@@ -1,0 +1,1 @@
+# algolia-swift-demo
