@@ -37,6 +37,7 @@ class MoviesTableViewController: UITableViewController, UISearchBarDelegate, UIS
     
     var searchId = 0
     var displayedSearchId = -1
+    var loadedPage: UInt = 0
     
     let placeholder = UIImage(named: "white")
     
@@ -84,6 +85,11 @@ class MoviesTableViewController: UITableViewController, UISearchBarDelegate, UIS
     override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCellWithIdentifier("movieCell", forIndexPath: indexPath) as! UITableViewCell
 
+        // Load more?
+        if (indexPath.row + 3) >= (movies.count - 1) {
+            loadMore()
+        }
+        
         // Configure the cell...
         let movie = movies[indexPath.row]
         cell.textLabel?.text = movie.title
@@ -101,11 +107,12 @@ class MoviesTableViewController: UITableViewController, UISearchBarDelegate, UIS
         let curSearchId = searchId
         
         movieIndex.search(query, block: { (data, error) -> Void in
-            if (error != nil) || (curSearchId <= self.displayedSearchId) {
+            if (curSearchId <= self.displayedSearchId) || (error != nil) {
                 return
             }
             
             self.displayedSearchId = curSearchId
+            self.loadedPage = 0 // reset loaded page
             
             let json = JSON(data!)
             let hits: [JSON] = json["hits"].arrayValue
@@ -120,6 +127,32 @@ class MoviesTableViewController: UITableViewController, UISearchBarDelegate, UIS
         })
         
         ++self.searchId
+    }
+    
+    // MARK: - Load more
+    
+    func loadMore() {
+        let nextQuery = Query(copy: query)
+        nextQuery.page = loadedPage + 1
+        movieIndex.search(nextQuery, block: { (data , error) -> Void in
+            // Reject if query has changed
+            if (nextQuery.query != self.query.query) || (error != nil) {
+                return
+            }
+            
+            self.loadedPage = nextQuery.page
+            
+            let json = JSON(data!)
+            let hits: [JSON] = json["hits"].arrayValue
+            
+            var tmp = [MovieRecord]()
+            for record in hits {
+                tmp.append(MovieRecord(json: record))
+            }
+            
+            self.movies.extend(tmp)
+            self.tableView.reloadData()
+        })
     }
 
     /*
