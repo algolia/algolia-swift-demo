@@ -38,6 +38,7 @@ class MoviesTableViewController: UITableViewController, UISearchBarDelegate, UIS
     var searchId = 0
     var displayedSearchId = -1
     var loadedPage: UInt = 0
+    var nbPages: UInt = 0
     
     let placeholder = UIImage(named: "white")
     
@@ -86,7 +87,7 @@ class MoviesTableViewController: UITableViewController, UISearchBarDelegate, UIS
         let cell = tableView.dequeueReusableCellWithIdentifier("movieCell", forIndexPath: indexPath) as! UITableViewCell
 
         // Load more?
-        if (indexPath.row + 3) >= (movies.count - 1) {
+        if (indexPath.row + 5) >= (movies.count - 1) {
             loadMore()
         }
         
@@ -116,6 +117,7 @@ class MoviesTableViewController: UITableViewController, UISearchBarDelegate, UIS
             
             let json = JSON(data!)
             let hits: [JSON] = json["hits"].arrayValue
+            self.nbPages = UInt(json["nbPages"].intValue)
             
             var tmp = [MovieRecord]()
             for record in hits {
@@ -132,6 +134,10 @@ class MoviesTableViewController: UITableViewController, UISearchBarDelegate, UIS
     // MARK: - Load more
     
     func loadMore() {
+        if loadedPage + 1 >= nbPages {
+            return
+        }
+        
         let nextQuery = Query(copy: query)
         nextQuery.page = loadedPage + 1
         movieIndex.search(nextQuery, block: { (data , error) -> Void in
