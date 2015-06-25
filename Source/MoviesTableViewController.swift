@@ -93,7 +93,9 @@ class MoviesTableViewController: UITableViewController, UISearchBarDelegate, UIS
         
         // Configure the cell...
         let movie = movies[indexPath.row]
-        cell.textLabel?.text = movie.title
+        cell.textLabel?.highlightedTextColor = UIColor(red:1, green:1, blue:0.898, alpha:1)
+        cell.textLabel?.highlightedText = movie.title
+        
         cell.detailTextLabel?.text = "\(movie.year)"
         cell.imageView?.cancelImageRequestOperation()
         cell.imageView?.setImageWithURL(NSURL(string: movie.image), placeholderImage: placeholder)

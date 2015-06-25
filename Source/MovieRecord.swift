@@ -31,7 +31,7 @@ struct MovieRecord {
     let year: Int
     
     init(json: JSON) {
-        title = json["title"].stringValue
+        title = json["_highlightResult", "title", "value"].stringValue
         image = json["image"].stringValue
         rating = json["rating"].intValue
         year = json["year"].intValue
