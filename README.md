@@ -1,13 +1,13 @@
 # iOS instant search demo
 
-This is a sample project implementing an instant-search based e-commerce website with [Algolia](https://www.algolia.com/). Algolia is a Search API that provides hosted full-text, numerical and faceted search.
+This is a sample project implementing an instant-search view with [Algolia](https://www.algolia.com/). Algolia is a Search API that provides hosted full-text, numerical and faceted search.
 
 ## Features
 
-* Full Swift
-* Displaying result as you type
-* Highlighting
-* Load more when the user reach the bottom of the view
+* Full Swift using the [AlgoliaSearch Swift API client](https://github.com/algolia/algoliasearch-client-swift)
+* Displaying results as you type
+* Match highlighting
+* Infinite scroll
 
 ## Setup
 
