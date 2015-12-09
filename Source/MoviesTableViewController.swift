@@ -84,7 +84,7 @@ class MoviesTableViewController: UITableViewController, UISearchBarDelegate, UIS
     }
     
     override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCellWithIdentifier("movieCell", forIndexPath: indexPath) as! UITableViewCell
+        let cell = tableView.dequeueReusableCellWithIdentifier("movieCell", forIndexPath: indexPath) 
 
         // Load more?
         if (indexPath.row + 5) >= (movies.count - 1) {
@@ -98,7 +98,12 @@ class MoviesTableViewController: UITableViewController, UISearchBarDelegate, UIS
         
         cell.detailTextLabel?.text = "\(movie.year)"
         cell.imageView?.cancelImageRequestOperation()
-        cell.imageView?.setImageWithURL(NSURL(string: movie.image), placeholderImage: placeholder)
+        if let url = NSURL(string: movie.image) {
+            cell.imageView?.setImageWithURL(url, placeholderImage: placeholder)
+        }
+        else {
+            cell.imageView?.image = nil
+        }
 
         return cell
     }
@@ -158,7 +163,7 @@ class MoviesTableViewController: UITableViewController, UISearchBarDelegate, UIS
                 tmp.append(MovieRecord(json: record))
             }
             
-            self.movies.extend(tmp)
+            self.movies.appendContentsOf(tmp)
             self.tableView.reloadData()
         })
     }

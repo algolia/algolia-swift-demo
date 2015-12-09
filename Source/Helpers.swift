@@ -24,26 +24,29 @@
 import UIKit
 
 extension UILabel {
-    var highlightedText: String {
+    var highlightedText: String? {
         get {
-            return attributedText.string
+            return attributedText?.string
         }
         set {
             attributedTextFromHtml(newValue)
         }
     }
     
-    private func attributedTextFromHtml(htmlText: String) {
-        var text = NSMutableString(string: htmlText)
-        var rangesOfAttributes = getRangeToHighlight(text)
-        
-        let attributedString = NSMutableAttributedString(string: String(text))
-        for range in rangesOfAttributes {
-            let color = highlightedTextColor ?? UIColor.yellowColor()
-            attributedString.addAttribute(NSBackgroundColorAttributeName, value: color, range: range)
+    private func attributedTextFromHtml(htmlText: String?) {
+        if htmlText == nil {
+            attributedText = nil
         }
-        
-        attributedText = attributedString
+        else {
+            let text = NSMutableString(string: htmlText!)
+            let rangesOfAttributes = getRangeToHighlight(text)
+            let attributedString = NSMutableAttributedString(string: String(text))
+            for range in rangesOfAttributes {
+                let color = highlightedTextColor ?? UIColor.yellowColor()
+                attributedString.addAttribute(NSBackgroundColorAttributeName, value: color, range: range)
+            }
+            attributedText = attributedString
+        }
     }
     
     private func getRangeToHighlight(text: NSMutableString) -> [NSRange] {
