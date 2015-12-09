@@ -15,7 +15,7 @@
 		5D44D0231B35F87B008369AC /* MoviesTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D44D0221B35F87B008369AC /* MoviesTableViewController.swift */; };
 		5D44D0251B3601E8008369AC /* MovieRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D44D0241B3601E8008369AC /* MovieRecord.swift */; };
 		5D9EB6AE1B3C3DC100BA6737 /* Helpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D9EB6AD1B3C3DC100BA6737 /* Helpers.swift */; };
-		AA5BC57C1364C5FB7C70933A /* Pods.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 13D25C23D87861EC441A72F6 /* Pods.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
+		AA5BC57C1364C5FB7C70933A /* Pods.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 13D25C23D87861EC441A72F6 /* Pods.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -189,6 +189,8 @@
 		5D44CFF51B35F7B3008369AC /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
+				LastSwiftMigration = 0720;
+				LastSwiftUpdateCheck = 0720;
 				LastUpgradeCheck = 0630;
 				ORGANIZATIONNAME = "Thibault Deutsch";
 				TargetAttributes = {
