@@ -39,6 +39,7 @@ class MoviesTableViewController: UITableViewController, UISearchBarDelegate, UIS
     var displayedSearchId = -1
     var loadedPage: UInt = 0
     var nbPages: UInt = 0
+    var loadingPage: UInt = 0
     
     let placeholder = UIImage(named: "white")
     
@@ -121,6 +122,7 @@ class MoviesTableViewController: UITableViewController, UISearchBarDelegate, UIS
             
             self.displayedSearchId = curSearchId
             self.loadedPage = 0 // reset loaded page
+            self.loadingPage = 0 // reset the loading page
             
             let json = JSON(data!)
             let hits: [JSON] = json["hits"].arrayValue
@@ -144,6 +146,11 @@ class MoviesTableViewController: UITableViewController, UISearchBarDelegate, UIS
         if loadedPage + 1 >= nbPages {
             return
         }
+        // check if already loading this page so a redundent query isn't generated
+        if loadedPage + 1 == loadingPage {
+            return
+        }
+        loadingPage = loadedPage + 1
         
         let nextQuery = Query(copy: query)
         nextQuery.page = loadedPage + 1
