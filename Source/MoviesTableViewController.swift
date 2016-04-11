@@ -115,7 +115,7 @@ class MoviesTableViewController: UITableViewController, UISearchBarDelegate, UIS
         query.query = searchController.searchBar.text
         let curSearchId = searchId
         
-        movieIndex.search(query, block: { (data, error) -> Void in
+        movieIndex.search(query, completionHandler: { (data, error) -> Void in
             if (curSearchId <= self.displayedSearchId) || (error != nil) {
                 return
             }
@@ -154,7 +154,7 @@ class MoviesTableViewController: UITableViewController, UISearchBarDelegate, UIS
         
         let nextQuery = Query(copy: query)
         nextQuery.page = loadedPage + 1
-        movieIndex.search(nextQuery, block: { (data , error) -> Void in
+        movieIndex.search(nextQuery, completionHandler: { (data , error) -> Void in
             // Reject if query has changed
             if (nextQuery.query != self.query.query) || (error != nil) {
                 return
