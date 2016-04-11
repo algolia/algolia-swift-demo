@@ -137,7 +137,7 @@ class MoviesTableViewController: UITableViewController, UISearchBarDelegate, UIS
             self.tableView.reloadData()
         })
         
-        ++self.searchId
+        self.searchId += 1
     }
     
     // MARK: - Load more
@@ -160,7 +160,7 @@ class MoviesTableViewController: UITableViewController, UISearchBarDelegate, UIS
                 return
             }
             
-            self.loadedPage = nextQuery.page
+            self.loadedPage = nextQuery.page!.unsignedIntegerValue
             
             let json = JSON(data!)
             let hits: [JSON] = json["hits"].arrayValue
