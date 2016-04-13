@@ -98,7 +98,7 @@ class MoviesTableViewController: UITableViewController, UISearchBarDelegate, UIS
         cell.textLabel?.highlightedText = movie.title
         
         cell.detailTextLabel?.text = "\(movie.year)"
-        cell.imageView?.cancelImageRequestOperation()
+        cell.imageView?.cancelImageDownloadTask()
         if let url = NSURL(string: movie.image) {
             cell.imageView?.setImageWithURL(url, placeholderImage: placeholder)
         }
