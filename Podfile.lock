@@ -20,17 +20,21 @@ PODS:
   - AFNetworking/UIKit (2.6.3):
     - AFNetworking/NSURLConnection
     - AFNetworking/NSURLSession
-  - AlgoliaSearch-Client-Swift (2.1.0)
+  - AlgoliaSearch-Client-Swift (3.0a1):
+    - AlgoliaSearch-Client-Swift/Online (= 3.0a1)
+  - AlgoliaSearch-Client-Swift/Online (3.0a1)
   - SwiftyJSON (2.3.2)
 
 DEPENDENCIES:
   - AFNetworking (~> 2.0)
-  - AlgoliaSearch-Client-Swift (~> 2.1)
+  - AlgoliaSearch-Client-Swift (~> 3.0a1)
   - SwiftyJSON (~> 2.2)
 
 SPEC CHECKSUMS:
   AFNetworking: cb8d14a848e831097108418f5d49217339d4eb60
-  AlgoliaSearch-Client-Swift: 9811e67fffc4ca833443867cf1bf090571dec5b4
+  AlgoliaSearch-Client-Swift: a2ac1a37e8519eeacbf8aa9ef228e8d28b449242
   SwiftyJSON: 04ccea08915aa0109039157c7974cf0298da292a
 
-COCOAPODS: 0.39.0
+PODFILE CHECKSUM: e96668cfbd149a0952d7a238a1ed81cdb6a982f2
+
+COCOAPODS: 1.0.0.beta.2
