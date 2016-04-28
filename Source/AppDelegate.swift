@@ -44,6 +44,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         }
         self.reachability.startNotifier()
 
+        // Set up an on-disk URL cache.
+        let urlCache = NSURLCache(memoryCapacity: 0, diskCapacity:50 * 1024 * 1024, diskPath:nil)
+        NSURLCache.setSharedURLCache(urlCache)
+
         return true
     }
 
