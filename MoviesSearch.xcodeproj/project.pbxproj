@@ -15,6 +15,7 @@
 		5D44D0231B35F87B008369AC /* MoviesTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D44D0221B35F87B008369AC /* MoviesTableViewController.swift */; };
 		5D44D0251B3601E8008369AC /* MovieRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D44D0241B3601E8008369AC /* MovieRecord.swift */; };
 		5D9EB6AE1B3C3DC100BA6737 /* Helpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D9EB6AD1B3C3DC100BA6737 /* Helpers.swift */; };
+		BC9C1A001CD233A5003E2FA1 /* AlgoliaManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC9C19FF1CD233A5003E2FA1 /* AlgoliaManager.swift */; };
 		EB936E676EA3ABB6FF43A252 /* Pods_MoviesSearch.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A2FF6DC00013B2F8CAAFA113 /* Pods_MoviesSearch.framework */; };
 /* End PBXBuildFile section */
 
@@ -46,6 +47,7 @@
 		7FFA3B79BEC9E5676A9669C8 /* Pods-MoviesSearch.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MoviesSearch.debug.xcconfig"; path = "Pods/Target Support Files/Pods-MoviesSearch/Pods-MoviesSearch.debug.xcconfig"; sourceTree = "<group>"; };
 		9BEC1C17860BAEDA209DB025 /* Pods.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.debug.xcconfig; path = "Pods/Target Support Files/Pods/Pods.debug.xcconfig"; sourceTree = "<group>"; };
 		A2FF6DC00013B2F8CAAFA113 /* Pods_MoviesSearch.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_MoviesSearch.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		BC9C19FF1CD233A5003E2FA1 /* AlgoliaManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AlgoliaManager.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -90,6 +92,7 @@
 		5D44CFFF1B35F7B3008369AC /* Source */ = {
 			isa = PBXGroup;
 			children = (
+				BC9C19FF1CD233A5003E2FA1 /* AlgoliaManager.swift */,
 				5D44D0021B35F7B3008369AC /* AppDelegate.swift */,
 				5D44D0221B35F87B008369AC /* MoviesTableViewController.swift */,
 				5D44D0241B3601E8008369AC /* MovieRecord.swift */,
@@ -303,6 +306,7 @@
 				5D44D0251B3601E8008369AC /* MovieRecord.swift in Sources */,
 				5D44D0031B35F7B3008369AC /* AppDelegate.swift in Sources */,
 				5D9EB6AE1B3C3DC100BA6737 /* Helpers.swift in Sources */,
+				BC9C1A001CD233A5003E2FA1 /* AlgoliaManager.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

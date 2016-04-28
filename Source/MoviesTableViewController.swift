@@ -45,6 +45,8 @@ class MoviesTableViewController: UITableViewController, UISearchBarDelegate, UIS
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        movieIndex = AlgoliaManager.sharedInstance.moviesIndex
 
         // Search controller
         searchController = UISearchController(searchResultsController: nil)
@@ -57,19 +59,16 @@ class MoviesTableViewController: UITableViewController, UISearchBarDelegate, UIS
         definesPresentationContext = true
         searchController!.searchBar.sizeToFit()
         
-        // Algolia Search
-        let apiKey = NSBundle.mainBundle().infoDictionary!["AlgoliaApiKey"] as! String
-        let apiClient = OfflineClient(appID: "latency", apiKey: apiKey)
-        let licenseKey = NSBundle.mainBundle().infoDictionary!["AlgoliaOfflineSdkLicenseKey"] as! String
-        apiClient.enableOfflineMode(licenseKey)
-        movieIndex = apiClient.getIndex("movies")
-        
+        // Prepare search query.
         query.hitsPerPage = 15
         query.attributesToRetrieve = ["title", "image", "rating", "year"]
         query.attributesToHighlight = ["title"]
         
         // First load
         updateSearchResultsForSearchController(searchController)
+        
+        // Start a sync if needed.
+        AlgoliaManager.sharedInstance.syncIfNeededAndPossible()
     }
 
     override func didReceiveMemoryWarning() {
