@@ -34,5 +34,9 @@
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>
 	</array>
+	<key>AlgoliaApiKey</key>
+	<string>${ALGOLIA_API_KEY}</string>
+	<key>AlgoliaOfflineSdkLicenseKey</key>
+	<string>${ALGOLIA_OFFLINE_SDK_LICENSE_KEY}</string>
 </dict>
 </plist>

@@ -30,7 +30,7 @@ class MoviesTableViewController: UITableViewController, UISearchBarDelegate, UIS
 
     var searchController: UISearchController!
     
-    var movieIndex: Index!
+    var movieIndex: MirroredIndex!
     let query = Query()
     
     var movies = [MovieRecord]()
@@ -58,7 +58,10 @@ class MoviesTableViewController: UITableViewController, UISearchBarDelegate, UIS
         searchController!.searchBar.sizeToFit()
         
         // Algolia Search
-        let apiClient = Client(appID: "latency", apiKey: "dce4286c2833e8cf4b7b1f2d3fa1dbcb")
+        let apiKey = NSBundle.mainBundle().infoDictionary!["AlgoliaApiKey"] as! String
+        let apiClient = OfflineClient(appID: "latency", apiKey: apiKey)
+        let licenseKey = NSBundle.mainBundle().infoDictionary!["AlgoliaOfflineSdkLicenseKey"] as! String
+        apiClient.enableOfflineMode(licenseKey)
         movieIndex = apiClient.getIndex("movies")
         
         query.hitsPerPage = 15
