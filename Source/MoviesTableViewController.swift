@@ -75,6 +75,13 @@ class MoviesTableViewController: UITableViewController, UISearchBarDelegate, UIS
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
+    
+    // MARK: - Actions
+    
+    @IBAction func sync(sender: UIBarButtonItem) {
+        // Unconditionally trigger a sync.
+        AlgoliaManager.sharedInstance.moviesIndex.sync()
+    }
 
     // MARK: - Table view data source
 
@@ -111,7 +118,7 @@ class MoviesTableViewController: UITableViewController, UISearchBarDelegate, UIS
         return cell
     }
     
-    // MARK: - Search bar
+    // MARK: - Search
     
     func updateSearchResultsForSearchController(searchController: UISearchController) {
         query.query = searchController.searchBar.text
@@ -141,8 +148,6 @@ class MoviesTableViewController: UITableViewController, UISearchBarDelegate, UIS
         
         self.searchId += 1
     }
-    
-    // MARK: - Load more
     
     func loadMore() {
         if loadedPage + 1 >= nbPages {
@@ -176,15 +181,4 @@ class MoviesTableViewController: UITableViewController, UISearchBarDelegate, UIS
             self.tableView.reloadData()
         })
     }
-
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
-        // Get the new view controller using [segue destinationViewController].
-        // Pass the selected object to the new view controller.
-    }
-    */
-
 }
