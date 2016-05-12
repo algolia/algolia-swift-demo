@@ -28,11 +28,13 @@ import SwiftyJSON
 
 
 class AlgoliaManager {
+    /// The singleton instance.
     static let sharedInstance = AlgoliaManager()
-    
-    let moviesIndex: MirroredIndex
+
     let client: OfflineClient
+    var moviesIndex: MirroredIndex
     
+    var shouldLoadImages = false
     var imagesToLoad: [String] = []
     var imagesLoading = 0
     
@@ -73,7 +75,11 @@ class AlgoliaManager {
     
     @objc func syncDidFinish(notification: NSNotification) {
         NSLog("Sync did finish: %@", notification)
-        preloadImages()
+        if shouldLoadImages {
+            preloadImages()
+        } else {
+            syncFinished()
+        }
     }
     
     private func preloadImages() {
@@ -87,7 +93,7 @@ class AlgoliaManager {
     
     private func handleBrowse(content: [String: AnyObject]?, error: NSError?) {
         if error != nil {
-            preloadImagesFinished()
+            syncFinished()
             return
         }
         let cursor = content!["cursor"] as? String
@@ -137,7 +143,7 @@ class AlgoliaManager {
                 }
             }
         } else if imagesLoading == 0 {
-            preloadImagesFinished()
+            syncFinished()
         }
     }
     
@@ -146,7 +152,7 @@ class AlgoliaManager {
         dequeueNext()
     }
     
-    private func preloadImagesFinished() {
+    private func syncFinished() {
         NSLog("Sync finished")
     }
 }
