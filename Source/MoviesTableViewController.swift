@@ -24,28 +24,27 @@
 import UIKit
 import AlgoliaSearch
 import AFNetworking
-import SwiftyJSON
+
 
 class MoviesTableViewController: UITableViewController, UISearchBarDelegate, UISearchResultsUpdating {
 
     var searchController: UISearchController!
     
-    var movieIndex: Index!
-    let query = Query()
-    
-    var movies = [MovieRecord]()
-    
-    var searchId = 0
-    var displayedSearchId = -1
-    var loadedPage: UInt = 0
-    var nbPages: UInt = 0
-    var loadingPage: UInt = 0
+    var movieSearcher: SearchHelper!
     
     let placeholder = UIImage(named: "white")
     
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        // Algolia Search
+        movieSearcher = SearchHelper(index: AlgoliaManager.sharedInstance.moviesIndex, completionHandler: { (content, error) in
+            self.tableView.reloadData()
+        })
+        movieSearcher.query.hitsPerPage = 15
+        movieSearcher.query.attributesToRetrieve = ["title", "image", "rating", "year"]
+        movieSearcher.query.attributesToHighlight = ["title"]
+        
         // Search controller
         searchController = UISearchController(searchResultsController: nil)
         searchController.searchResultsUpdater = self
@@ -56,14 +55,6 @@ class MoviesTableViewController: UITableViewController, UISearchBarDelegate, UIS
         tableView.tableHeaderView = self.searchController!.searchBar
         definesPresentationContext = true
         searchController!.searchBar.sizeToFit()
-        
-        // Algolia Search
-        let apiClient = Client(appID: "latency", apiKey: "dce4286c2833e8cf4b7b1f2d3fa1dbcb")
-        movieIndex = apiClient.getIndex("movies")
-        
-        query.hitsPerPage = 15
-        query.attributesToRetrieve = ["title", "image", "rating", "year"]
-        query.attributesToHighlight = ["title"]
         
         // First load
         updateSearchResultsForSearchController(searchController)
@@ -81,19 +72,19 @@ class MoviesTableViewController: UITableViewController, UISearchBarDelegate, UIS
     }
 
     override func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return movies.count
+        return movieSearcher.hits.count
     }
     
     override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCellWithIdentifier("movieCell", forIndexPath: indexPath) 
 
         // Load more?
-        if (indexPath.row + 5) >= (movies.count - 1) {
-            loadMore()
+        if indexPath.row + 5 >= movieSearcher.hits.count {
+            movieSearcher.loadMore()
         }
         
         // Configure the cell...
-        let movie = movies[indexPath.row]
+        let movie = MovieRecord(json: movieSearcher.hits[indexPath.row])
         cell.textLabel?.highlightedTextColor = UIColor(red:1, green:1, blue:0.898, alpha:1)
         cell.textLabel?.highlightedText = movie.title_highlighted
         
@@ -112,71 +103,8 @@ class MoviesTableViewController: UITableViewController, UISearchBarDelegate, UIS
     // MARK: - Search bar
     
     func updateSearchResultsForSearchController(searchController: UISearchController) {
-        query.query = searchController.searchBar.text
-        let curSearchId = searchId
-        
-        movieIndex.search(query, completionHandler: { (data, error) -> Void in
-            if (curSearchId <= self.displayedSearchId) || (error != nil) {
-                return
-            }
-            
-            self.displayedSearchId = curSearchId
-            self.loadedPage = 0 // reset loaded page
-            self.loadingPage = 0 // reset the loading page
-            
-            guard let
-                hits = data?["hits"] as? [[String: AnyObject]],
-                nbPages = data?["nbPages"] as? UInt
-            else {
-                return
-            }
-            self.nbPages = nbPages
-            
-            var tmp = [MovieRecord]()
-            for hit in hits {
-                tmp.append(MovieRecord(json: hit))
-            }
-            
-            self.movies = tmp
-            self.tableView.reloadData()
-        })
-        
-        self.searchId += 1
+        movieSearcher.query.query = searchController.searchBar.text
+        movieSearcher.search()
     }
     
-    // MARK: - Load more
-    
-    func loadMore() {
-        if loadedPage + 1 >= nbPages {
-            return
-        }
-        // check if already loading this page so a redundent query isn't generated
-        if loadedPage + 1 == loadingPage {
-            return
-        }
-        loadingPage = loadedPage + 1
-        
-        let nextQuery = Query(copy: query)
-        nextQuery.page = loadedPage + 1
-        movieIndex.search(nextQuery, completionHandler: { (data , error) -> Void in
-            // Reject if query has changed
-            if (nextQuery.query != self.query.query) || (error != nil) {
-                return
-            }
-            
-            self.loadedPage = nextQuery.page!.unsignedIntegerValue
-            
-            guard let hits = data?["hits"] as? [[String: AnyObject]] else {
-                return
-            }
-            var tmp = [MovieRecord]()
-            for hit in hits {
-                tmp.append(MovieRecord(json: hit))
-            }
-            
-            self.movies.appendContentsOf(tmp)
-            self.tableView.reloadData()
-        })
-    }
-
 }
