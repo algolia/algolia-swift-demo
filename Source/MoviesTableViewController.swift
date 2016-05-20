@@ -95,11 +95,11 @@ class MoviesTableViewController: UITableViewController, UISearchBarDelegate, UIS
         // Configure the cell...
         let movie = movies[indexPath.row]
         cell.textLabel?.highlightedTextColor = UIColor(red:1, green:1, blue:0.898, alpha:1)
-        cell.textLabel?.highlightedText = movie.title
+        cell.textLabel?.highlightedText = movie.title_highlighted
         
         cell.detailTextLabel?.text = "\(movie.year)"
         cell.imageView?.cancelImageDownloadTask()
-        if let url = NSURL(string: movie.image) {
+        if let url = movie.imageUrl {
             cell.imageView?.setImageWithURL(url, placeholderImage: placeholder)
         }
         else {
@@ -124,13 +124,17 @@ class MoviesTableViewController: UITableViewController, UISearchBarDelegate, UIS
             self.loadedPage = 0 // reset loaded page
             self.loadingPage = 0 // reset the loading page
             
-            let json = JSON(data!)
-            let hits: [JSON] = json["hits"].arrayValue
-            self.nbPages = UInt(json["nbPages"].intValue)
+            guard let
+                hits = data?["hits"] as? [[String: AnyObject]],
+                nbPages = data?["nbPages"] as? UInt
+            else {
+                return
+            }
+            self.nbPages = nbPages
             
             var tmp = [MovieRecord]()
-            for record in hits {
-                tmp.append(MovieRecord(json: record))
+            for hit in hits {
+                tmp.append(MovieRecord(json: hit))
             }
             
             self.movies = tmp
@@ -162,27 +166,17 @@ class MoviesTableViewController: UITableViewController, UISearchBarDelegate, UIS
             
             self.loadedPage = nextQuery.page!.unsignedIntegerValue
             
-            let json = JSON(data!)
-            let hits: [JSON] = json["hits"].arrayValue
-            
+            guard let hits = data?["hits"] as? [[String: AnyObject]] else {
+                return
+            }
             var tmp = [MovieRecord]()
-            for record in hits {
-                tmp.append(MovieRecord(json: record))
+            for hit in hits {
+                tmp.append(MovieRecord(json: hit))
             }
             
             self.movies.appendContentsOf(tmp)
             self.tableView.reloadData()
         })
     }
-
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
-        // Get the new view controller using [segue destinationViewController].
-        // Pass the selected object to the new view controller.
-    }
-    */
 
 }

@@ -22,18 +22,35 @@
 //
 
 import Foundation
-import SwiftyJSON
+
 
 struct MovieRecord {
-    let title: String
-    let image: String
-    let rating: Int
-    let year: Int
+    private let json: [String: AnyObject]
     
-    init(json: JSON) {
-        title = json["_highlightResult", "title", "value"].stringValue
-        image = json["image"].stringValue
-        rating = json["rating"].intValue
-        year = json["year"].intValue
+    init(json: [String: AnyObject]) {
+        self.json = json
+    }
+
+    var title: String? {
+        return json["title"] as? String
+    }
+    
+    var imageUrl: NSURL? {
+        guard let urlString = json["image"] as? String else {
+            return nil
+        }
+        return NSURL(string: urlString)
+    }
+    
+    var title_highlighted: String? {
+        return ((json["_highlightResult"] as? [String: AnyObject])?["title"] as? [String: AnyObject])?["value"] as? String
+    }
+
+    var rating: Int? {
+        return json["rating"] as? Int
+    }
+    
+    var year: Int? {
+        return json["year"] as? Int
     }
 }
