@@ -183,6 +183,64 @@
                                     <outlet property="delegate" destination="QoU-xg-cOI" id="Ix3-jE-jAD"/>
                                 </connections>
                             </view>
+                            <view contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="mLA-z9-UQN" customClass="RatingSelectorView" customModule="MoviesSearch" customModuleProvider="target">
+                                <rect key="frame" x="30" y="681" width="120" height="20"/>
+                                <subviews>
+                                    <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" adjustsImageWhenHighlighted="NO" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="h87-4c-KIp">
+                                        <rect key="frame" x="2" y="0.0" width="20" height="20"/>
+                                        <state key="normal" title="Button" image="star-gray.png"/>
+                                        <state key="selected" image="star-yellow.png"/>
+                                        <state key="highlighted" image="star-yellow.png"/>
+                                        <connections>
+                                            <action selector="didPressStar:" destination="mLA-z9-UQN" eventType="touchDown" id="Oqj-Uj-mrt"/>
+                                        </connections>
+                                    </button>
+                                    <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" adjustsImageWhenHighlighted="NO" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="aJq-bX-d0W">
+                                        <rect key="frame" x="26" y="0.0" width="20" height="20"/>
+                                        <state key="normal" title="Button" image="star-gray.png"/>
+                                        <state key="selected" image="star-yellow.png"/>
+                                        <state key="highlighted" image="star-yellow.png"/>
+                                        <connections>
+                                            <action selector="didPressStar:" destination="mLA-z9-UQN" eventType="touchDown" id="eLd-WT-A5v"/>
+                                        </connections>
+                                    </button>
+                                    <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" adjustsImageWhenHighlighted="NO" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="ktL-Vr-mG3">
+                                        <rect key="frame" x="50" y="0.0" width="20" height="20"/>
+                                        <state key="normal" title="Button" image="star-gray.png"/>
+                                        <state key="selected" image="star-yellow.png"/>
+                                        <state key="highlighted" image="star-yellow.png"/>
+                                        <connections>
+                                            <action selector="didPressStar:" destination="mLA-z9-UQN" eventType="touchDown" id="gmp-CW-Ejf"/>
+                                        </connections>
+                                    </button>
+                                    <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" adjustsImageWhenHighlighted="NO" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="hQO-se-Aah">
+                                        <rect key="frame" x="74" y="0.0" width="20" height="20"/>
+                                        <state key="normal" title="Button" image="star-gray.png"/>
+                                        <state key="selected" image="star-yellow.png"/>
+                                        <state key="highlighted" image="star-yellow.png"/>
+                                        <connections>
+                                            <action selector="didPressStar:" destination="mLA-z9-UQN" eventType="touchDown" id="5o7-iX-sKS"/>
+                                        </connections>
+                                    </button>
+                                    <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" adjustsImageWhenHighlighted="NO" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="zbl-bq-9g2">
+                                        <rect key="frame" x="98" y="0.0" width="20" height="20"/>
+                                        <state key="normal" title="Button" image="star-gray.png"/>
+                                        <state key="selected" image="star-yellow.png"/>
+                                        <state key="highlighted" image="star-yellow.png"/>
+                                        <connections>
+                                            <action selector="didPressStar:" destination="mLA-z9-UQN" eventType="touchDown" id="mnd-GF-Dio"/>
+                                        </connections>
+                                    </button>
+                                </subviews>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                <connections>
+                                    <outlet property="star1Button" destination="h87-4c-KIp" id="MIP-L9-9z9"/>
+                                    <outlet property="star2Button" destination="aJq-bX-d0W" id="7QL-N5-z4e"/>
+                                    <outlet property="star3Button" destination="ktL-Vr-mG3" id="j2s-ms-rCq"/>
+                                    <outlet property="star4Button" destination="hQO-se-Aah" id="UyI-MS-jsN"/>
+                                    <outlet property="star5Button" destination="zbl-bq-9g2" id="70G-cJ-y6B"/>
+                                </connections>
+                            </view>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <constraints>
@@ -206,6 +264,7 @@
                         <outlet property="actorsTableView" destination="cqd-50-3Ip" id="mie-NB-XjL"/>
                         <outlet property="genreTableView" destination="rch-8R-ZpG" id="ubW-59-31q"/>
                         <outlet property="moviesCollectionView" destination="DcT-Nr-JyO" id="SfI-24-86P"/>
+                        <outlet property="ratingSelectorView" destination="mLA-z9-UQN" id="Nqb-zt-u8Q"/>
                         <outlet property="searchBar" destination="0sR-ah-Hs5" id="fWY-Ow-V0h"/>
                         <outlet property="yearRangeSlider" destination="jAj-7w-QJV" id="vv0-p3-aCL"/>
                     </connections>
@@ -223,4 +282,8 @@
             <point key="canvasLocation" x="128" y="50"/>
         </scene>
     </scenes>
+    <resources>
+        <image name="star-gray.png" width="64" height="64"/>
+        <image name="star-yellow.png" width="64" height="64"/>
+    </resources>
 </document>

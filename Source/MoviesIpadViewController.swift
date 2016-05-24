@@ -29,6 +29,7 @@ class MoviesIpadViewController: UIViewController, UICollectionViewDataSource, TT
     @IBOutlet weak var searchBar: UISearchBar!
     @IBOutlet weak var genreTableView: UITableView!
     @IBOutlet weak var yearRangeSlider: TTRangeSlider!
+    @IBOutlet weak var ratingSelectorView: RatingSelectorView!
     @IBOutlet weak var moviesCollectionView: UICollectionView!
     @IBOutlet weak var actorsTableView: UITableView!
 
@@ -40,11 +41,14 @@ class MoviesIpadViewController: UIViewController, UICollectionViewDataSource, TT
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        // Customize year range slider.
         yearRangeSlider.numberFormatterOverride = NSNumberFormatter()
         let tintColor = self.view.tintColor
         yearRangeSlider.tintColorBetweenHandles = tintColor
         yearRangeSlider.handleColor = tintColor
         yearRangeSlider.lineHeight = 3
+        
+        ratingSelectorView.addObserver(self, forKeyPath: "rating", options: .New, context: nil)
         
         // Configure actor search.
         actorSearcher = SearchHelper(index: AlgoliaManager.sharedInstance.actorsIndex, completionHandler: self.handleActorSearchResults)
@@ -66,7 +70,11 @@ class MoviesIpadViewController: UIViewController, UICollectionViewDataSource, TT
     
     private func search() {
         actorSearcher.search()
-        movieSearcher.query.numericFilters = [ "year >= \(Int(yearRangeSlider.selectedMinimum))", "year <= \(Int(yearRangeSlider.selectedMaximum))" ]
+        movieSearcher.query.numericFilters = [
+            "year >= \(Int(yearRangeSlider.selectedMinimum))",
+            "year <= \(Int(yearRangeSlider.selectedMaximum))",
+            "rating >= \(ratingSelectorView.rating)"
+        ]
         movieSearcher.search()
     }
     
@@ -170,5 +178,16 @@ class MoviesIpadViewController: UIViewController, UICollectionViewDataSource, TT
     
     func rangeSlider(sender: TTRangeSlider!, didChangeSelectedMinimumValue selectedMinimum: Float, andMaximumValue selectedMaximum: Float) {
         search()
+    }
+    
+    // MARK: - KVO
+    
+    override func observeValueForKeyPath(keyPath: String?, ofObject object: AnyObject?, change: [String : AnyObject]?, context: UnsafeMutablePointer<Void>) {
+        guard object != nil else { return }
+        if object! as? NSObject == ratingSelectorView {
+            if keyPath == "rating" {
+                search()
+            }
+        }
     }
 }
