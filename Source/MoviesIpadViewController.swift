@@ -162,7 +162,7 @@ class MoviesIpadViewController: UIViewController, UICollectionViewDataSource, TT
         switch tableView {
             case actorsTableView: return actorSearcher.hits.count
             case genreTableView: return genreFacets.count
-            default: assert(false)
+            default: assert(false); return 0
         }
     }
     
@@ -180,7 +180,7 @@ class MoviesIpadViewController: UIViewController, UICollectionViewDataSource, TT
                 cell.value = genreFacets[indexPath.item]
                 cell.checked = QueryBuilder(query: movieSearcher.receivedQuery!).hasConjunctiveFacetRefinement("genre", value: genreFacets[indexPath.item].value)
                 return cell
-            default: assert(false)
+            default: assert(false); return UITableViewCell()
         }
     }
     
