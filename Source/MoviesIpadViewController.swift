@@ -96,6 +96,11 @@ class MoviesIpadViewController: UIViewController, UICollectionViewDataSource, TT
 
     private func handleActorSearchResults(content: [String: AnyObject]?, error: NSError?) {
         self.actorsTableView.reloadData()
+        
+        // Scroll to top.
+        if actorSearcher.receivedPage == actorSearcher.receivedInitialPage {
+            self.moviesCollectionView.contentOffset = CGPointZero
+        }
     }
 
     private func handleMovieSearchResults(content: [String: AnyObject]?, error: NSError?) {
@@ -129,6 +134,11 @@ class MoviesIpadViewController: UIViewController, UICollectionViewDataSource, TT
 
         self.genreTableView.reloadData()
         self.moviesCollectionView.reloadData()
+        
+        // Scroll to top.
+        if movieSearcher.receivedPage == movieSearcher.receivedInitialPage {
+            self.moviesCollectionView.contentOffset = CGPointZero
+        }
     }
     
     // MARK: - UICollectionViewDataSource

@@ -66,8 +66,13 @@ public class SearchHelper {
     /// Total number of pages in results.
     private var nbPages: Int = 0
 
+    /// The initial page for the last received results.
+    public var receivedInitialPage: Int {
+        return receivedQuery?.page?.integerValue ?? 0
+    }
+
     /// The last received page.
-    private var receivedPage: Int = 0
+    public private(set) var receivedPage: Int = 0
     
     /// The query corresponding to the last received results.
     public private(set) var receivedQuery: Query?
