@@ -25,6 +25,15 @@ import AlgoliaSearch
 import Foundation
 
 
+/// A value of a given facet, together with its number of occurrences.
+///
+public struct FacetValue {
+    let value: String
+    let count: Int
+    
+}
+
+
 /// Manages search on an Algolia index.
 ///
 /// The purpose of this class is to maintain a state between searches and handle pagination.
@@ -61,7 +70,7 @@ public class SearchHelper {
     private var receivedPage: Int = 0
     
     /// The query corresponding to the last received results.
-    private var receivedQuery: Query?
+    public private(set) var receivedQuery: Query?
     
     /// Results for the last query.
     ///
@@ -70,6 +79,11 @@ public class SearchHelper {
     /// another call to `search()`.
     ///
     public private(set) var hits: [[String: AnyObject]] = []
+    
+    /// Facets returned by the last query.
+    /// Maps each facet name to the array of corresponding (value, count) pairs.
+    ///
+    public private(set) var facets: [String: [FacetValue]] = [:]
     
     // MARK: -
     
@@ -131,12 +145,27 @@ public class SearchHelper {
             hits = content["hits"] as? [[String: AnyObject]] else {
                 throw NSError(domain: Client.ErrorDomain, code: 500, userInfo: [NSLocalizedDescriptionKey: "Invalid response from server"])
         }
+        // Update page.
         self.receivedPage = receivedPage
         self.nbPages = nbPages
+        
+        // Update hits.
         if receivedPage == initialPage {
             self.hits = hits
         } else {
             self.hits.appendContentsOf(hits)
+        }
+        
+        // Update facets.
+        self.facets.removeAll()
+        if let facets = content["facets"] as? [String: [String: Int]] {
+            for (facetName, facetValues) in facets {
+                var values = [FacetValue]()
+                for (value, count) in facetValues {
+                    values.append(FacetValue(value: value, count: count))
+                }
+                self.facets[facetName] = values
+            }
         }
     }
 }

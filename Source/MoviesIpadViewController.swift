@@ -22,32 +22,42 @@
 //
 
 import AlgoliaSearch
+import TTRangeSlider
 import UIKit
 
-class MoviesIpadViewController: UIViewController, UICollectionViewDataSource, UISearchBarDelegate, UITableViewDataSource {
+class MoviesIpadViewController: UIViewController, UICollectionViewDataSource, TTRangeSliderDelegate, UISearchBarDelegate, UITableViewDataSource, UITableViewDelegate {
     @IBOutlet weak var searchBar: UISearchBar!
+    @IBOutlet weak var genreTableView: UITableView!
+    @IBOutlet weak var yearRangeSlider: TTRangeSlider!
     @IBOutlet weak var moviesCollectionView: UICollectionView!
     @IBOutlet weak var actorsTableView: UITableView!
 
     var actorSearcher: SearchHelper!
     var movieSearcher: SearchHelper!
     
+    var genreFacets: [FacetValue] = []
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        actorSearcher = SearchHelper(index: AlgoliaManager.sharedInstance.actorsIndex, completionHandler: { (content, error) in
-            self.actorsTableView.reloadData()
-        })
+        yearRangeSlider.numberFormatterOverride = NSNumberFormatter()
+        let tintColor = self.view.tintColor
+        yearRangeSlider.tintColorBetweenHandles = tintColor
+        yearRangeSlider.handleColor = tintColor
+        yearRangeSlider.lineHeight = 3
+        
+        // Configure actor search.
+        actorSearcher = SearchHelper(index: AlgoliaManager.sharedInstance.actorsIndex, completionHandler: self.handleActorSearchResults)
         actorSearcher.query.hitsPerPage = 10
 
-        movieSearcher = SearchHelper(index: AlgoliaManager.sharedInstance.moviesIndex, completionHandler: { (content, error) in
-            self.moviesCollectionView.reloadData()
-        })
+        // Configure movie search.
+        movieSearcher = SearchHelper(index: AlgoliaManager.sharedInstance.moviesIndex, completionHandler: self.handleMovieSearchResults)
+        movieSearcher.query.facets = ["genre"]
         movieSearcher.query.hitsPerPage = 30
 
         search()
     }
-
+    
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
     }
@@ -56,6 +66,7 @@ class MoviesIpadViewController: UIViewController, UICollectionViewDataSource, UI
     
     private func search() {
         actorSearcher.search()
+        movieSearcher.query.numericFilters = [ "year >= \(Int(yearRangeSlider.selectedMinimum))", "year <= \(Int(yearRangeSlider.selectedMaximum))" ]
         movieSearcher.search()
     }
     
@@ -65,6 +76,30 @@ class MoviesIpadViewController: UIViewController, UICollectionViewDataSource, UI
         actorSearcher.query.query = searchText
         movieSearcher.query.query = searchText
         search()
+    }
+    
+    // MARK: - Search completion handlers
+
+    private func handleActorSearchResults(content: [String: AnyObject]?, error: NSError?) {
+        self.actorsTableView.reloadData()
+    }
+
+    private func handleMovieSearchResults(content: [String: AnyObject]?, error: NSError?) {
+        // Sort facets: first selected facets, then by decreasing count, then by name.
+        let receivedQueryBuilder = QueryBuilder(query: movieSearcher.receivedQuery!)
+        genreFacets = self.movieSearcher.facets["genre"]?.sort({ (lhs, rhs) in
+            let lhsChecked = receivedQueryBuilder.hasConjunctiveFacetRefinement("genre", value: lhs.value)
+            let rhsChecked = receivedQueryBuilder.hasConjunctiveFacetRefinement("genre", value: rhs.value)
+            if lhsChecked != rhsChecked {
+                return lhsChecked
+            } else if lhs.count != rhs.count {
+                return lhs.count > rhs.count
+            } else {
+                return lhs.value < rhs.value
+            }
+        }) ?? []
+        self.genreTableView.reloadData()
+        self.moviesCollectionView.reloadData()
     }
     
     // MARK: - UICollectionViewDataSource
@@ -85,15 +120,55 @@ class MoviesIpadViewController: UIViewController, UICollectionViewDataSource, UI
     // MARK: - UITableViewDataSource
     
     func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return actorSearcher.hits.count
+        switch tableView {
+            case actorsTableView: return actorSearcher.hits.count
+            case genreTableView: return genreFacets.count
+            default: assert(false)
+        }
     }
     
     func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCellWithIdentifier("actorCell", forIndexPath: indexPath) as! ActorCell
-        cell.actor = Actor(json: actorSearcher.hits[indexPath.item])
-        if indexPath.item + 5 >= actorSearcher.hits.count {
-            actorSearcher.loadMore()
+        switch tableView {
+            case actorsTableView:
+                let cell = tableView.dequeueReusableCellWithIdentifier("actorCell", forIndexPath: indexPath) as! ActorCell
+                cell.actor = Actor(json: actorSearcher.hits[indexPath.item])
+                if indexPath.item + 5 >= actorSearcher.hits.count {
+                    actorSearcher.loadMore()
+                }
+                return cell
+            case genreTableView:
+                let cell = tableView.dequeueReusableCellWithIdentifier("genreCell", forIndexPath: indexPath) as! GenreCell
+                cell.value = genreFacets[indexPath.item]
+                cell.checked = QueryBuilder(query: movieSearcher.receivedQuery!).hasConjunctiveFacetRefinement("genre", value: genreFacets[indexPath.item].value)
+                return cell
+            default: assert(false)
         }
-        return cell
+    }
+    
+    // MARK: - UITableViewDelegate
+    
+    func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
+        switch tableView {
+            case genreTableView:
+                let facetValue = genreFacets[indexPath.item].value
+                let receivedQueryBuilder = QueryBuilder(query: movieSearcher.receivedQuery!)
+                var checked = receivedQueryBuilder.hasConjunctiveFacetRefinement("genre", value: facetValue)
+                checked = !checked
+                let newQueryBuilder = QueryBuilder(query: movieSearcher.query)
+                if checked {
+                    newQueryBuilder.addConjunctiveFacetRefinement("genre", value: facetValue)
+                } else {
+                    newQueryBuilder.removeConjunctiveFacetRefinement("genre", value: facetValue)
+                }
+                movieSearcher.search()
+                break
+            default: return
+        }
+    }
+    
+    // MARK: - TTRangeSliderDelegate
+    
+    func rangeSlider(sender: TTRangeSlider!, didChangeSelectedMinimumValue selectedMinimum: Float, andMaximumValue selectedMaximum: Float) {
+        search()
     }
 }
