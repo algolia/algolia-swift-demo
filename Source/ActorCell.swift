@@ -45,7 +45,7 @@ class ActorCell: UITableViewCell {
     
     var actor: Actor? {
         didSet {
-            nameLabel.text = actor?.name
+            nameLabel.highlightedText = actor?.name_highlighted
             portraitImageView.cancelImageDownloadTask()
             if let url = actor?.imageUrl {
                 portraitImageView.setImageWithURL(url, placeholderImage: nil)

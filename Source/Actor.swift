@@ -36,6 +36,10 @@ struct Actor {
         return json["name"] as? String
     }
     
+    var name_highlighted: String? {
+        return ((json["_highlightResult"] as? [String: AnyObject])?["name"] as? [String: AnyObject])?["value"] as? String
+    }
+
     var imageUrl: NSURL? {
         guard let imagePath = json["image_path"] as? String else {
             return nil

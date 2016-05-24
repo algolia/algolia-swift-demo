@@ -57,10 +57,12 @@ class MoviesIpadViewController: UIViewController, UICollectionViewDataSource, TT
         // Configure actor search.
         actorSearcher = SearchHelper(index: AlgoliaManager.sharedInstance.actorsIndex, completionHandler: self.handleActorSearchResults)
         actorSearcher.query.hitsPerPage = 10
+        actorSearcher.query.attributesToHighlight = ["name"]
 
         // Configure movie search.
         movieSearcher = SearchHelper(index: AlgoliaManager.sharedInstance.moviesIndex, completionHandler: self.handleMovieSearchResults)
         movieSearcher.query.facets = ["genre"]
+        movieSearcher.query.attributesToHighlight = ["title"]
         movieSearcher.query.hitsPerPage = 30
 
         search()
