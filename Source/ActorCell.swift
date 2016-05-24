@@ -38,6 +38,11 @@ class ActorCell: UITableViewCell {
         super.init(coder: aDecoder)
     }
     
+    override func awakeFromNib() {
+        portraitImageView.layer.cornerRadius = portraitImageView.frame.height / 2
+        portraitImageView.layer.masksToBounds = true
+    }
+    
     var actor: Actor? {
         didSet {
             nameLabel.text = actor?.name

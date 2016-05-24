@@ -32,6 +32,8 @@ class MoviesIpadViewController: UIViewController, UICollectionViewDataSource, TT
     @IBOutlet weak var ratingSelectorView: RatingSelectorView!
     @IBOutlet weak var moviesCollectionView: UICollectionView!
     @IBOutlet weak var actorsTableView: UITableView!
+    @IBOutlet weak var movieCountLabel: UILabel!
+    @IBOutlet weak var searchTimeLabel: UILabel!
 
     var actorSearcher: SearchHelper!
     var movieSearcher: SearchHelper!
@@ -47,6 +49,8 @@ class MoviesIpadViewController: UIViewController, UICollectionViewDataSource, TT
         yearRangeSlider.tintColorBetweenHandles = tintColor
         yearRangeSlider.handleColor = tintColor
         yearRangeSlider.lineHeight = 3
+        yearRangeSlider.minLabelFont = UIFont.systemFontOfSize(12)
+        yearRangeSlider.maxLabelFont = yearRangeSlider.minLabelFont
         
         ratingSelectorView.addObserver(self, forKeyPath: "rating", options: .New, context: nil)
         
@@ -106,6 +110,17 @@ class MoviesIpadViewController: UIViewController, UICollectionViewDataSource, TT
                 return lhs.value < rhs.value
             }
         }) ?? []
+
+        // TODO: Use better formatting
+        if let nbHits = content?["nbHits"] as? Int {
+            self.movieCountLabel.text = "\(nbHits) MOVIES"
+        } else {
+            self.movieCountLabel.text = "MOVIES"
+        }
+        if let processingTimeMS = content?["processingTimeMS"] as? Int {
+            self.searchTimeLabel.text = "Found in \(processingTimeMS) ms"
+        }
+
         self.genreTableView.reloadData()
         self.moviesCollectionView.reloadData()
     }

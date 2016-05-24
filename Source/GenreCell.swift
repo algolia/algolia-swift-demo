@@ -38,6 +38,10 @@ class GenreCell: UITableViewCell {
         super.init(coder: aDecoder)
     }
     
+    override func awakeFromNib() {
+        countLabel.textColor = countLabel.tintColor
+    }
+    
     var value: FacetValue? {
         didSet {
             nameLabel.text = value?.value
@@ -47,7 +51,8 @@ class GenreCell: UITableViewCell {
 
     var checked: Bool = false {
         didSet {
-            backgroundColor = checked ? UIColor.redColor() : nil
+            nameLabel.font = checked ? UIFont.boldSystemFontOfSize(nameLabel.font.pointSize) : UIFont.systemFontOfSize(nameLabel.font.pointSize)
+            nameLabel.textColor = checked ? nameLabel.tintColor : UIColor.blackColor()
         }
     }
 }
