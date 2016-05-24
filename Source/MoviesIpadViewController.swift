@@ -113,9 +113,13 @@ class MoviesIpadViewController: UIViewController, UICollectionViewDataSource, TT
             }
         }) ?? []
 
-        // TODO: Use better formatting
         if let nbHits = content?["nbHits"] as? Int {
-            self.movieCountLabel.text = "\(nbHits) MOVIES"
+            let formatter = NSNumberFormatter()
+            formatter.locale = NSLocale.currentLocale()
+            formatter.numberStyle = .DecimalStyle
+            formatter.usesGroupingSeparator = true
+            formatter.groupingSize = 3
+            self.movieCountLabel.text = "\(formatter.stringFromNumber(nbHits)!) MOVIES"
         } else {
             self.movieCountLabel.text = "MOVIES"
         }
