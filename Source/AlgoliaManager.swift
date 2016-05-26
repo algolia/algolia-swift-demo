@@ -54,7 +54,7 @@ class AlgoliaManager {
             DataSelectionQuery(query: Query(parameters: ["filters": "year >= 2000"]), maxObjects: 500),
             DataSelectionQuery(query: Query(parameters: ["filters": "year < 2000"]), maxObjects: 100)
         ]
-        moviesIndex.delayBetweenSyncs = 10 // FIXME: Raise the value for Release configuration
+        moviesIndex.delayBetweenSyncs = 30 * 60 // 30 minutes
         
         NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(syncDidStart), name: MirroredIndex.SyncDidStartNotification, object: moviesIndex)
         NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(syncDidFinish), name: MirroredIndex.SyncDidFinishNotification, object: moviesIndex)
