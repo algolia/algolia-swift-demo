@@ -153,12 +153,12 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 5D44D01C1B35F7B3008369AC /* Build configuration list for PBXNativeTarget "MoviesSearch" */;
 			buildPhases = (
-				073B008BF094C3613460DB4D /* Check Pods Manifest.lock */,
+				073B008BF094C3613460DB4D /* 📦 Check Pods Manifest.lock */,
 				5D44CFF91B35F7B3008369AC /* Sources */,
 				5D44CFFA1B35F7B3008369AC /* Frameworks */,
 				5D44CFFB1B35F7B3008369AC /* Resources */,
-				27819121FF8995793C4CFEA3 /* Embed Pods Frameworks */,
-				1F35BD3D3B964F386A6FCA62 /* Copy Pods Resources */,
+				27819121FF8995793C4CFEA3 /* 📦 Embed Pods Frameworks */,
+				1F35BD3D3B964F386A6FCA62 /* 📦 Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -247,14 +247,14 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
-		073B008BF094C3613460DB4D /* Check Pods Manifest.lock */ = {
+		073B008BF094C3613460DB4D /* 📦 Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			inputPaths = (
 			);
-			name = "Check Pods Manifest.lock";
+			name = "📦 Check Pods Manifest.lock";
 			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -262,14 +262,14 @@
 			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [[ $? != 0 ]] ; then\n    cat << EOM\nerror: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\nEOM\n    exit 1\nfi\n";
 			showEnvVarsInLog = 0;
 		};
-		1F35BD3D3B964F386A6FCA62 /* Copy Pods Resources */ = {
+		1F35BD3D3B964F386A6FCA62 /* 📦 Copy Pods Resources */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			inputPaths = (
 			);
-			name = "Copy Pods Resources";
+			name = "📦 Copy Pods Resources";
 			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -277,14 +277,14 @@
 			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-MoviesSearch/Pods-MoviesSearch-resources.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
-		27819121FF8995793C4CFEA3 /* Embed Pods Frameworks */ = {
+		27819121FF8995793C4CFEA3 /* 📦 Embed Pods Frameworks */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			inputPaths = (
 			);
-			name = "Embed Pods Frameworks";
+			name = "📦 Embed Pods Frameworks";
 			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
