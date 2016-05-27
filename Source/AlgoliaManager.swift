@@ -34,7 +34,7 @@ class AlgoliaManager {
     let client: OfflineClient
     var moviesIndex: MirroredIndex
     
-    var shouldLoadImages = false
+    var shouldLoadImages = true
     var imagesToLoad: [String] = []
     var imagesLoading = 0
     
