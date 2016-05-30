@@ -163,11 +163,22 @@ public class SearchHelper {
         
         // Update facets.
         self.facets.removeAll()
-        if let facets = content["facets"] as? [String: [String: Int]] {
-            for (facetName, facetValues) in facets {
+        if let requestedFacets = receivedQuery!.facets,
+            returnedFacets = content["facets"] as? [String: [String: Int]] {
+            let queryBuilder = QueryBuilder(query: receivedQuery!)
+            // NOTE: We iterate on the *requested* facets, because the search may return no results and therefore no
+            // facets, whereas we want the arrays to be always populated at least for the refined values.
+            for facetName in requestedFacets {
+                let returnedValues = returnedFacets[facetName] ?? [String: Int]()
                 var values = [FacetValue]()
-                for (value, count) in facetValues {
+                for (value, count) in returnedValues {
                     values.append(FacetValue(value: value, count: count))
+                }
+                // Make sure there is a value at least for the refined values.
+                for value in queryBuilder.listConjunctiveFacetRefinements(facetName) {
+                    if returnedValues[value] == nil {
+                        values.append(FacetValue(value: value, count: 0))
+                    }
                 }
                 self.facets[facetName] = values
             }
