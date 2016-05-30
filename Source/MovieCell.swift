@@ -30,6 +30,8 @@ class MovieCell: UICollectionViewCell {
     @IBOutlet weak var posterImageView: UIImageView!
     @IBOutlet weak var titleLabel: UILabel!
 
+    static let placeholder = UIImage(named: "placeholder")!
+    
     override init(frame: CGRect) {
         super.init(frame: frame)
     }
@@ -41,11 +43,11 @@ class MovieCell: UICollectionViewCell {
     var movie: MovieRecord? {
         didSet {
             titleLabel.highlightedText = movie?.title_highlighted
-            posterImageView.cancelImageDownloadTask()
             if let url = movie?.imageUrl {
-                posterImageView.setImageWithURL(url, placeholderImage: nil)
+                posterImageView.setImageWithURL(url, placeholderImage: MovieCell.placeholder)
             } else {
-                posterImageView.image = nil
+                posterImageView.cancelImageDownloadTask()
+                posterImageView.image = MovieCell.placeholder
             }
         }
     }

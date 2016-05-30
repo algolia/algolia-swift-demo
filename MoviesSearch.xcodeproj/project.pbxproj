@@ -33,6 +33,7 @@
 		BCD754FB1CF4801C006A05F1 /* star-gray@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = BCD754F71CF4801C006A05F1 /* star-gray@3x.png */; };
 		BCD754FC1CF4801C006A05F1 /* star-gray@4x.png in Resources */ = {isa = PBXBuildFile; fileRef = BCD754F81CF4801C006A05F1 /* star-gray@4x.png */; };
 		BCD755021CF48168006A05F1 /* RatingSelectorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCD755011CF48168006A05F1 /* RatingSelectorView.swift */; };
+		BCE9A13A1CFC8A6000BF767D /* placeholder.png in Resources */ = {isa = PBXBuildFile; fileRef = BCE9A1391CFC8A6000BF767D /* placeholder.png */; };
 		EB936E676EA3ABB6FF43A252 /* Pods_MoviesSearch.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A2FF6DC00013B2F8CAAFA113 /* Pods_MoviesSearch.framework */; };
 /* End PBXBuildFile section */
 
@@ -82,6 +83,7 @@
 		BCD754F71CF4801C006A05F1 /* star-gray@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "star-gray@3x.png"; path = "Ressources/star-gray@3x.png"; sourceTree = "<group>"; };
 		BCD754F81CF4801C006A05F1 /* star-gray@4x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "star-gray@4x.png"; path = "Ressources/star-gray@4x.png"; sourceTree = "<group>"; };
 		BCD755011CF48168006A05F1 /* RatingSelectorView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RatingSelectorView.swift; sourceTree = "<group>"; };
+		BCE9A1391CFC8A6000BF767D /* placeholder.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = placeholder.png; path = Ressources/placeholder.png; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -188,6 +190,7 @@
 		BCD754EE1CF47E40006A05F1 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				BCE9A1391CFC8A6000BF767D /* placeholder.png */,
 				BCD754F51CF4801C006A05F1 /* star-gray.png */,
 				BCD754F61CF4801C006A05F1 /* star-gray@2x.png */,
 				BCD754F71CF4801C006A05F1 /* star-gray@3x.png */,
@@ -296,6 +299,7 @@
 				BCD754F31CF47EB6006A05F1 /* star-yellow@2x.png in Resources */,
 				BCD754FA1CF4801C006A05F1 /* star-gray@2x.png in Resources */,
 				BCD754ED1CF47E39006A05F1 /* star-yellow@4x.png in Resources */,
+				BCE9A13A1CFC8A6000BF767D /* placeholder.png in Resources */,
 				BCD754FB1CF4801C006A05F1 /* star-gray@3x.png in Resources */,
 				BCD754F91CF4801C006A05F1 /* star-gray.png in Resources */,
 				BCD754FC1CF4801C006A05F1 /* star-gray@4x.png in Resources */,

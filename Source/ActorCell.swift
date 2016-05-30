@@ -30,6 +30,8 @@ class ActorCell: UITableViewCell {
     @IBOutlet weak var portraitImageView: UIImageView!
     @IBOutlet weak var nameLabel: UILabel!
     
+    static let placeholder = UIImage(named: "placeholder")!
+
     override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
     }
@@ -46,11 +48,11 @@ class ActorCell: UITableViewCell {
     var actor: Actor? {
         didSet {
             nameLabel.highlightedText = actor?.name_highlighted
-            portraitImageView.cancelImageDownloadTask()
             if let url = actor?.imageUrl {
-                portraitImageView.setImageWithURL(url, placeholderImage: nil)
+                portraitImageView.setImageWithURL(url, placeholderImage: ActorCell.placeholder)
             } else {
-                portraitImageView.image = nil
+                portraitImageView.cancelImageDownloadTask()
+                portraitImageView.image = ActorCell.placeholder
             }
         }
     }
