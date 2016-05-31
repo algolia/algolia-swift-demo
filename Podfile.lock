@@ -15,15 +15,28 @@ PODS:
   - AFNetworking/UIKit (3.1.0):
     - AFNetworking/NSURLSession
   - AlgoliaSearch-Client-Swift (3.2.1)
+  - TTRangeSlider (1.0.4)
 
 DEPENDENCIES:
   - AFNetworking (~> 3.0)
   - AlgoliaSearch-Client-Swift (~> 3.0)
+  - TTRangeSlider (from `https://github.com/TomThorpe/TTRangeSlider`, branch `master`)
+
+EXTERNAL SOURCES:
+  TTRangeSlider:
+    :branch: master
+    :git: https://github.com/TomThorpe/TTRangeSlider
+
+CHECKOUT OPTIONS:
+  TTRangeSlider:
+    :commit: 4948b4eaac054154c8fe2600d42e3e2c6c31d222
+    :git: https://github.com/TomThorpe/TTRangeSlider
 
 SPEC CHECKSUMS:
   AFNetworking: 5e0e199f73d8626b11e79750991f5d173d1f8b67
   AlgoliaSearch-Client-Swift: a98a201953a7c5f2ef552d9a288141beacf432e2
+  TTRangeSlider: 7c04d9cf84cd5fba96e86b3ded8e5e0b534758b0
 
-PODFILE CHECKSUM: ad8c2e6ec9b06f321a68682a326d5fa812c6ffca
+PODFILE CHECKSUM: 874ce8ba00ffe6d92ab15bddc779e726358797e7
 
 COCOAPODS: 1.0.0
