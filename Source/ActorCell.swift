@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2015 Algolia
+//  Copyright (c) 2016 Algolia
 //  http://www.algolia.com/
 //
 //  Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -21,36 +21,39 @@
 //  THE SOFTWARE.
 //
 
-import Foundation
+import UIKit
 
 
-struct MovieRecord {
-    private let json: [String: AnyObject]
+/// A collection view displaying a movie.
+///
+class ActorCell: UITableViewCell {
+    @IBOutlet weak var portraitImageView: UIImageView!
+    @IBOutlet weak var nameLabel: UILabel!
     
-    init(json: [String: AnyObject]) {
-        self.json = json
-    }
+    static let placeholder = UIImage(named: "placeholder")!
 
-    var title: String? {
-        return json["title"] as? String
+    override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
+        super.init(style: style, reuseIdentifier: reuseIdentifier)
     }
     
-    var imageUrl: NSURL? {
-        guard let urlString = json["image"] as? String else {
-            return nil
+    required init?(coder aDecoder: NSCoder) {
+        super.init(coder: aDecoder)
+    }
+    
+    override func awakeFromNib() {
+        portraitImageView.layer.cornerRadius = portraitImageView.frame.height / 2
+        portraitImageView.layer.masksToBounds = true
+    }
+    
+    var actor: Actor? {
+        didSet {
+            nameLabel.highlightedText = actor?.name_highlighted
+            if let url = actor?.imageUrl {
+                portraitImageView.setImageWithURL(url, placeholderImage: ActorCell.placeholder)
+            } else {
+                portraitImageView.cancelImageDownloadTask()
+                portraitImageView.image = ActorCell.placeholder
+            }
         }
-        return NSURL(string: urlString)
-    }
-    
-    var title_highlighted: String? {
-        return ((json["_highlightResult"] as? [String: AnyObject])?["title"] as? [String: AnyObject])?["value"] as? String
-    }
-
-    var rating: Int? {
-        return json["rating"] as? Int
-    }
-    
-    var year: Int? {
-        return json["year"] as? Int
     }
 }

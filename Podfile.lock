@@ -18,21 +18,31 @@ PODS:
     - AlgoliaSearchOfflineCore-iOS (= 0.1)
   - AlgoliaSearchOfflineCore-iOS (0.1)
   - Reachability (3.2)
-  - SwiftyJSON (2.3.2)
+  - TTRangeSlider (1.0.4)
 
 DEPENDENCIES:
   - AFNetworking (~> 3.0)
   - AlgoliaSearch-Offline-Swift (~> 3.2)
   - Reachability (~> 3.2)
-  - SwiftyJSON (~> 2.3)
+  - TTRangeSlider (from `https://github.com/TomThorpe/TTRangeSlider`, branch `master`)
+
+EXTERNAL SOURCES:
+  TTRangeSlider:
+    :branch: master
+    :git: https://github.com/TomThorpe/TTRangeSlider
+
+CHECKOUT OPTIONS:
+  TTRangeSlider:
+    :commit: 4948b4eaac054154c8fe2600d42e3e2c6c31d222
+    :git: https://github.com/TomThorpe/TTRangeSlider
 
 SPEC CHECKSUMS:
   AFNetworking: 5e0e199f73d8626b11e79750991f5d173d1f8b67
   AlgoliaSearch-Offline-Swift: fab0be2e46190bc78f51b9fcc0536c4141a76c8f
   AlgoliaSearchOfflineCore-iOS: 5fe8c370b7f83ab685beda71ce29c4af1847cff4
   Reachability: 33e18b67625424e47b6cde6d202dce689ad7af96
-  SwiftyJSON: 04ccea08915aa0109039157c7974cf0298da292a
+  TTRangeSlider: 7c04d9cf84cd5fba96e86b3ded8e5e0b534758b0
 
-PODFILE CHECKSUM: 21aed422a3037d2ae0fa835768d104f90b8882b3
+PODFILE CHECKSUM: 410107a0294dd9347c5af54141e5203a03873c23
 
 COCOAPODS: 1.0.0

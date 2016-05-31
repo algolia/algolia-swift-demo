@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2015 Algolia
+//  Copyright (c) 2016 Algolia
 //  http://www.algolia.com/
 //
 //  Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -22,35 +22,40 @@
 //
 
 import Foundation
+import UIKit
 
 
-struct MovieRecord {
-    private let json: [String: AnyObject]
+class RatingSelectorView: UIView {
+    @IBOutlet weak var star1Button: UIButton!
+    @IBOutlet weak var star2Button: UIButton!
+    @IBOutlet weak var star3Button: UIButton!
+    @IBOutlet weak var star4Button: UIButton!
+    @IBOutlet weak var star5Button: UIButton!
     
-    init(json: [String: AnyObject]) {
-        self.json = json
-    }
-
-    var title: String? {
-        return json["title"] as? String
-    }
+    private var buttons: [UIButton] = []
     
-    var imageUrl: NSURL? {
-        guard let urlString = json["image"] as? String else {
-            return nil
+    var rating: Int = 0 {
+        willSet {
+            willChangeValueForKey("rating")
         }
-        return NSURL(string: urlString)
-    }
-    
-    var title_highlighted: String? {
-        return ((json["_highlightResult"] as? [String: AnyObject])?["title"] as? [String: AnyObject])?["value"] as? String
+        didSet {
+            didChangeValueForKey("rating")
+            update()
+        }
     }
 
-    var rating: Int? {
-        return json["rating"] as? Int
+    override func awakeFromNib() {
+        buttons = [star1Button, star2Button, star3Button, star4Button, star5Button]
+        update()
     }
     
-    var year: Int? {
-        return json["year"] as? Int
+    @IBAction func didPressStar(sender: UIButton) {
+        rating = buttons.indexOf(sender)! + 1
+    }
+    
+    private func update() {
+        for i in 0..<buttons.count {
+            buttons[i].selected = i + 1 >= rating
+        }
     }
 }

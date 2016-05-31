@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2015 Algolia
+//  Copyright (c) 2016 Algolia
 //  http://www.algolia.com/
 //
 //  Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -21,36 +21,38 @@
 //  THE SOFTWARE.
 //
 
-import Foundation
+import UIKit
 
 
-struct MovieRecord {
-    private let json: [String: AnyObject]
+/// A collection view displaying a movie.
+///
+class GenreCell: UITableViewCell {
+    @IBOutlet weak var nameLabel: UILabel!
+    @IBOutlet weak var countLabel: UILabel!
     
-    init(json: [String: AnyObject]) {
-        self.json = json
-    }
-
-    var title: String? {
-        return json["title"] as? String
+    override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
+        super.init(style: style, reuseIdentifier: reuseIdentifier)
     }
     
-    var imageUrl: NSURL? {
-        guard let urlString = json["image"] as? String else {
-            return nil
+    required init?(coder aDecoder: NSCoder) {
+        super.init(coder: aDecoder)
+    }
+    
+    override func awakeFromNib() {
+        countLabel.textColor = countLabel.tintColor
+    }
+    
+    var value: FacetValue? {
+        didSet {
+            nameLabel.text = value?.value
+            countLabel.text = value != nil ? String(value!.count) : nil
         }
-        return NSURL(string: urlString)
-    }
-    
-    var title_highlighted: String? {
-        return ((json["_highlightResult"] as? [String: AnyObject])?["title"] as? [String: AnyObject])?["value"] as? String
     }
 
-    var rating: Int? {
-        return json["rating"] as? Int
-    }
-    
-    var year: Int? {
-        return json["year"] as? Int
+    var checked: Bool = false {
+        didSet {
+            nameLabel.font = checked ? UIFont.boldSystemFontOfSize(nameLabel.font.pointSize) : UIFont.systemFontOfSize(nameLabel.font.pointSize)
+            nameLabel.textColor = checked ? nameLabel.tintColor : UIColor.blackColor()
+        }
     }
 }

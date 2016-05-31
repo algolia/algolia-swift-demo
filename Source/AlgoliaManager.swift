@@ -24,7 +24,6 @@
 import AFNetworking
 import AlgoliaSearch
 import Foundation
-import SwiftyJSON
 
 
 class AlgoliaManager {
@@ -32,10 +31,11 @@ class AlgoliaManager {
     static let sharedInstance = AlgoliaManager()
 
     let client: OfflineClient
+    var actorsIndex: Index
     var moviesIndex: MirroredIndex
     
     var shouldLoadImages = true
-    var imagesToLoad: [String] = []
+    var imagesToLoad: [NSURL] = []
     var imagesLoading = 0
     
     let imageQueue = dispatch_queue_create("Image download queue", DISPATCH_QUEUE_SERIAL)
@@ -46,6 +46,7 @@ class AlgoliaManager {
         // NOTE: Edit your license key in the build settings.
         let licenseKey = NSBundle.mainBundle().infoDictionary!["AlgoliaOfflineSdkLicenseKey"] as! String
         client.enableOfflineMode(licenseKey)
+        actorsIndex = client.getIndex("actors")
         moviesIndex = client.getIndex("movies")
         
         // Sync the index for offline use.
@@ -99,9 +100,10 @@ class AlgoliaManager {
         let cursor = content!["cursor"] as? String
         if let hits = content!["hits"] as? [[String: AnyObject]] {
             for hit in hits {
-                let json = JSON(hit)
-                let movie = MovieRecord(json: json)
-                imagesToLoad.append(movie.image)
+                let movie = MovieRecord(json: hit)
+                if movie.imageUrl != nil {
+                    imagesToLoad.append(movie.imageUrl!)
+                }
             }
             self.dequeueNext()
         }
@@ -118,29 +120,27 @@ class AlgoliaManager {
     private func dequeueNext() {
         // WARNING: Calls to this method must be serialized: use the `imageQueue` dispatch queue.
         if !imagesToLoad.isEmpty {
-            let urlString = imagesToLoad.removeFirst()
-            if let url = NSURL(string: urlString) {
-                // Check if the image is already in the URL cache.
-                let request = NSURLRequest(URL: url)
-                let cachedResponse = NSURLCache.sharedURLCache().cachedResponseForRequest(request)
-                if cachedResponse != nil {
-                    NSLog("Image %@ already in cache", urlString)
-                    dispatch_async(self.imageQueue) {
-                        self.dequeueNext()
-                    }
-                } else {
-                    NSLog("Loading image %@", urlString)
-                    imagesLoading += 1
-                    // Load the image. We don't care about the content now. We just want the URL cache to intercept it
-                    // and store it on disk.
-                    let task = NSURLSession.sharedSession().dataTaskWithRequest(request) {
-                        (data, response, error) in
-                        dispatch_async(self.imageQueue) {
-                            self.handleImageDownloaded(data, response: response, error: error)
-                        }
-                    }
-                    task.resume()
+            let url = imagesToLoad.removeFirst()
+            // Check if the image is already in the URL cache.
+            let request = NSURLRequest(URL: url)
+            let cachedResponse = NSURLCache.sharedURLCache().cachedResponseForRequest(request)
+            if cachedResponse != nil {
+                NSLog("Image %@ already in cache", url)
+                dispatch_async(self.imageQueue) {
+                    self.dequeueNext()
                 }
+            } else {
+                NSLog("Loading image %@", url)
+                imagesLoading += 1
+                // Load the image. We don't care about the content now. We just want the URL cache to intercept it
+                // and store it on disk.
+                let task = NSURLSession.sharedSession().dataTaskWithRequest(request) {
+                    (data, response, error) in
+                    dispatch_async(self.imageQueue) {
+                        self.handleImageDownloaded(data, response: response, error: error)
+                    }
+                }
+                task.resume()
             }
         } else if imagesLoading == 0 {
             syncFinished()

@@ -42,8 +42,8 @@ extension UILabel {
             let rangesOfAttributes = getRangeToHighlight(text)
             let attributedString = NSMutableAttributedString(string: String(text))
             for range in rangesOfAttributes {
-                let color = highlightedTextColor ?? UIColor.yellowColor()
-                attributedString.addAttribute(NSBackgroundColorAttributeName, value: color, range: range)
+                let color = highlightedTextColor ?? self.tintColor ?? UIColor.blueColor()
+                attributedString.addAttribute(NSForegroundColorAttributeName, value: color, range: range)
             }
             attributedText = attributedString
         }

@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2015 Algolia
+//  Copyright (c) 2016 Algolia
 //  http://www.algolia.com/
 //
 //  Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -24,33 +24,26 @@
 import Foundation
 
 
-struct MovieRecord {
+
+struct Actor {
     private let json: [String: AnyObject]
     
     init(json: [String: AnyObject]) {
         self.json = json
     }
-
-    var title: String? {
-        return json["title"] as? String
+    
+    var name: String? {
+        return json["name"] as? String
     }
     
+    var name_highlighted: String? {
+        return ((json["_highlightResult"] as? [String: AnyObject])?["name"] as? [String: AnyObject])?["value"] as? String
+    }
+
     var imageUrl: NSURL? {
-        guard let urlString = json["image"] as? String else {
+        guard let imagePath = json["image_path"] as? String else {
             return nil
         }
-        return NSURL(string: urlString)
-    }
-    
-    var title_highlighted: String? {
-        return ((json["_highlightResult"] as? [String: AnyObject])?["title"] as? [String: AnyObject])?["value"] as? String
-    }
-
-    var rating: Int? {
-        return json["rating"] as? Int
-    }
-    
-    var year: Int? {
-        return json["year"] as? Int
+        return NSURL(string: "https://image.tmdb.org/t/p/w300" + imagePath)
     }
 }
