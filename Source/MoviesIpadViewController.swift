@@ -133,6 +133,10 @@ class MoviesIpadViewController: UIViewController, UICollectionViewDataSource, TT
         }
         if let processingTimeMS = content?["processingTimeMS"] as? Int {
             self.searchTimeLabel.text = "Found in \(processingTimeMS) ms"
+            // Indicate origin of content.
+            if content?["origin"] as? String == "local" {
+                searchTimeLabel.text! += " (offline results)"
+            }
         }
 
         self.genreTableView.reloadData()

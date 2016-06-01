@@ -31,6 +31,7 @@ class MoviesTableViewController: UITableViewController, UISearchBarDelegate, UIS
     var searchController: UISearchController!
     
     var movieSearcher: SearchHelper!
+    var originIsLocal: Bool = false
     
     let placeholder = UIImage(named: "white")
     
@@ -38,9 +39,7 @@ class MoviesTableViewController: UITableViewController, UISearchBarDelegate, UIS
         super.viewDidLoad()
         
         // Algolia Search
-        movieSearcher = SearchHelper(index: AlgoliaManager.sharedInstance.moviesIndex, completionHandler: { (content, error) in
-            self.tableView.reloadData()
-        })
+        movieSearcher = SearchHelper(index: AlgoliaManager.sharedInstance.moviesIndex, completionHandler: self.handleSearchResults)
         movieSearcher.query.hitsPerPage = 15
         movieSearcher.query.attributesToRetrieve = ["title", "image", "rating", "year"]
         movieSearcher.query.attributesToHighlight = ["title"]
@@ -75,6 +74,15 @@ class MoviesTableViewController: UITableViewController, UISearchBarDelegate, UIS
         AlgoliaManager.sharedInstance.moviesIndex.sync()
     }
 
+    // MARK: - Search completion handlers
+    
+    private func handleSearchResults(content: [String: AnyObject]?, error: NSError?) {
+        if content != nil {
+            originIsLocal = content!["origin"] as? String == "local"
+        }
+        self.tableView.reloadData()
+    }
+    
     // MARK: - Table view data source
 
     override func numberOfSectionsInTableView(tableView: UITableView) -> Int {
@@ -105,6 +113,7 @@ class MoviesTableViewController: UITableViewController, UISearchBarDelegate, UIS
         else {
             cell.imageView?.image = nil
         }
+        cell.backgroundColor = originIsLocal ? AppDelegate.colorForLocalOrigin : UIColor.whiteColor()
 
         return cell
     }
