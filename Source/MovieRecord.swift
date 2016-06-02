@@ -43,7 +43,7 @@ struct MovieRecord {
     }
     
     var title_highlighted: String? {
-        return ((json["_highlightResult"] as? [String: AnyObject])?["title"] as? [String: AnyObject])?["value"] as? String
+        return HighlightHelper.getHighlightedAttribute(json, name: "title")
     }
 
     var rating: Int? {
