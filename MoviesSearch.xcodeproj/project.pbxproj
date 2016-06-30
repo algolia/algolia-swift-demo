@@ -21,6 +21,7 @@
 		BC3FF4BD1CEF4759005CCC78 /* ActorCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC3FF4BC1CEF4759005CCC78 /* ActorCell.swift */; };
 		BC3FF4BF1CEF4788005CCC78 /* Actor.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC3FF4BE1CEF4788005CCC78 /* Actor.swift */; };
 		BC7F2DCC1D00506C00C1B93F /* HighlightHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC7F2DCB1D00506C00C1B93F /* HighlightHelper.swift */; };
+		BC7F2DCE1D00513200C1B93F /* JSONHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC7F2DCD1D00513200C1B93F /* JSONHelper.swift */; };
 		BCA4DA641CEDFCBB00E16ACA /* Main_iPad.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = BCA4DA621CEDFCBB00E16ACA /* Main_iPad.storyboard */; };
 		BCA4DA671CEDFE0300E16ACA /* MoviesIpadViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCA4DA651CEDFE0300E16ACA /* MoviesIpadViewController.swift */; };
 		BCD754E91CF452EC006A05F1 /* GenreCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCD754E81CF452EC006A05F1 /* GenreCell.swift */; };
@@ -72,6 +73,7 @@
 		BC3FF4BC1CEF4759005CCC78 /* ActorCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ActorCell.swift; sourceTree = "<group>"; };
 		BC3FF4BE1CEF4788005CCC78 /* Actor.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Actor.swift; sourceTree = "<group>"; };
 		BC7F2DCB1D00506C00C1B93F /* HighlightHelper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HighlightHelper.swift; sourceTree = "<group>"; };
+		BC7F2DCD1D00513200C1B93F /* JSONHelper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = JSONHelper.swift; path = ../JSONHelper.swift; sourceTree = "<group>"; };
 		BCA4DA631CEDFCBB00E16ACA /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main_iPad.storyboard; sourceTree = "<group>"; };
 		BCA4DA651CEDFE0300E16ACA /* MoviesIpadViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MoviesIpadViewController.swift; sourceTree = "<group>"; };
 		BCD754E81CF452EC006A05F1 /* GenreCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GenreCell.swift; sourceTree = "<group>"; };
@@ -150,6 +152,7 @@
 				BCD754EA1CF45C1A006A05F1 /* QueryBuilder.swift */,
 				BCD755011CF48168006A05F1 /* RatingSelectorView.swift */,
 				BC7F2DCB1D00506C00C1B93F /* HighlightHelper.swift */,
+				BC7F2DCD1D00513200C1B93F /* JSONHelper.swift */,
 			);
 			path = Source;
 			sourceTree = "<group>";
@@ -386,6 +389,7 @@
 				BCD754EB1CF45C1A006A05F1 /* QueryBuilder.swift in Sources */,
 				5D9EB6AE1B3C3DC100BA6737 /* Helpers.swift in Sources */,
 				BC7F2DCC1D00506C00C1B93F /* HighlightHelper.swift in Sources */,
+				BC7F2DCE1D00513200C1B93F /* JSONHelper.swift in Sources */,
 				BC3FF4B51CEF0DF6005CCC78 /* AlgoliaManager.swift in Sources */,
 				BCD754E91CF452EC006A05F1 /* GenreCell.swift in Sources */,
 				BC3FF4B71CEF1299005CCC78 /* SearchHelper.swift in Sources */,

@@ -24,26 +24,28 @@
 import Foundation
 
 
-
-struct Actor {
-    private let json: [String: AnyObject]
+/// Various helpers to deal with JSON data.
+///
+public class JSONHelper {
+    // NOTE: Should be an extension, but restricting a generic type non the non-protocol type String does not compile.
     
-    init(json: [String: AnyObject]) {
-        self.json = json
-    }
-    
-    var name: String? {
-        return json["name"] as? String
-    }
-    
-    var name_highlighted: String? {
-        return HighlightHelper.getHighlightedAttribute(json, path: "name")
-    }
-
-    var imageUrl: NSURL? {
-        guard let imagePath = json["image_path"] as? String else {
-            return nil
+    /// Get the value for an attribute with a "deep" path (dot notation).
+    /// Example: asking for "foo.bar" will retrieve the "bar" attribute of the "foo" attribute, provided that the
+    /// latter exists and is a dictionary.
+    ///
+    /// - parameter json: The root JSON object.
+    /// - parameter path: Path of the attribute to retrieve, in dot notation.
+    /// - return The corresponding value, or nil if it does not exist.
+    ///
+    public static func valueForKeyPath(json: [String: AnyObject], path: String) -> AnyObject? {
+        var value: AnyObject = json
+        for name in path.componentsSeparatedByString(".") {
+            if let newValue = (value as? [String: AnyObject])?[name] {
+                value = newValue
+            } else {
+                return nil
+            }
         }
-        return NSURL(string: "https://image.tmdb.org/t/p/w300" + imagePath)
+        return value
     }
 }

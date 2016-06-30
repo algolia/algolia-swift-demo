@@ -31,12 +31,12 @@ class HighlightHelper {
     /// Retrieve the highlighted string corresponding to an attribute inside the JSON representation of a hit.
     ///
     /// - param json: The JSON object for a hit.
-    /// - param name: Name of the attribute to retrieve the highlight for.
+    /// - param path: Path of the attribute to retrieve the highlight for, in dot notation ("foo.bar").
     /// - return The highlighted value, or nil if not available.
     ///
-    static func getHighlightedAttribute(json: [String: AnyObject], name: String) -> String? {
+    static func getHighlightedAttribute(json: [String: AnyObject], path: String) -> String? {
         guard let highlights = json["_highlightResult"] as? [String: AnyObject] else { return nil }
-        guard let attribute = highlights[name] as? [String: AnyObject] else { return nil }
+        guard let attribute = JSONHelper.valueForKeyPath(highlights, path: path) as? [String: AnyObject] else { return nil }
         return attribute["value"] as? String
     }
 }
