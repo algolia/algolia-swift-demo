@@ -37,7 +37,7 @@ struct Actor {
     }
     
     var name_highlighted: String? {
-        return HighlightHelper.getHighlightedAttribute(json, path: "name")
+        return SearchResults.getHighlightResult(json, path: "name")?.value
     }
 
     var imageUrl: NSURL? {

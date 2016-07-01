@@ -55,12 +55,12 @@ class MoviesIpadViewController: UIViewController, UICollectionViewDataSource, TT
         ratingSelectorView.addObserver(self, forKeyPath: "rating", options: .New, context: nil)
         
         // Configure actor search.
-        actorSearcher = SearchHelper(index: AlgoliaManager.sharedInstance.actorsIndex, completionHandler: self.handleActorSearchResults)
+        actorSearcher = SearchHelper(index: AlgoliaManager.sharedInstance.actorsIndex, resultHandler: self.handleActorSearchResults)
         actorSearcher.query.hitsPerPage = 10
         actorSearcher.query.attributesToHighlight = ["name"]
 
         // Configure movie search.
-        movieSearcher = SearchHelper(index: AlgoliaManager.sharedInstance.moviesIndex, completionHandler: self.handleMovieSearchResults)
+        movieSearcher = SearchHelper(index: AlgoliaManager.sharedInstance.moviesIndex, resultHandler: self.handleMovieSearchResults)
         movieSearcher.query.facets = ["genre"]
         movieSearcher.query.attributesToHighlight = ["title"]
         movieSearcher.query.hitsPerPage = 30
@@ -94,7 +94,7 @@ class MoviesIpadViewController: UIViewController, UICollectionViewDataSource, TT
     
     // MARK: - Search completion handlers
 
-    private func handleActorSearchResults(content: [String: AnyObject]?, error: NSError?) {
+    private func handleActorSearchResults(results: SearchResults?, error: NSError?) {
         self.actorsTableView.reloadData()
         
         // Scroll to top.
@@ -103,10 +103,10 @@ class MoviesIpadViewController: UIViewController, UICollectionViewDataSource, TT
         }
     }
 
-    private func handleMovieSearchResults(content: [String: AnyObject]?, error: NSError?) {
+    private func handleMovieSearchResults(results: SearchResults?, error: NSError?) {
         // Sort facets: first selected facets, then by decreasing count, then by name.
         let receivedQueryBuilder = QueryBuilder(query: movieSearcher.receivedQuery!)
-        genreFacets = self.movieSearcher.facets["genre"]?.sort({ (lhs, rhs) in
+        genreFacets = self.movieSearcher.results!.facets("genre")?.sort({ (lhs, rhs) in
             let lhsChecked = receivedQueryBuilder.hasConjunctiveFacetRefinement("genre", value: lhs.value)
             let rhsChecked = receivedQueryBuilder.hasConjunctiveFacetRefinement("genre", value: rhs.value)
             if lhsChecked != rhsChecked {
@@ -118,7 +118,7 @@ class MoviesIpadViewController: UIViewController, UICollectionViewDataSource, TT
             }
         }) ?? []
 
-        if let nbHits = content?["nbHits"] as? Int {
+        if let nbHits = results?.nbHits {
             let formatter = NSNumberFormatter()
             formatter.locale = NSLocale.currentLocale()
             formatter.numberStyle = .DecimalStyle
@@ -128,7 +128,7 @@ class MoviesIpadViewController: UIViewController, UICollectionViewDataSource, TT
         } else {
             self.movieCountLabel.text = "MOVIES"
         }
-        if let processingTimeMS = content?["processingTimeMS"] as? Int {
+        if let processingTimeMS = results?.processingTimeMS {
             self.searchTimeLabel.text = "Found in \(processingTimeMS) ms"
         }
 
@@ -144,13 +144,13 @@ class MoviesIpadViewController: UIViewController, UICollectionViewDataSource, TT
     // MARK: - UICollectionViewDataSource
     
     func collectionView(collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return movieSearcher.hits.count
+        return movieSearcher.results?.hits.count ?? 0
     }
     
     func collectionView(collectionView: UICollectionView, cellForItemAtIndexPath indexPath: NSIndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCellWithReuseIdentifier("movieCell", forIndexPath: indexPath) as! MovieCell
-        cell.movie = MovieRecord(json: movieSearcher.hits[indexPath.item])
-        if indexPath.item + 6 >= movieSearcher.hits.count {
+        cell.movie = MovieRecord(json: movieSearcher.results!.hits[indexPath.item])
+        if indexPath.item + 6 >= movieSearcher.results?.hits.count {
             movieSearcher.loadMore()
         }
         return cell
@@ -160,7 +160,7 @@ class MoviesIpadViewController: UIViewController, UICollectionViewDataSource, TT
     
     func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         switch tableView {
-            case actorsTableView: return actorSearcher.hits.count
+            case actorsTableView: return actorSearcher.results?.hits.count ?? 0
             case genreTableView: return genreFacets.count
             default: assert(false); return 0
         }
@@ -170,8 +170,8 @@ class MoviesIpadViewController: UIViewController, UICollectionViewDataSource, TT
         switch tableView {
             case actorsTableView:
                 let cell = tableView.dequeueReusableCellWithIdentifier("actorCell", forIndexPath: indexPath) as! ActorCell
-                cell.actor = Actor(json: actorSearcher.hits[indexPath.item])
-                if indexPath.item + 5 >= actorSearcher.hits.count {
+                cell.actor = Actor(json: actorSearcher.results!.hits[indexPath.item])
+                if indexPath.item + 5 >= actorSearcher.results!.hits.count {
                     actorSearcher.loadMore()
                 }
                 return cell

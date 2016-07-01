@@ -33,14 +33,15 @@ public struct FacetValue {
     
 }
 
-
 /// Manages search on an Algolia index.
 ///
 /// The purpose of this class is to maintain a state between searches and handle pagination.
 ///
 public class SearchHelper {
+    public typealias ResultHandler = (results: SearchResults?, error: NSError?) -> Void
+    
     public let index: Index
-    public let completionHandler: CompletionHandler
+    private let resultHandler: ResultHandler
     
     /// The query that will be used for the next search.
     /// It can be modified at will. It is not taken into account until the `search()` method is called.
@@ -77,24 +78,14 @@ public class SearchHelper {
     /// The query corresponding to the last received results.
     public private(set) var receivedQuery: Query?
     
-    /// Results for the last query.
-    ///
-    /// This contains results of all pages for the last query, i.e. the results of the initial `search()` call, plus
-    /// any subsequent calls to `loadMore()`. It is reset when results are received for a new query, i.e. after
-    /// another call to `search()`.
-    ///
-    public private(set) var hits: [[String: AnyObject]] = []
-    
-    /// Facets returned by the last query.
-    /// Maps each facet name to the array of corresponding (value, count) pairs.
-    ///
-    public private(set) var facets: [String: [FacetValue]] = [:]
+    /// The last received results.
+    public private(set) var results: SearchResults?
     
     // MARK: -
     
-    public init(index: Index, completionHandler: CompletionHandler) {
+    public init(index: Index, resultHandler: ResultHandler) {
         self.index = index
-        self.completionHandler = completionHandler
+        self.resultHandler = resultHandler
     }
 
     /// Search.
@@ -137,18 +128,19 @@ public class SearchHelper {
             if content != nil {
                 try _handleResults(content!)
             }
-            completionHandler(content: content, error: error)
+            resultHandler(results: self.results, error: error)
         } catch let e as NSError {
-            completionHandler(content: nil, error: e)
+            resultHandler(results: self.results, error: e)
         }
     }
     
     /// Exception-throwing flavor of `handleResults`.
     private func _handleResults(content: [String: AnyObject]) throws {
-        guard let receivedPage = content["page"] as? Int,
-            nbPages = content["nbPages"] as? Int,
-            hits = content["hits"] as? [[String: AnyObject]] else {
-                throw NSError(domain: Client.ErrorDomain, code: 500, userInfo: [NSLocalizedDescriptionKey: "Invalid response from server"])
+        guard let
+            receivedPage = content["page"] as? Int,
+            nbPages = content["nbPages"] as? Int
+        else {
+            throw NSError(domain: Client.ErrorDomain, code: 500, userInfo: [NSLocalizedDescriptionKey: "Invalid response from server"])
         }
         // Update page.
         self.receivedPage = receivedPage
@@ -156,32 +148,9 @@ public class SearchHelper {
         
         // Update hits.
         if receivedPage == initialPage {
-            self.hits = hits
+            self.results = SearchResults(content: content)
         } else {
-            self.hits.appendContentsOf(hits)
-        }
-        
-        // Update facets.
-        self.facets.removeAll()
-        if let requestedFacets = receivedQuery!.facets,
-            returnedFacets = content["facets"] as? [String: [String: Int]] {
-            let queryBuilder = QueryBuilder(query: receivedQuery!)
-            // NOTE: We iterate on the *requested* facets, because the search may return no results and therefore no
-            // facets, whereas we want the arrays to be always populated at least for the refined values.
-            for facetName in requestedFacets {
-                let returnedValues = returnedFacets[facetName] ?? [String: Int]()
-                var values = [FacetValue]()
-                for (value, count) in returnedValues {
-                    values.append(FacetValue(value: value, count: count))
-                }
-                // Make sure there is a value at least for the refined values.
-                for value in queryBuilder.listConjunctiveFacetRefinements(facetName) {
-                    if returnedValues[value] == nil {
-                        values.append(FacetValue(value: value, count: 0))
-                    }
-                }
-                self.facets[facetName] = values
-            }
+            self.results?.add(content)
         }
     }
 }

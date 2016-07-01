@@ -38,7 +38,7 @@ class MoviesTableViewController: UITableViewController, UISearchBarDelegate, UIS
         super.viewDidLoad()
 
         // Algolia Search
-        movieSearcher = SearchHelper(index: AlgoliaManager.sharedInstance.moviesIndex, completionHandler: { (content, error) in
+        movieSearcher = SearchHelper(index: AlgoliaManager.sharedInstance.moviesIndex, resultHandler: { (results, error) in
             self.tableView.reloadData()
         })
         movieSearcher.query.hitsPerPage = 15
@@ -72,19 +72,19 @@ class MoviesTableViewController: UITableViewController, UISearchBarDelegate, UIS
     }
 
     override func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return movieSearcher.hits.count
+        return movieSearcher.results?.hits.count ?? 0
     }
     
     override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCellWithIdentifier("movieCell", forIndexPath: indexPath) 
 
         // Load more?
-        if indexPath.row + 5 >= movieSearcher.hits.count {
+        if indexPath.row + 5 >= movieSearcher.results!.hits.count {
             movieSearcher.loadMore()
         }
         
         // Configure the cell...
-        let movie = MovieRecord(json: movieSearcher.hits[indexPath.row])
+        let movie = MovieRecord(json: movieSearcher.results!.hits[indexPath.row])
         cell.textLabel?.highlightedText = movie.title_highlighted
         
         cell.detailTextLabel?.text = movie.year != nil ? "\(movie.year!)" : nil
