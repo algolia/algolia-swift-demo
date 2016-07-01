@@ -105,10 +105,10 @@ class MoviesIpadViewController: UIViewController, UICollectionViewDataSource, TT
 
     private func handleMovieSearchResults(results: SearchResults?, error: NSError?) {
         // Sort facets: first selected facets, then by decreasing count, then by name.
-        let receivedQueryBuilder = QueryBuilder(query: movieSearcher.receivedQuery!)
+        let receivedQueryHelper = QueryHelper(query: movieSearcher.receivedQuery!)
         genreFacets = self.movieSearcher.results!.facets("genre")?.sort({ (lhs, rhs) in
-            let lhsChecked = receivedQueryBuilder.hasConjunctiveFacetRefinement("genre", value: lhs.value)
-            let rhsChecked = receivedQueryBuilder.hasConjunctiveFacetRefinement("genre", value: rhs.value)
+            let lhsChecked = receivedQueryHelper.hasConjunctiveFacetRefinement("genre", value: lhs.value)
+            let rhsChecked = receivedQueryHelper.hasConjunctiveFacetRefinement("genre", value: rhs.value)
             if lhsChecked != rhsChecked {
                 return lhsChecked
             } else if lhs.count != rhs.count {
@@ -178,7 +178,7 @@ class MoviesIpadViewController: UIViewController, UICollectionViewDataSource, TT
             case genreTableView:
                 let cell = tableView.dequeueReusableCellWithIdentifier("genreCell", forIndexPath: indexPath) as! GenreCell
                 cell.value = genreFacets[indexPath.item]
-                cell.checked = QueryBuilder(query: movieSearcher.receivedQuery!).hasConjunctiveFacetRefinement("genre", value: genreFacets[indexPath.item].value)
+                cell.checked = QueryHelper(query: movieSearcher.receivedQuery!).hasConjunctiveFacetRefinement("genre", value: genreFacets[indexPath.item].value)
                 return cell
             default: assert(false); return UITableViewCell()
         }
@@ -190,14 +190,14 @@ class MoviesIpadViewController: UIViewController, UICollectionViewDataSource, TT
         switch tableView {
             case genreTableView:
                 let facetValue = genreFacets[indexPath.item].value
-                let receivedQueryBuilder = QueryBuilder(query: movieSearcher.receivedQuery!)
-                var checked = receivedQueryBuilder.hasConjunctiveFacetRefinement("genre", value: facetValue)
+                let receivedQueryHelper = QueryHelper(query: movieSearcher.receivedQuery!)
+                var checked = receivedQueryHelper.hasConjunctiveFacetRefinement("genre", value: facetValue)
                 checked = !checked
-                let newQueryBuilder = QueryBuilder(query: movieSearcher.query)
+                let newQueryHelper = QueryHelper(query: movieSearcher.query)
                 if checked {
-                    newQueryBuilder.addConjunctiveFacetRefinement("genre", value: facetValue)
+                    newQueryHelper.addConjunctiveFacetRefinement("genre", value: facetValue)
                 } else {
-                    newQueryBuilder.removeConjunctiveFacetRefinement("genre", value: facetValue)
+                    newQueryHelper.removeConjunctiveFacetRefinement("genre", value: facetValue)
                 }
                 movieSearcher.search()
                 break

@@ -27,7 +27,7 @@ import Foundation
 
 /// Utilities to build `Query` instances.
 ///
-public class QueryBuilder {
+public class QueryHelper {
     let query: Query
 
     /// Create an initially empty query builder.

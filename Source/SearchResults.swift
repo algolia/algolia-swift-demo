@@ -160,7 +160,7 @@ public class SearchResults {
                 }
             }
             // Make sure there is a value at least for the refined values.
-            let queryBuilder = QueryBuilder(query: lastQuery)
+            let queryBuilder = QueryHelper(query: lastQuery)
             for value in queryBuilder.listConjunctiveFacetRefinements(name) {
                 if returnedValues?[value] == nil {
                     values.append(FacetValue(value: value, count: 0))
