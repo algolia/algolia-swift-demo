@@ -47,6 +47,9 @@ public class SearchHelper {
     /// It can be modified at will. It is not taken into account until the `search()` method is called.
     public var query: Query = Query()
     
+    /// Facets that will be treated as disjunctive (`OR`). By default, facets are conjunctive (`AND`).
+    public var disjunctiveFacets: [String] = []
+    
     // MARK: On-going request
     // ----------------------
     
@@ -60,7 +63,9 @@ public class SearchHelper {
     private var initialPage: Int {
         return requestedQuery?.page?.integerValue ?? 0
     }
-    
+
+    private var requestedDisjunctiveFacets: [String]!
+
     // MARK: Last received results
     // ---------------------------
     
@@ -91,8 +96,9 @@ public class SearchHelper {
     /// Search.
     public func search() {
         requestedQuery = Query(copy: query)
+        requestedDisjunctiveFacets = disjunctiveFacets
         requestedPage = initialPage
-        index.search(requestedQuery!, completionHandler: self.handleResults)
+        _doNextRequest(requestedQuery!)
     }
     
     /// Load more content, if possible.
@@ -118,7 +124,16 @@ public class SearchHelper {
         let newQuery = Query(copy: requestedQuery!)
         requestedPage = nextPage
         newQuery.page = nextPage
-        index.search(newQuery, completionHandler: self.handleResults)
+        _doNextRequest(newQuery)
+    }
+    
+    private func _doNextRequest(query: Query) {
+        if disjunctiveFacets.isEmpty {
+            index.search(query, completionHandler: self.handleResults)
+        } else {
+            let queryHelper = QueryHelper(query: query)
+            index.searchDisjunctiveFaceting(query, disjunctiveFacets: disjunctiveFacets, refinements: queryHelper.parseFacetRefinements(), completionHandler: self.handleResults)
+        }
     }
 
     /// Completion handler for search requests.
@@ -148,7 +163,7 @@ public class SearchHelper {
         
         // Update hits.
         if receivedPage == initialPage {
-            self.results = SearchResults(content: content)
+            self.results = SearchResults(content: content, disjunctiveFacets: requestedDisjunctiveFacets)
         } else {
             self.results?.add(content)
         }

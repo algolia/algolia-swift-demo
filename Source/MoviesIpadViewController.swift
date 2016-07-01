@@ -35,6 +35,7 @@ class MoviesIpadViewController: UIViewController, UICollectionViewDataSource, TT
     @IBOutlet weak var movieCountLabel: UILabel!
     @IBOutlet weak var searchTimeLabel: UILabel!
     @IBOutlet weak var genreTableViewFooter: UILabel!
+    @IBOutlet weak var genreFilteringModeSwitch: UISwitch!
 
     var actorSearcher: SearchHelper!
     var movieSearcher: SearchHelper!
@@ -81,12 +82,17 @@ class MoviesIpadViewController: UIViewController, UICollectionViewDataSource, TT
     
     private func search() {
         actorSearcher.search()
+        movieSearcher.disjunctiveFacets = genreFilteringModeSwitch.on ? ["genre"] : []
         movieSearcher.query.numericFilters = [
             "year >= \(Int(yearRangeSlider.selectedMinimum))",
             "year <= \(Int(yearRangeSlider.selectedMaximum))",
             "rating >= \(ratingSelectorView.rating)"
         ]
         movieSearcher.search()
+    }
+    
+    @IBAction func genreFilteringModeDidChange(sender: AnyObject) {
+        search()
     }
     
     // MARK: - UISearchBarDelegate
@@ -112,9 +118,12 @@ class MoviesIpadViewController: UIViewController, UICollectionViewDataSource, TT
         // Sort facets: first selected facets, then by decreasing count, then by name.
         let receivedQueryHelper = QueryHelper(query: movieSearcher.receivedQuery!)
         genreFacets = self.movieSearcher.results!.facets("genre")?.sort({ (lhs, rhs) in
+            // When using cunjunctive faceting ("AND"), all refined facet values are displayed first.
+            // But when using disjunctive faceting ("OR"), refined facet values are left where they are.
+            let disjunctiveFaceting = results?.disjunctiveFacets.contains("genre") ?? false
             let lhsChecked = receivedQueryHelper.hasConjunctiveFacetRefinement("genre", value: lhs.value)
             let rhsChecked = receivedQueryHelper.hasConjunctiveFacetRefinement("genre", value: rhs.value)
-            if lhsChecked != rhsChecked {
+            if !disjunctiveFaceting && lhsChecked != rhsChecked {
                 return lhsChecked
             } else if lhs.count != rhs.count {
                 return lhs.count > rhs.count
@@ -157,7 +166,7 @@ class MoviesIpadViewController: UIViewController, UICollectionViewDataSource, TT
     func collectionView(collectionView: UICollectionView, cellForItemAtIndexPath indexPath: NSIndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCellWithReuseIdentifier("movieCell", forIndexPath: indexPath) as! MovieCell
         cell.movie = MovieRecord(json: movieSearcher.results!.hits[indexPath.item])
-        if indexPath.item + 6 >= movieSearcher.results?.hits.count {
+        if indexPath.item + 5 >= movieSearcher.results?.hits.count {
             movieSearcher.loadMore()
         }
         return cell

@@ -86,6 +86,9 @@ public class SearchResults {
     /// The last received JSON content.
     /// Either that passed to the initializer, or that last passed to `add()`.
     public private(set) var lastContent: [String: AnyObject]
+    
+    /// Facets that will be treated as disjunctive (`OR`). By default, facets are conjunctive (`AND`).
+    public let disjunctiveFacets: [String]
 
     /// Hits for all the received pages.
     public private(set) var hits: [[String: AnyObject]] = []
@@ -119,8 +122,9 @@ public class SearchResults {
     // MARK: - Initialization, termination
     
     /// Create search results from an initial response from the API.
-    public init(content: [String: AnyObject]) {
+    public init(content: [String: AnyObject], disjunctiveFacets: [String]) {
         self.lastContent = content
+        self.disjunctiveFacets = disjunctiveFacets
         self.hits = content["hits"] as? [[String: AnyObject]] ?? [[String: AnyObject]]()
         if let queryString = content["params"] as? String {
             self.lastQuery = Query.parse(queryString)
@@ -142,6 +146,7 @@ public class SearchResults {
     /// Retrieve the facet values for a given facet.
     ///
     /// - parameter name: Facet name.
+    /// - parameter disjunctive: true if this is a disjunctive facet, false if it's a conjunctive facet (default).
     /// - return: The corresponding facet values.
     ///
     public func facets(name: String) -> [FacetValue]? {
@@ -151,7 +156,8 @@ public class SearchResults {
         }
         // Otherwise lazily compute the values.
         else {
-            guard let returnedFacets = lastContent["facets"] as? [String: AnyObject] else { return nil }
+            let disjunctive = disjunctiveFacets.contains(name)
+            guard let returnedFacets = lastContent[disjunctive ? "disjunctiveFacets" : "facets"] as? [String: AnyObject] else { return nil }
             var values = [FacetValue]()
             let returnedValues = returnedFacets[name] as? [String: Int]
             if let returnedValues = returnedValues {
@@ -160,10 +166,12 @@ public class SearchResults {
                 }
             }
             // Make sure there is a value at least for the refined values.
-            let queryBuilder = QueryHelper(query: lastQuery)
-            for value in queryBuilder.listConjunctiveFacetRefinements(name) {
-                if returnedValues?[value] == nil {
-                    values.append(FacetValue(value: value, count: 0))
+            let queryHelper = QueryHelper(query: lastQuery)
+            if let facetRefinements = queryHelper.parseFacetRefinements()[name] {
+                for value in facetRefinements {
+                    if returnedValues?[value] == nil {
+                        values.append(FacetValue(value: value, count: 0))
+                    }
                 }
             }
             // Remember values for later use.

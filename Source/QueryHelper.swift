@@ -25,11 +25,27 @@ import AlgoliaSearch
 import Foundation
 
 
-/// Utilities to build `Query` instances.
+public struct FacetRefinement {
+    /// Name of the facet.
+    public var name: String
+    
+    /// Value for the facet.
+    public var value: String
+
+    /// Whether the refinement is inclusive (default) or exclusive (value prefixed with "-").
+    public var inclusive: Bool = true
+    
+    /// Build a facet filter corresponding to this refinement.
+    public func buildFacetFilter() -> String {
+        return "\(name):\(inclusive ? "" : "-")\(value)"
+    }
+}
+
+/// Utilities to build and interpret `Query` instances.
 ///
 public class QueryHelper {
-    let query: Query
-
+    public let query: Query
+    
     /// Create an initially empty query builder.
     init() {
         self.query = Query()
@@ -38,6 +54,43 @@ public class QueryHelper {
     /// Create a query builder wrapping the specified query.
     init(query: Query) {
         self.query = query
+    }
+    
+    /// Parse facet filters into facet refinements.
+    /// Please note that doing so discards the notion of conjunctive ("AND") vs disjunctive ("OR") filters.
+    ///
+    /// - return: A dictionary mapping each facet name to the corresponding list of values.
+    ///
+    public func parseFacetRefinements() -> [String: [String]] {
+        if let facetFilters = query.facetFilters {
+            return _parseFacetRefinements(facetFilters)
+        } else {
+            return [:]
+        }
+    }
+    
+    /// Recursively parse facet filters into facet refinements.
+    private func _parseFacetRefinements(facetFilters: [AnyObject]) -> [String: [String]] {
+        var refinements = [String: [String]]()
+        for facetFilter in facetFilters {
+            if let facetFilter = facetFilter as? String, facetRefinement = QueryHelper.parseFacetRefinement(facetFilter) {
+                if let facetRefinements = refinements[facetRefinement.name] {
+                    refinements[facetRefinement.name] = facetRefinements + [facetRefinement.value]
+                } else {
+                    refinements[facetRefinement.name] = [facetRefinement.value]
+                }
+            } else if let facetFilter = facetFilter as? [AnyObject] {
+                let additionalRefinements = _parseFacetRefinements(facetFilter)
+                for (facetName, facetValues) in additionalRefinements {
+                    if let facetRefinements = refinements[facetName] {
+                        refinements[facetName] = facetRefinements + facetValues
+                    } else {
+                        refinements[facetName] = facetValues
+                    }
+                }
+            }
+        }
+        return refinements
     }
     
     public func hasConjunctiveFacetRefinement(name: String, value: String) -> Bool {
@@ -72,19 +125,24 @@ public class QueryHelper {
         return nil
     }
     
-    public func listConjunctiveFacetRefinements(name: String) -> [String] {
-        var refinements = [String]()
-        if query.facetFilters != nil {
-            for facetFilter in query.facetFilters! {
-                if let filter = facetFilter as? String {
-                    let components = filter.componentsSeparatedByString(":")
-                    if components[0] == name {
-                        refinements.append(components[1])
-                        // TODO: Handle the case when the value has a colon
-                    }
-                }
+    /// Parse a facet filter into a facet refinement.
+    ///
+    /// - parameter facetFilter: A string representation of a facet filter, as used by `Query`.
+    /// - return: The corresponding facet refinement, or nil if the string is invalid.
+    ///
+    public static func parseFacetRefinement(facetFilter: String) -> FacetRefinement? {
+        let components = facetFilter.characters.split(":", maxSplit: 1, allowEmptySlices: true)
+        if components.count == 2 {
+            let facetName = String(components[0])
+            var facetValue = String(components[1])
+            var inclusive = true
+            if facetValue.characters.first == "-" {
+                facetValue = facetValue.substringFromIndex(facetValue.startIndex.successor())
+                inclusive = false
             }
+            return FacetRefinement(name: facetName, value: facetValue, inclusive: inclusive)
+        } else {
+            return nil
         }
-        return refinements
     }
 }
