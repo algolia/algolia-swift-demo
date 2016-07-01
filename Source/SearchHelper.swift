@@ -168,4 +168,26 @@ public class SearchHelper {
             self.results?.add(content)
         }
     }
+
+    /// Toggle a facet refinement on/off, in a way suitable for high latency environments.
+    ///
+    /// The trick here is that the toggle reads the *received* query state, but updates the *next* query. Why?
+    /// Because if search results are slow to come, the user will be acting on the received state. If you just toggle
+    /// the next query state, it might lead to inconsistent results.
+    ///
+    public func toggleFacetRefinement(facetRefinement: FacetRefinement) {
+        let receivedQueryHelper = QueryHelper(query: receivedQuery!)
+        var enabled = receivedQueryHelper.hasFacetRefinement(facetRefinement)
+        enabled = !enabled
+        let newQueryHelper = QueryHelper(query: query)
+        if enabled {
+            if disjunctiveFacets.contains(facetRefinement.name) {
+                newQueryHelper.addDisjunctiveFacetRefinement(facetRefinement)
+            } else {
+                newQueryHelper.addConjunctiveFacetRefinement(facetRefinement)
+            }
+        } else {
+            newQueryHelper.removeFacetRefinement(facetRefinement)
+        }
+    }
 }

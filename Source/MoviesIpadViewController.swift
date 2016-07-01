@@ -219,22 +219,7 @@ class MoviesIpadViewController: UIViewController, UICollectionViewDataSource, TT
     func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
         switch tableView {
             case genreTableView:
-                // TODO: The toggle logic is non-obvious because of latency of response. => Maybe we should factorize it in the helper?
-                let facetValue = genreFacets[indexPath.item].value
-                let receivedQueryHelper = QueryHelper(query: movieSearcher.receivedQuery!)
-                let refinement = FacetRefinement(name: "genre", value: facetValue)
-                var checked = receivedQueryHelper.hasFacetRefinement(refinement)
-                checked = !checked
-                let newQueryHelper = QueryHelper(query: movieSearcher.query)
-                if checked {
-                    if genreFilteringModeSwitch.on {
-                        newQueryHelper.addDisjunctiveFacetRefinement(refinement)
-                    } else {
-                        newQueryHelper.addConjunctiveFacetRefinement(refinement)
-                    }
-                } else {
-                    newQueryHelper.removeFacetRefinement(refinement)
-                }
+                movieSearcher.toggleFacetRefinement(FacetRefinement(name: "genre", value: genreFacets[indexPath.item].value))
                 movieSearcher.search()
                 break
             default: return
