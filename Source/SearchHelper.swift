@@ -128,13 +128,30 @@ public class SearchHelper {
     }
     
     private func _doNextRequest(query: Query) {
+        #if DEBUG
+        let completionHandler = responseDelay > 0.0 ? self.handleResultsWithDelay : self.handleResults
+        #else
+        let completionHandler = self.handleResults
+        #endif
         if disjunctiveFacets.isEmpty {
-            index.search(query, completionHandler: self.handleResults)
+            index.search(query, completionHandler: completionHandler)
         } else {
             let queryHelper = QueryHelper(query: query)
-            index.searchDisjunctiveFaceting(query, disjunctiveFacets: disjunctiveFacets, refinements: queryHelper.buildFacetRefinementsForDisjunctiveFaceting(), completionHandler: self.handleResults)
+            index.searchDisjunctiveFaceting(query, disjunctiveFacets: disjunctiveFacets, refinements: queryHelper.buildFacetRefinementsForDisjunctiveFaceting(), completionHandler: completionHandler)
         }
     }
+    
+    #if DEBUG
+    /// Artificial delay introduced in responses. By default, no delay.
+    public let responseDelay: NSTimeInterval = 0.0
+    
+    /// Debug flavor of `handleResults()` simulating a high latency.
+    private func handleResultsWithDelay(content: [String: AnyObject]?, error: NSError?) {
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, Int64(responseDelay * Double(NSEC_PER_SEC))), dispatch_get_main_queue()) {
+            self.handleResults(content, error: error)
+        }
+    }
+    #endif
 
     /// Completion handler for search requests.
     private func handleResults(content: [String: AnyObject]?, error: NSError?) {
