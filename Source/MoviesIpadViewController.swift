@@ -34,6 +34,7 @@ class MoviesIpadViewController: UIViewController, UICollectionViewDataSource, TT
     @IBOutlet weak var actorsTableView: UITableView!
     @IBOutlet weak var movieCountLabel: UILabel!
     @IBOutlet weak var searchTimeLabel: UILabel!
+    @IBOutlet weak var genreTableViewFooter: UILabel!
 
     var actorSearcher: SearchHelper!
     var movieSearcher: SearchHelper!
@@ -53,6 +54,10 @@ class MoviesIpadViewController: UIViewController, UICollectionViewDataSource, TT
         yearRangeSlider.maxLabelFont = yearRangeSlider.minLabelFont
         
         ratingSelectorView.addObserver(self, forKeyPath: "rating", options: .New, context: nil)
+        
+        // Customize genre table view.
+        genreTableView.tableFooterView = genreTableViewFooter
+        genreTableViewFooter.hidden = true
         
         // Configure actor search.
         actorSearcher = SearchHelper(index: AlgoliaManager.sharedInstance.actorsIndex, resultHandler: self.handleActorSearchResults)
@@ -117,6 +122,8 @@ class MoviesIpadViewController: UIViewController, UICollectionViewDataSource, TT
                 return lhs.value < rhs.value
             }
         }) ?? []
+        let exhaustiveFacetsCount = results?.exhaustiveFacetsCount == true
+        genreTableViewFooter.hidden = exhaustiveFacetsCount
 
         if let nbHits = results?.nbHits {
             let formatter = NSNumberFormatter()
