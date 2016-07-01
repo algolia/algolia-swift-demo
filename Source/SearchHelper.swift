@@ -132,7 +132,7 @@ public class SearchHelper {
             index.search(query, completionHandler: self.handleResults)
         } else {
             let queryHelper = QueryHelper(query: query)
-            index.searchDisjunctiveFaceting(query, disjunctiveFacets: disjunctiveFacets, refinements: queryHelper.parseFacetRefinements(), completionHandler: self.handleResults)
+            index.searchDisjunctiveFaceting(query, disjunctiveFacets: disjunctiveFacets, refinements: queryHelper.buildFacetRefinementsForDisjunctiveFaceting(), completionHandler: self.handleResults)
         }
     }
 

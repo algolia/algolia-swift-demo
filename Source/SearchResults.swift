@@ -167,11 +167,10 @@ public class SearchResults {
             }
             // Make sure there is a value at least for the refined values.
             let queryHelper = QueryHelper(query: lastQuery)
-            if let facetRefinements = queryHelper.parseFacetRefinements()[name] {
-                for value in facetRefinements {
-                    if returnedValues?[value] == nil {
-                        values.append(FacetValue(value: value, count: 0))
-                    }
+            let facetRefinements = queryHelper.getFacetRefinements() { $0.name == name }
+            for facetRefinement in facetRefinements {
+                if returnedValues?[facetRefinement.value] == nil {
+                    values.append(FacetValue(value: facetRefinement.value, count: 0))
                 }
             }
             // Remember values for later use.
