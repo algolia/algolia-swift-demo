@@ -79,6 +79,13 @@ public struct RankingInfo {
     public var filters: Int? { return json["filters"] as? Int }
 }
 
+/// A value of a given facet, together with its number of occurrences.
+///
+public struct FacetValue {
+    let value: String
+    let count: Int
+}
+
 /// Search results.
 /// NOTE: Wraps the raw JSON returned by the API.
 ///

@@ -25,14 +25,6 @@ import AlgoliaSearch
 import Foundation
 
 
-/// A value of a given facet, together with its number of occurrences.
-///
-public struct FacetValue {
-    let value: String
-    let count: Int
-}
-
-
 /// Manages search on an Algolia index.
 ///
 /// The purpose of this class is to maintain a state between searches and handle pagination.
