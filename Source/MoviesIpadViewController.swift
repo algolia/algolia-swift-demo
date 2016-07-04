@@ -62,14 +62,14 @@ class MoviesIpadViewController: UIViewController, UICollectionViewDataSource, TT
         
         // Configure actor search.
         actorSearcher = SearchHelper(index: AlgoliaManager.sharedInstance.actorsIndex, resultHandler: self.handleActorSearchResults)
-        actorSearcher.query.hitsPerPage = 10
-        actorSearcher.query.attributesToHighlight = ["name"]
+        actorSearcher.nextState.query.hitsPerPage = 10
+        actorSearcher.nextState.query.attributesToHighlight = ["name"]
 
         // Configure movie search.
         movieSearcher = SearchHelper(index: AlgoliaManager.sharedInstance.moviesIndex, resultHandler: self.handleMovieSearchResults)
-        movieSearcher.query.facets = ["genre"]
-        movieSearcher.query.attributesToHighlight = ["title"]
-        movieSearcher.query.hitsPerPage = 30
+        movieSearcher.nextState.query.facets = ["genre"]
+        movieSearcher.nextState.query.attributesToHighlight = ["title"]
+        movieSearcher.nextState.query.hitsPerPage = 30
 
         search()
     }
@@ -82,8 +82,8 @@ class MoviesIpadViewController: UIViewController, UICollectionViewDataSource, TT
     
     private func search() {
         actorSearcher.search()
-        movieSearcher.disjunctiveFacets = genreFilteringModeSwitch.on ? ["genre"] : []
-        movieSearcher.query.numericFilters = [
+        movieSearcher.nextState.disjunctiveFacets = genreFilteringModeSwitch.on ? ["genre"] : []
+        movieSearcher.nextState.query.numericFilters = [
             "year >= \(Int(yearRangeSlider.selectedMinimum))",
             "year <= \(Int(yearRangeSlider.selectedMaximum))",
             "rating >= \(ratingSelectorView.rating)"
@@ -93,7 +93,7 @@ class MoviesIpadViewController: UIViewController, UICollectionViewDataSource, TT
     
     @IBAction func genreFilteringModeDidChange(sender: AnyObject) {
         // Convert conjunctive refinements into disjunctive and vice versa.
-        let queryHelper = QueryHelper(query: movieSearcher.query)
+        let queryHelper = QueryHelper(query: movieSearcher.nextState.query)
         let refinements = queryHelper.getFacetRefinements() { $0.name == "genre" }
         for refinement in refinements {
             queryHelper.removeFacetRefinement(refinement)
@@ -112,8 +112,8 @@ class MoviesIpadViewController: UIViewController, UICollectionViewDataSource, TT
     // MARK: - UISearchBarDelegate
     
     func searchBar(searchBar: UISearchBar, textDidChange searchText: String) {
-        actorSearcher.query.query = searchText
-        movieSearcher.query.query = searchText
+        actorSearcher.nextState.query.query = searchText
+        movieSearcher.nextState.query.query = searchText
         search()
     }
     
@@ -123,14 +123,14 @@ class MoviesIpadViewController: UIViewController, UICollectionViewDataSource, TT
         self.actorsTableView.reloadData()
         
         // Scroll to top.
-        if actorSearcher.receivedPage == actorSearcher.receivedInitialPage {
+        if actorSearcher.receivedState.isInitialPage {
             self.moviesCollectionView.contentOffset = CGPointZero
         }
     }
 
     private func handleMovieSearchResults(results: SearchResults?, error: NSError?) {
         // Sort facets: first selected facets, then by decreasing count, then by name.
-        let receivedQueryHelper = QueryHelper(query: movieSearcher.receivedQuery!)
+        let receivedQueryHelper = QueryHelper(query: movieSearcher.receivedState.query)
         genreFacets = self.movieSearcher.results!.facets("genre")?.sort({ (lhs, rhs) in
             // When using cunjunctive faceting ("AND"), all refined facet values are displayed first.
             // But when using disjunctive faceting ("OR"), refined facet values are left where they are.
@@ -166,7 +166,7 @@ class MoviesIpadViewController: UIViewController, UICollectionViewDataSource, TT
         self.moviesCollectionView.reloadData()
         
         // Scroll to top.
-        if movieSearcher.receivedPage == movieSearcher.receivedInitialPage {
+        if movieSearcher.receivedState.isInitialPage {
             self.moviesCollectionView.contentOffset = CGPointZero
         }
     }
@@ -208,7 +208,7 @@ class MoviesIpadViewController: UIViewController, UICollectionViewDataSource, TT
             case genreTableView:
                 let cell = tableView.dequeueReusableCellWithIdentifier("genreCell", forIndexPath: indexPath) as! GenreCell
                 cell.value = genreFacets[indexPath.item]
-                cell.checked = QueryHelper(query: movieSearcher.receivedQuery!).hasFacetRefinement(FacetRefinement(name: "genre", value: genreFacets[indexPath.item].value))
+                cell.checked = QueryHelper(query: movieSearcher.receivedState.query).hasFacetRefinement(FacetRefinement(name: "genre", value: genreFacets[indexPath.item].value))
                 return cell
             default: assert(false); return UITableViewCell()
         }

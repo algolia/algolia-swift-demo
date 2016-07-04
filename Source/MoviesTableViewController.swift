@@ -41,9 +41,9 @@ class MoviesTableViewController: UITableViewController, UISearchBarDelegate, UIS
         movieSearcher = SearchHelper(index: AlgoliaManager.sharedInstance.moviesIndex, resultHandler: { (results, error) in
             self.tableView.reloadData()
         })
-        movieSearcher.query.hitsPerPage = 15
-        movieSearcher.query.attributesToRetrieve = ["title", "image", "rating", "year"]
-        movieSearcher.query.attributesToHighlight = ["title"]
+        movieSearcher.nextState.query.hitsPerPage = 15
+        movieSearcher.nextState.query.attributesToRetrieve = ["title", "image", "rating", "year"]
+        movieSearcher.nextState.query.attributesToHighlight = ["title"]
         
         // Search controller
         searchController = UISearchController(searchResultsController: nil)
@@ -102,7 +102,7 @@ class MoviesTableViewController: UITableViewController, UISearchBarDelegate, UIS
     // MARK: - Search bar
     
     func updateSearchResultsForSearchController(searchController: UISearchController) {
-        movieSearcher.query.query = searchController.searchBar.text
+        movieSearcher.nextState.query.query = searchController.searchBar.text
         movieSearcher.search()
     }
     

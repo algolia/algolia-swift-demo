@@ -30,8 +30,8 @@ import Foundation
 public struct FacetValue {
     let value: String
     let count: Int
-    
 }
+
 
 /// Manages search on an Algolia index.
 ///
@@ -39,49 +39,66 @@ public struct FacetValue {
 ///
 public class SearchHelper {
     public typealias ResultHandler = (results: SearchResults?, error: NSError?) -> Void
-    
+
+    /// Pluggable state representation for a `SearchHelper`.
+    public struct State {
+        /// Search query.
+        /// NOTE: The page may be overridden when loading more content.
+        ///
+        public var query: Query = Query()
+        
+        /// List of facets to be treated as disjunctive facets. Defaults to the empty list.
+        public var disjunctiveFacets: [String] = []
+        
+        /// Initial page.
+        public var initialPage: Int { return query.page?.integerValue ?? 0 }
+        
+        /// Current page.
+        public var page: Int = 0
+        
+        /// Whether the current page is the initial page for this search state.
+        public var isInitialPage: Bool { return initialPage == page }
+        
+        /// Construct a default state.
+        public init() {
+        }
+
+        // WARNING: Although `State` is a value type, `Query` is not (because of Objective-C bridgeability).
+        // Consequently, the memberwise assignment of `State` leads to unintended state sharing.
+        //
+        // TODO: I found no way to customize the assignment of a struct in Swift (something like C++'s assignment
+        // operator or copy constructor). So I resort to explicitly constructing copies so far.
+
+        /// Copy a state.
+        public init(copy: State) {
+            // WARNING: Query is not a value type (because of Objective-C bridgeability), so let's make sure to copy it.
+            self.query = Query(copy: copy.query)
+            self.disjunctiveFacets = copy.disjunctiveFacets
+            self.page = copy.page
+        }
+    }
+
+    /// The index used by this search helper.
     public let index: Index
+    
+    /// User callback for handling results.
     private let resultHandler: ResultHandler
-    
-    /// The query that will be used for the next search.
-    /// It can be modified at will. It is not taken into account until the `search()` method is called.
-    public var query: Query = Query()
-    
-    /// Facets that will be treated as disjunctive (`OR`). By default, facets are conjunctive (`AND`).
-    public var disjunctiveFacets: [String] = []
-    
-    // MARK: On-going request
+
+    // MARK: State management
     // ----------------------
     
-    /// The query corresponding to the currently on-going search, if any.
-    private var requestedQuery: Query?
+    /// The state that will be used for the next search.
+    /// It can be modified at will. It is not taken into account until the `search()` method is called; then it is
+    /// copied and transferred to `requestedState`.
+    public var nextState: State = State()
 
-    /// The last requested page.
-    private var requestedPage: Int = 0
-    
-    /// The initial page, i.e. that of the first request. Defaults to 0, unless the user provided one.
-    private var initialPage: Int {
-        return requestedQuery?.page?.integerValue ?? 0
-    }
+    /// The state corresponding to the last issued request.
+    /// WARNING: Only valid after the first call to `search()`.
+    public private(set) var requestedState: State!
 
-    private var requestedDisjunctiveFacets: [String]!
-
-    // MARK: Last received results
-    // ---------------------------
-    
-    /// Total number of pages in results.
-    private var nbPages: Int = 0
-
-    /// The initial page for the last received results.
-    public var receivedInitialPage: Int {
-        return receivedQuery?.page?.integerValue ?? 0
-    }
-
-    /// The last received page.
-    public private(set) var receivedPage: Int = 0
-    
-    /// The query corresponding to the last received results.
-    public private(set) var receivedQuery: Query?
+    /// The state corresponding to the last received results.
+    /// WARNING: Only valid after the first call to the result handler.
+    public private(set) var receivedState: State!
     
     /// The last received results.
     public private(set) var results: SearchResults?
@@ -95,68 +112,55 @@ public class SearchHelper {
 
     /// Search.
     public func search() {
-        requestedQuery = Query(copy: query)
-        requestedDisjunctiveFacets = disjunctiveFacets
-        requestedPage = initialPage
-        _doNextRequest(requestedQuery!)
+        requestedState = State(copy: nextState)
+        requestedState.page = requestedState.initialPage
+        _doNextRequest()
     }
     
     /// Load more content, if possible.
     public func loadMore() {
         // Cannot load more when no results have been received.
-        if receivedQuery == nil {
+        if results == nil {
             return
         }
         // Must not load more if the results are outdated with respect to the currently on-going search.
-        if requestedQuery != receivedQuery {
+        if requestedState.query != receivedState.query {
             return
         }
-        let nextPage = receivedPage + 1
+        let nextPage = receivedState.page + 1
         // Cannot load more if the end has already been reached.
-        if nextPage >= nbPages {
+        if nextPage >= results!.nbPages {
             return
         }
         // Must not load more if already loading.
-        if nextPage <= requestedPage {
+        if nextPage <= requestedState.page {
             return
         }
         // OK, everything's fine; let's go!
-        let newQuery = Query(copy: requestedQuery!)
-        requestedPage = nextPage
-        newQuery.page = nextPage
-        _doNextRequest(newQuery)
+        requestedState.page = nextPage
+        _doNextRequest()
     }
     
-    private func _doNextRequest(query: Query) {
-        #if DEBUG
-        let completionHandler = responseDelay > 0.0 ? self.handleResultsWithDelay : self.handleResults
-        #else
-        let completionHandler = self.handleResults
-        #endif
-        if disjunctiveFacets.isEmpty {
+    private func _doNextRequest() {
+        let state = State(copy: requestedState)
+        let completionHandler: CompletionHandler = { (content: [String: AnyObject]?, error: NSError?) in
+            // IMPORTANT: Mark the state as received.
+            self.receivedState = state
+            self.handleResults(content, error: error)
+        }
+        let query = Query(copy: state.query)
+        query.page = state.page
+        if state.disjunctiveFacets.isEmpty {
             index.search(query, completionHandler: completionHandler)
         } else {
             let queryHelper = QueryHelper(query: query)
-            index.searchDisjunctiveFaceting(query, disjunctiveFacets: disjunctiveFacets, refinements: queryHelper.buildFacetRefinementsForDisjunctiveFaceting(), completionHandler: completionHandler)
+            index.searchDisjunctiveFaceting(query, disjunctiveFacets: state.disjunctiveFacets, refinements: queryHelper.buildFacetRefinementsForDisjunctiveFaceting(), completionHandler: completionHandler)
         }
     }
     
-    #if DEBUG
-    /// Artificial delay introduced in responses. By default, no delay.
-    public let responseDelay: NSTimeInterval = 0.0
-    
-    /// Debug flavor of `handleResults()` simulating a high latency.
-    private func handleResultsWithDelay(content: [String: AnyObject]?, error: NSError?) {
-        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, Int64(responseDelay * Double(NSEC_PER_SEC))), dispatch_get_main_queue()) {
-            self.handleResults(content, error: error)
-        }
-    }
-    #endif
-
     /// Completion handler for search requests.
     private func handleResults(content: [String: AnyObject]?, error: NSError?) {
         do {
-            receivedQuery = self.requestedQuery
             if content != nil {
                 try _handleResults(content!)
             }
@@ -168,19 +172,9 @@ public class SearchHelper {
     
     /// Exception-throwing flavor of `handleResults`.
     private func _handleResults(content: [String: AnyObject]) throws {
-        guard let
-            receivedPage = content["page"] as? Int,
-            nbPages = content["nbPages"] as? Int
-        else {
-            throw NSError(domain: Client.ErrorDomain, code: 500, userInfo: [NSLocalizedDescriptionKey: "Invalid response from server"])
-        }
-        // Update page.
-        self.receivedPage = receivedPage
-        self.nbPages = nbPages
-        
         // Update hits.
-        if receivedPage == initialPage {
-            self.results = SearchResults(content: content, disjunctiveFacets: requestedDisjunctiveFacets)
+        if receivedState.page == receivedState.initialPage {
+            self.results = SearchResults(content: content, disjunctiveFacets: receivedState.disjunctiveFacets)
         } else {
             self.results?.add(content)
         }
@@ -193,12 +187,12 @@ public class SearchHelper {
     /// the next query state, it might lead to inconsistent results.
     ///
     public func toggleFacetRefinement(facetRefinement: FacetRefinement) {
-        let receivedQueryHelper = QueryHelper(query: receivedQuery!)
+        let receivedQueryHelper = QueryHelper(query: receivedState.query)
         var enabled = receivedQueryHelper.hasFacetRefinement(facetRefinement)
         enabled = !enabled
-        let newQueryHelper = QueryHelper(query: query)
+        let newQueryHelper = QueryHelper(query: nextState.query)
         if enabled {
-            if disjunctiveFacets.contains(facetRefinement.name) {
+            if receivedState.disjunctiveFacets.contains(facetRefinement.name) {
                 newQueryHelper.addDisjunctiveFacetRefinement(facetRefinement)
             } else {
                 newQueryHelper.addConjunctiveFacetRefinement(facetRefinement)
