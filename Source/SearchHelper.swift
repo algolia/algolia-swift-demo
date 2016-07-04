@@ -25,6 +25,19 @@ import AlgoliaSearch
 import Foundation
 
 
+/// Delegate for `SearchHelper`.
+public protocol SearchDelegate: class {
+    func requestIsSlow(request: NSOperation, query: Query) -> Void
+}
+
+// Default implementation for `SearchDelegate`.
+public extension SearchDelegate {
+    func requestIsSlow(request: NSOperation, query: Query) -> Void {
+        // Default implementation does nothing.
+    }
+}
+
+
 /// Manages search on an Algolia index.
 ///
 /// The purpose of this class is to maintain a state between searches and handle pagination.
@@ -75,6 +88,9 @@ public class SearchHelper {
     
     /// User callback for handling results.
     private let resultHandler: ResultHandler
+    
+    /// Delegate that will be notified of various events (optional).
+    public weak var delegate: SearchDelegate?
 
     // MARK: State management
     // ----------------------
@@ -94,6 +110,14 @@ public class SearchHelper {
     
     /// The last received results.
     public private(set) var results: SearchResults?
+    
+    /// All currently ongoing requests.
+    public private(set) var pendingRequests: [NSOperation] = []
+
+    // MARK: Configuration
+    // -------------------
+    
+    public var slowRequestThreshold: NSTimeInterval?
     
     // MARK: -
     
@@ -134,19 +158,33 @@ public class SearchHelper {
     }
     
     private func _doNextRequest() {
+        var operation: NSOperation!
         let state = State(copy: requestedState)
         let completionHandler: CompletionHandler = { (content: [String: AnyObject]?, error: NSError?) in
             // IMPORTANT: Mark the state as received.
             self.receivedState = state
+            if let index = self.pendingRequests.indexOf(operation) {
+                self.pendingRequests.removeAtIndex(index)
+            }
             self.handleResults(content, error: error)
         }
         let query = Query(copy: state.query)
         query.page = state.page
         if state.disjunctiveFacets.isEmpty {
-            index.search(query, completionHandler: completionHandler)
+            operation = index.search(query, completionHandler: completionHandler)
         } else {
             let queryHelper = QueryHelper(query: query)
-            index.searchDisjunctiveFaceting(query, disjunctiveFacets: state.disjunctiveFacets, refinements: queryHelper.buildFacetRefinementsForDisjunctiveFaceting(), completionHandler: completionHandler)
+            operation = index.searchDisjunctiveFaceting(query, disjunctiveFacets: state.disjunctiveFacets, refinements: queryHelper.buildFacetRefinementsForDisjunctiveFaceting(), completionHandler: completionHandler)
+        }
+        self.pendingRequests.append(operation)
+        
+        // Schedule a task to check if the request is slow.
+        if let threshold = slowRequestThreshold {
+            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, Int64(threshold * Double(NSEC_PER_SEC))), dispatch_get_main_queue()) {
+                if !operation.finished {
+                    self.delegate?.requestIsSlow(operation, query: query)
+                }
+            }
         }
     }
     

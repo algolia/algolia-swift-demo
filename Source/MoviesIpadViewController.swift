@@ -25,7 +25,7 @@ import AlgoliaSearch
 import TTRangeSlider
 import UIKit
 
-class MoviesIpadViewController: UIViewController, UICollectionViewDataSource, TTRangeSliderDelegate, UISearchBarDelegate, UITableViewDataSource, UITableViewDelegate {
+class MoviesIpadViewController: UIViewController, UICollectionViewDataSource, TTRangeSliderDelegate, UISearchBarDelegate, UITableViewDataSource, UITableViewDelegate, SearchDelegate {
     @IBOutlet weak var searchBar: UISearchBar!
     @IBOutlet weak var genreTableView: UITableView!
     @IBOutlet weak var yearRangeSlider: TTRangeSlider!
@@ -36,6 +36,7 @@ class MoviesIpadViewController: UIViewController, UICollectionViewDataSource, TT
     @IBOutlet weak var searchTimeLabel: UILabel!
     @IBOutlet weak var genreTableViewFooter: UILabel!
     @IBOutlet weak var genreFilteringModeSwitch: UISwitch!
+    @IBOutlet weak var activityIndicator: UIActivityIndicatorView!
 
     var actorSearcher: SearchHelper!
     var movieSearcher: SearchHelper!
@@ -73,6 +74,9 @@ class MoviesIpadViewController: UIViewController, UICollectionViewDataSource, TT
         movieSearcher.nextState.query.facets = ["genre"]
         movieSearcher.nextState.query.attributesToHighlight = ["title"]
         movieSearcher.nextState.query.hitsPerPage = 30
+        
+        movieSearcher.delegate = self
+        movieSearcher.slowRequestThreshold = 0.5
 
         search()
     }
@@ -135,6 +139,11 @@ class MoviesIpadViewController: UIViewController, UICollectionViewDataSource, TT
     }
 
     private func handleMovieSearchResults(results: SearchResults?, error: NSError?) {
+        // Stop the slow request indicator only when there are no pending requests.
+        if movieSearcher.pendingRequests.isEmpty {
+            activityIndicator.stopAnimating()
+        }
+        
         guard let results = results else {
             self.searchTimeLabel.text = NSLocalizedString("error_search", comment: "")
             return
@@ -251,5 +260,12 @@ class MoviesIpadViewController: UIViewController, UICollectionViewDataSource, TT
                 search()
             }
         }
+    }
+    
+    // MARK: - SearchDelegate
+    
+    func requestIsSlow(request: NSOperation, query: Query) {
+        // When a slow request is encountered, provide user feedback through the activity indicator.
+        activityIndicator.startAnimating()
     }
 }
