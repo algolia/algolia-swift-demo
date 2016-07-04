@@ -153,12 +153,14 @@ public class SearchHelper {
     /// Completion handler for search requests.
     private func handleResults(content: [String: AnyObject]?, error: NSError?) {
         do {
-            if content != nil {
+            if content != nil && error == nil {
                 try _handleResults(content!)
+                resultHandler(results: self.results, error: nil)
+            } else {
+                resultHandler(results: nil, error: error)
             }
-            resultHandler(results: self.results, error: error)
         } catch let e as NSError {
-            resultHandler(results: self.results, error: e)
+            resultHandler(results: nil, error: e)
         }
     }
     

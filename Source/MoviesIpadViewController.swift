@@ -45,6 +45,9 @@ class MoviesIpadViewController: UIViewController, UICollectionViewDataSource, TT
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        self.movieCountLabel.text = NSLocalizedString("movie_count_placeholder", comment: "")
+        self.searchTimeLabel.text = nil
+        
         // Customize year range slider.
         yearRangeSlider.numberFormatterOverride = NSNumberFormatter()
         let tintColor = self.view.tintColor
@@ -120,6 +123,9 @@ class MoviesIpadViewController: UIViewController, UICollectionViewDataSource, TT
     // MARK: - Search completion handlers
 
     private func handleActorSearchResults(results: SearchResults?, error: NSError?) {
+        if results == nil {
+            return
+        }
         self.actorsTableView.reloadData()
         
         // Scroll to top.
@@ -129,12 +135,16 @@ class MoviesIpadViewController: UIViewController, UICollectionViewDataSource, TT
     }
 
     private func handleMovieSearchResults(results: SearchResults?, error: NSError?) {
+        guard let results = results else {
+            self.searchTimeLabel.text = NSLocalizedString("error_search", comment: "")
+            return
+        }
         // Sort facets: first selected facets, then by decreasing count, then by name.
         let receivedQueryHelper = QueryHelper(query: movieSearcher.receivedState.query)
-        genreFacets = self.movieSearcher.results!.facets("genre")?.sort({ (lhs, rhs) in
+        genreFacets = results.facets("genre")?.sort({ (lhs, rhs) in
             // When using cunjunctive faceting ("AND"), all refined facet values are displayed first.
             // But when using disjunctive faceting ("OR"), refined facet values are left where they are.
-            let disjunctiveFaceting = results?.disjunctiveFacets.contains("genre") ?? false
+            let disjunctiveFaceting = results.disjunctiveFacets.contains("genre") ?? false
             let lhsChecked = receivedQueryHelper.hasFacetRefinement(FacetRefinement(name: "genre", value: lhs.value))
             let rhsChecked = receivedQueryHelper.hasFacetRefinement(FacetRefinement(name: "genre", value: rhs.value))
             if !disjunctiveFaceting && lhsChecked != rhsChecked {
@@ -145,10 +155,10 @@ class MoviesIpadViewController: UIViewController, UICollectionViewDataSource, TT
                 return lhs.value < rhs.value
             }
         }) ?? []
-        let exhaustiveFacetsCount = results?.exhaustiveFacetsCount == true
+        let exhaustiveFacetsCount = results.exhaustiveFacetsCount == true
         genreTableViewFooter.hidden = exhaustiveFacetsCount
 
-        if let nbHits = results?.nbHits {
+        if let nbHits = results.nbHits {
             let formatter = NSNumberFormatter()
             formatter.locale = NSLocale.currentLocale()
             formatter.numberStyle = .DecimalStyle
@@ -158,7 +168,7 @@ class MoviesIpadViewController: UIViewController, UICollectionViewDataSource, TT
         } else {
             self.movieCountLabel.text = "MOVIES"
         }
-        if let processingTimeMS = results?.processingTimeMS {
+        if let processingTimeMS = results.processingTimeMS {
             self.searchTimeLabel.text = "Found in \(processingTimeMS) ms"
         }
 

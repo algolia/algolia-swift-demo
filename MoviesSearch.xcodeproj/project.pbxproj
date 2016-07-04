@@ -15,6 +15,7 @@
 		5D44D0231B35F87B008369AC /* MoviesTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D44D0221B35F87B008369AC /* MoviesTableViewController.swift */; };
 		5D44D0251B3601E8008369AC /* MovieRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D44D0241B3601E8008369AC /* MovieRecord.swift */; };
 		5D9EB6AE1B3C3DC100BA6737 /* Helpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D9EB6AD1B3C3DC100BA6737 /* Helpers.swift */; };
+		BC3A24E61D2AB3D70041870D /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = BC3A24E51D2AB3D70041870D /* Localizable.strings */; };
 		BC3FF4B51CEF0DF6005CCC78 /* AlgoliaManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC3FF4B41CEF0DF6005CCC78 /* AlgoliaManager.swift */; };
 		BC3FF4B71CEF1299005CCC78 /* SearchHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC3FF4B61CEF1299005CCC78 /* SearchHelper.swift */; };
 		BC3FF4B91CEF1526005CCC78 /* MovieCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC3FF4B81CEF1526005CCC78 /* MovieCell.swift */; };
@@ -68,6 +69,7 @@
 		7FFA3B79BEC9E5676A9669C8 /* Pods-MoviesSearch.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MoviesSearch.debug.xcconfig"; path = "Pods/Target Support Files/Pods-MoviesSearch/Pods-MoviesSearch.debug.xcconfig"; sourceTree = "<group>"; };
 		9BEC1C17860BAEDA209DB025 /* Pods.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.debug.xcconfig; path = "Pods/Target Support Files/Pods/Pods.debug.xcconfig"; sourceTree = "<group>"; };
 		A2FF6DC00013B2F8CAAFA113 /* Pods_MoviesSearch.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_MoviesSearch.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		BC3A24E51D2AB3D70041870D /* Localizable.strings */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.strings; name = Localizable.strings; path = Ressources/Localizable.strings; sourceTree = "<group>"; };
 		BC3FF4B41CEF0DF6005CCC78 /* AlgoliaManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AlgoliaManager.swift; sourceTree = "<group>"; };
 		BC3FF4B61CEF1299005CCC78 /* SearchHelper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SearchHelper.swift; sourceTree = "<group>"; };
 		BC3FF4B81CEF1526005CCC78 /* MovieCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MovieCell.swift; sourceTree = "<group>"; };
@@ -208,6 +210,7 @@
 				BCD754F01CF47EB6006A05F1 /* star-yellow@2x.png */,
 				BCD754F11CF47EB6006A05F1 /* star-yellow@3x.png */,
 				BCD754EC1CF47E39006A05F1 /* star-yellow@4x.png */,
+				BC3A24E51D2AB3D70041870D /* Localizable.strings */,
 			);
 			name = Resources;
 			sourceTree = "<group>";
@@ -308,6 +311,7 @@
 				BCD754F31CF47EB6006A05F1 /* star-yellow@2x.png in Resources */,
 				BCD754FA1CF4801C006A05F1 /* star-gray@2x.png in Resources */,
 				BCD754ED1CF47E39006A05F1 /* star-yellow@4x.png in Resources */,
+				BC3A24E61D2AB3D70041870D /* Localizable.strings in Resources */,
 				BCE9A13A1CFC8A6000BF767D /* placeholder.png in Resources */,
 				BCD754FB1CF4801C006A05F1 /* star-gray@3x.png in Resources */,
 				BCD754F91CF4801C006A05F1 /* star-gray.png in Resources */,
