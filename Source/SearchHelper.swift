@@ -85,7 +85,7 @@ public class SearchHelper {
     public typealias ResultHandler = (results: SearchResults?, error: NSError?) -> Void
 
     /// Pluggable state representation for a `SearchHelper`.
-    public struct State {
+    public struct State: CustomStringConvertible {
         /// Search query.
         /// NOTE: The page may be overridden when loading more content.
         ///
@@ -122,6 +122,10 @@ public class SearchHelper {
             self.query = Query(copy: copy.query)
             self.disjunctiveFacets = copy.disjunctiveFacets
             self.page = copy.page
+        }
+        
+        public var description: String {
+            return "State#\(sequenceNumber){query=\(query), disjunctiveFacets=\(disjunctiveFacets), page=\(page)}"
         }
     }
 
