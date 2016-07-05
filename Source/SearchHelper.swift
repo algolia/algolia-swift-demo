@@ -25,6 +25,45 @@ import AlgoliaSearch
 import Foundation
 
 
+// ------------------------------------------------------------------------
+// IMPLEMENTATION NOTES
+// ------------------------------------------------------------------------
+// # Sequencing logic
+//
+// An important part of the search helper is to manage the proper sequencing
+// of search requests and responses.
+//
+// Conceptually, a search session can be seen as a sequence of *queries*,
+// each query resulting in one or more *requests* to the API (one per page).
+// Each request is assigned an auto-incremented sequence number.
+//
+// Example:
+//
+// ```
+// Queries:    A --> B --> C --> D
+//             |     |     |     |
+// Requests:   1     2     4     6
+//             …     |     |
+//            (X)    3     5
+// ```
+//
+// Now, there are important rules to guarantee a consistent behavior:
+//
+// 1. A `loadMore()` request for a query will be ignored if a more recent
+//    query has already been requested.
+//
+//    For example, in the diagram above: request X (page 2 of query A) will
+//    be ignored if request 2 (page 1 of query B) has already been sent.
+//
+// 2. Results for a request will be ignored if results have already been
+//    received for a more recent request.
+//
+//    For example, in the diagram above: results for request 3 will be
+//    ignored if results have already been received for request 4.
+//
+// ------------------------------------------------------------------------
+
+
 /// Delegate for `SearchHelper`.
 public protocol SearchDelegate: class {
     func requestIsSlow(request: NSOperation, query: Query) -> Void
@@ -64,6 +103,9 @@ public class SearchHelper {
         /// Whether the current page is the initial page for this search state.
         public var isInitialPage: Bool { return initialPage == page }
         
+        /// This state's sequence number.
+        public var sequenceNumber: Int = 0
+        
         /// Construct a default state.
         public init() {
         }
@@ -94,6 +136,8 @@ public class SearchHelper {
 
     // MARK: State management
     // ----------------------
+    
+    public var nextSequenceNumber: Int = 0
     
     /// The state that will be used for the next search.
     /// It can be modified at will. It is not taken into account until the `search()` method is called; then it is
@@ -159,13 +203,22 @@ public class SearchHelper {
     
     private func _doNextRequest() {
         var operation: NSOperation!
-        let state = State(copy: requestedState)
+        var state = State(copy: requestedState)
+        state.sequenceNumber = nextSequenceNumber
+        nextSequenceNumber += 1
         let completionHandler: CompletionHandler = { (content: [String: AnyObject]?, error: NSError?) in
-            // IMPORTANT: Mark the state as received.
-            self.receivedState = state
+            // Remove request from list of pending requests.
             if let index = self.pendingRequests.indexOf(operation) {
                 self.pendingRequests.removeAtIndex(index)
             }
+            
+            // IMPORTANT: If more recent results were already received, ignore those.
+            if self.receivedState != nil && self.receivedState!.sequenceNumber > state.sequenceNumber {
+                return
+            }
+            self.receivedState = state
+            
+            // Call the result handler.
             self.handleResults(content, error: error)
         }
         let query = Query(copy: state.query)
