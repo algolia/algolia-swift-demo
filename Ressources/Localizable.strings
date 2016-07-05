@@ -1,0 +1,10 @@
+/* 
+  Localizable.strings
+  MoviesSearch
+
+  Created by Clément Le Provost on 04/07/16.
+  Copyright © 2016 Thibault Deutsch. All rights reserved.
+*/
+
+"error_search" = "Search failed. Check your Internet settings.";
+"movie_count_placeholder" = "MOVIES";

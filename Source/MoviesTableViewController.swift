@@ -39,10 +39,10 @@ class MoviesTableViewController: UITableViewController, UISearchBarDelegate, UIS
         super.viewDidLoad()
         
         // Algolia Search
-        movieSearcher = SearchHelper(index: AlgoliaManager.sharedInstance.moviesIndex, completionHandler: self.handleSearchResults)
-        movieSearcher.query.hitsPerPage = 15
-        movieSearcher.query.attributesToRetrieve = ["title", "image", "rating", "year"]
-        movieSearcher.query.attributesToHighlight = ["title"]
+        movieSearcher = SearchHelper(index: AlgoliaManager.sharedInstance.moviesIndex, resultHandler: self.handleSearchResults)
+        movieSearcher.nextState.query.hitsPerPage = 15
+        movieSearcher.nextState.query.attributesToRetrieve = ["title", "image", "rating", "year"]
+        movieSearcher.nextState.query.attributesToHighlight = ["title"]
         
         // Search controller
         searchController = UISearchController(searchResultsController: nil)
@@ -76,10 +76,9 @@ class MoviesTableViewController: UITableViewController, UISearchBarDelegate, UIS
 
     // MARK: - Search completion handlers
     
-    private func handleSearchResults(content: [String: AnyObject]?, error: NSError?) {
-        if content != nil {
-            originIsLocal = content!["origin"] as? String == "local"
-        }
+    private func handleSearchResults(results: SearchResults?, error: NSError?) {
+        guard let results = results else { return }
+        originIsLocal = results.lastContent["origin"] as? String == "local"
         self.tableView.reloadData()
     }
     
@@ -90,19 +89,19 @@ class MoviesTableViewController: UITableViewController, UISearchBarDelegate, UIS
     }
 
     override func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return movieSearcher.hits.count
+        return movieSearcher.results?.hits.count ?? 0
     }
     
     override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCellWithIdentifier("movieCell", forIndexPath: indexPath) 
 
         // Load more?
-        if indexPath.row + 5 >= movieSearcher.hits.count {
+        if indexPath.row + 5 >= movieSearcher.results!.hits.count {
             movieSearcher.loadMore()
         }
         
         // Configure the cell...
-        let movie = MovieRecord(json: movieSearcher.hits[indexPath.row])
+        let movie = MovieRecord(json: movieSearcher.results!.hits[indexPath.row])
         cell.textLabel?.highlightedText = movie.title_highlighted
         
         cell.detailTextLabel?.text = movie.year != nil ? "\(movie.year!)" : nil
@@ -121,7 +120,7 @@ class MoviesTableViewController: UITableViewController, UISearchBarDelegate, UIS
     // MARK: - Search
     
     func updateSearchResultsForSearchController(searchController: UISearchController) {
-        movieSearcher.query.query = searchController.searchBar.text
+        movieSearcher.nextState.query.query = searchController.searchBar.text
         movieSearcher.search()
     }
     

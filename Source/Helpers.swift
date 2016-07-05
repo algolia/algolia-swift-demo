@@ -29,49 +29,8 @@ extension UILabel {
             return attributedText?.string
         }
         set {
-            attributedTextFromHtml(newValue)
+            let color = highlightedTextColor ?? self.tintColor ?? UIColor.blueColor()
+            attributedText = newValue == nil ? nil : HighlightRenderer(highlightAttrs: [NSForegroundColorAttributeName: color]).render(newValue!)
         }
-    }
-    
-    private func attributedTextFromHtml(htmlText: String?) {
-        if htmlText == nil {
-            attributedText = nil
-        }
-        else {
-            let text = NSMutableString(string: htmlText!)
-            let rangesOfAttributes = getRangeToHighlight(text)
-            let attributedString = NSMutableAttributedString(string: String(text))
-            for range in rangesOfAttributes {
-                let color = highlightedTextColor ?? self.tintColor ?? UIColor.blueColor()
-                attributedString.addAttribute(NSForegroundColorAttributeName, value: color, range: range)
-            }
-            attributedText = attributedString
-        }
-    }
-    
-    private func getRangeToHighlight(text: NSMutableString) -> [NSRange] {
-        var rangesOfAttributes = [NSRange]()
-        
-        while true {
-            let matchBegin = text.rangeOfString("<em>", options: .CaseInsensitiveSearch)
-            
-            if matchBegin.location != NSNotFound {
-                text.deleteCharactersInRange(matchBegin)
-                let firstCharacter = matchBegin.location
-                
-                let range = NSRange(location: firstCharacter, length: text.length - firstCharacter)
-                let matchEnd = text.rangeOfString("</em>", options: .CaseInsensitiveSearch, range: range)
-                if matchEnd.location != NSNotFound {
-                    text.deleteCharactersInRange(matchEnd)
-                    let lastCharacter = matchEnd.location
-                    
-                    rangesOfAttributes.append(NSRange(location: firstCharacter, length: lastCharacter - firstCharacter))
-                }
-            } else {
-                break
-            }
-        }
-        
-        return rangesOfAttributes
     }
 }

@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2015 Algolia
+//  Copyright (c) 2016 Algolia
 //  http://www.algolia.com/
 //
 //  Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -24,33 +24,28 @@
 import Foundation
 
 
-struct MovieRecord {
-    private let json: [String: AnyObject]
+/// Various helpers to deal with JSON data.
+///
+public class JSONHelper {
+    // NOTE: Should be an extension, but restricting a generic type non the non-protocol type String does not compile.
     
-    init(json: [String: AnyObject]) {
-        self.json = json
-    }
-
-    var title: String? {
-        return json["title"] as? String
-    }
-    
-    var imageUrl: NSURL? {
-        guard let urlString = json["image"] as? String else {
-            return nil
+    /// Get the value for an attribute with a "deep" path (dot notation).
+    /// Example: asking for "foo.bar" will retrieve the "bar" attribute of the "foo" attribute, provided that the
+    /// latter exists and is a dictionary.
+    ///
+    /// - parameter json: The root JSON object.
+    /// - parameter path: Path of the attribute to retrieve, in dot notation.
+    /// - return The corresponding value, or nil if it does not exist.
+    ///
+    public static func valueForKeyPath(json: [String: AnyObject], path: String) -> AnyObject? {
+        var value: AnyObject = json
+        for name in path.componentsSeparatedByString(".") {
+            if let newValue = (value as? [String: AnyObject])?[name] {
+                value = newValue
+            } else {
+                return nil
+            }
         }
-        return NSURL(string: urlString)
-    }
-    
-    var title_highlighted: String? {
-        return SearchResults.getHighlightResult(json, path: "title")?.value
-    }
-
-    var rating: Int? {
-        return json["rating"] as? Int
-    }
-    
-    var year: Int? {
-        return json["year"] as? Int
+        return value
     }
 }
