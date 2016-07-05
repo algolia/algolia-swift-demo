@@ -82,6 +82,11 @@ public extension SearchDelegate {
 /// The purpose of this class is to maintain a state between searches and handle pagination.
 ///
 public class SearchHelper {
+    /// Handler for search results.
+    ///
+    /// - parameter results: The results (in case of success).
+    /// - parameter error: The error (in case of failure).
+    ///
     public typealias ResultHandler = (results: SearchResults?, error: NSError?) -> Void
 
     /// Pluggable state representation for a `SearchHelper`.
