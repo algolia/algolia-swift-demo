@@ -66,12 +66,12 @@ import Foundation
 
 /// Delegate for `SearchHelper`.
 public protocol SearchDelegate: class {
-    func requestIsSlow(request: NSOperation, query: Query) -> Void
+    func slowRequestDetected(request: NSOperation, query: Query) -> Void
 }
 
 // Default implementation for `SearchDelegate`.
 public extension SearchDelegate {
-    func requestIsSlow(request: NSOperation, query: Query) -> Void {
+    func slowRequestDetected(request: NSOperation, query: Query) -> Void {
         // Default implementation does nothing.
     }
 }
@@ -81,7 +81,7 @@ public extension SearchDelegate {
 ///
 /// The purpose of this class is to maintain a state between searches and handle pagination.
 ///
-public class SearchHelper {
+public class SearchHelper: NSObject {
     /// Handler for search results.
     ///
     /// - parameter results: The results (in case of success).
@@ -165,11 +165,13 @@ public class SearchHelper {
     public private(set) var results: SearchResults?
     
     /// All currently ongoing requests.
-    public private(set) var pendingRequests: [NSOperation] = []
+    public private(set) dynamic var pendingRequests: [NSOperation] = []
 
     // MARK: Configuration
     // -------------------
     
+    /// Threshold for slow request detection. When nil (default), slow request detection is disabled.
+    /// Any request taking more than this threshold will trigger a call to `SearchDelegate.slowRequestDetected()`.
     public var slowRequestThreshold: NSTimeInterval?
     
     // MARK: -
@@ -215,7 +217,10 @@ public class SearchHelper {
         var state = State(copy: requestedState)
         state.sequenceNumber = nextSequenceNumber
         nextSequenceNumber += 1
+        var requestCompleted = false
         let completionHandler: CompletionHandler = { (content: [String: AnyObject]?, error: NSError?) in
+            requestCompleted = true
+            
             // Remove request from list of pending requests.
             if let index = self.pendingRequests.indexOf(operation) {
                 self.pendingRequests.removeAtIndex(index)
@@ -243,8 +248,8 @@ public class SearchHelper {
         // Schedule a task to check if the request is slow.
         if let threshold = slowRequestThreshold {
             dispatch_after(dispatch_time(DISPATCH_TIME_NOW, Int64(threshold * Double(NSEC_PER_SEC))), dispatch_get_main_queue()) {
-                if !operation.finished {
-                    self.delegate?.requestIsSlow(operation, query: query)
+                if !requestCompleted {
+                    self.delegate?.slowRequestDetected(operation, query: query)
                 }
             }
         }

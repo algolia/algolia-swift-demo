@@ -77,6 +77,7 @@ class MoviesIpadViewController: UIViewController, UICollectionViewDataSource, TT
         
         movieSearcher.delegate = self
         movieSearcher.slowRequestThreshold = 0.5
+        movieSearcher.addObserver(self, forKeyPath: "pendingRequests", options: [.New], context: nil)
 
         search()
     }
@@ -139,11 +140,6 @@ class MoviesIpadViewController: UIViewController, UICollectionViewDataSource, TT
     }
 
     private func handleMovieSearchResults(results: SearchResults?, error: NSError?) {
-        // Stop the slow request indicator only when there are no pending requests.
-        if movieSearcher.pendingRequests.isEmpty {
-            activityIndicator.stopAnimating()
-        }
-        
         guard let results = results else {
             self.searchTimeLabel.text = NSLocalizedString("error_search", comment: "")
             return
@@ -254,17 +250,24 @@ class MoviesIpadViewController: UIViewController, UICollectionViewDataSource, TT
     // MARK: - KVO
     
     override func observeValueForKeyPath(keyPath: String?, ofObject object: AnyObject?, change: [String : AnyObject]?, context: UnsafeMutablePointer<Void>) {
-        guard object != nil else { return }
-        if object! as? NSObject == ratingSelectorView {
+        guard let object = object as? NSObject else { return }
+        if object == ratingSelectorView {
             if keyPath == "rating" {
                 search()
+            }
+        } else if object == movieSearcher {
+            if keyPath == "pendingRequests" {
+                // Stop the slow request indicator only when there are no pending requests.
+                if movieSearcher.pendingRequests.isEmpty {
+                    activityIndicator.stopAnimating()
+                }
             }
         }
     }
     
     // MARK: - SearchDelegate
     
-    func requestIsSlow(request: NSOperation, query: Query) {
+    func slowRequestDetected(request: NSOperation, query: Query) {
         // When a slow request is encountered, provide user feedback through the activity indicator.
         activityIndicator.startAnimating()
     }
