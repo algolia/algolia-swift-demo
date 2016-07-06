@@ -222,14 +222,18 @@ public class SearchHelper: NSObject {
             requestCompleted = true
             
             // Remove request from list of pending requests.
+            // Also cancel and remove all previous requests (as this one is deemed more recent).
             if let index = self.pendingRequests.indexOf(operation) {
-                self.pendingRequests.removeAtIndex(index)
+                for i in 0..<index {
+                    self.pendingRequests[i].cancel()
+                }
+                self.pendingRequests.removeRange(0...index)
             }
             
-            // IMPORTANT: If more recent results were already received, ignore those.
-            if self.receivedState != nil && self.receivedState!.sequenceNumber > state.sequenceNumber {
-                return
-            }
+            // Obsolete requests should not happen since they have been cancelled by more recent requests (see above).
+            // WARNING: Only works if the current queue is serial!
+            assert(self.receivedState == nil || self.receivedState!.sequenceNumber < state.sequenceNumber)
+
             self.receivedState = state
             
             // Call the result handler.
