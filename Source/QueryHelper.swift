@@ -154,6 +154,7 @@ public class QueryHelper {
         }
         // Otherwise, add a new array.
         else {
+            query.facetFilters = query.facetFilters ?? []
             query.facetFilters?.append([newValue])
         }
     }
