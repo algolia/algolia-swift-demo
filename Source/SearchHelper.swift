@@ -220,11 +220,13 @@ public class SearchHelper: NSObject {
         var requestCompleted = false
         let completionHandler: CompletionHandler = { (content: [String: AnyObject]?, error: NSError?) in
             requestCompleted = true
+            DEBUG_LOG("RECVD \(operation.name!)")
             
             // Remove request from list of pending requests.
             // Also cancel and remove all previous requests (as this one is deemed more recent).
             if let index = self.pendingRequests.indexOf(operation) {
                 for i in 0..<index {
+                    DEBUG_LOG("CANCL \(self.pendingRequests[i].name!)")
                     self.pendingRequests[i].cancel()
                 }
                 self.pendingRequests.removeRange(0...index)
@@ -247,7 +249,9 @@ public class SearchHelper: NSObject {
             let queryHelper = QueryHelper(query: query)
             operation = index.searchDisjunctiveFaceting(query, disjunctiveFacets: state.disjunctiveFacets, refinements: queryHelper.buildFacetRefinementsForDisjunctiveFaceting(), completionHandler: completionHandler)
         }
+        operation.name = "\(index) #\(state.sequenceNumber): \(query)"
         self.pendingRequests.append(operation)
+        DEBUG_LOG("START \(operation.name!)")
         
         // Schedule a task to check if the request is slow.
         if let threshold = slowRequestThreshold {
@@ -305,3 +309,19 @@ public class SearchHelper: NSObject {
         }
     }
 }
+
+// MARK: - Debug
+
+#if DEBUG
+
+func DEBUG_LOG(format: String, args: CVarArgType...) {
+    withVaList(args) { NSLogv(format, $0) }
+}
+
+#else
+
+func DEBUG_LOG(format: String, args: CVarArgType...) {
+    withVaList(args) { NSLogv(format, $0) }
+}
+
+#endif // DEBUG
