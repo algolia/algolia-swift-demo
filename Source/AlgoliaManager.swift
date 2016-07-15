@@ -31,7 +31,7 @@ class AlgoliaManager {
     static let sharedInstance = AlgoliaManager()
 
     let client: OfflineClient
-    var actorsIndex: Index
+    var actorsIndex: MirroredIndex
     var moviesIndex: MirroredIndex
     
     var shouldLoadImages = true
@@ -49,13 +49,20 @@ class AlgoliaManager {
         actorsIndex = client.getIndex("actors")
         moviesIndex = client.getIndex("movies")
         
-        // Sync the index for offline use.
+        // Sync the indices for offline use.
+        let delayBetweenSyncs: NSTimeInterval = 30 * 60 // 30 minutes
         moviesIndex.mirrored = true
         moviesIndex.dataSelectionQueries = [
             DataSelectionQuery(query: Query(parameters: ["filters": "year >= 2000"]), maxObjects: 500),
             DataSelectionQuery(query: Query(parameters: ["filters": "year < 2000"]), maxObjects: 100)
         ]
-        moviesIndex.delayBetweenSyncs = 30 * 60 // 30 minutes
+        moviesIndex.delayBetweenSyncs = delayBetweenSyncs
+
+        actorsIndex.mirrored = true
+        actorsIndex.dataSelectionQueries = [
+            DataSelectionQuery(query: Query(), maxObjects: 500) // should mirror the entire index
+        ]
+        actorsIndex.delayBetweenSyncs = delayBetweenSyncs
         
         NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(syncDidStart), name: MirroredIndex.SyncDidStartNotification, object: moviesIndex)
         NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(syncDidFinish), name: MirroredIndex.SyncDidFinishNotification, object: moviesIndex)
@@ -64,6 +71,7 @@ class AlgoliaManager {
     func syncIfNeededAndPossible() {
         let appDelegate = UIApplication.sharedApplication().delegate as! AppDelegate
         if appDelegate.reachability.isReachableViaWiFi() {
+            actorsIndex.syncIfNeeded()
             moviesIndex.syncIfNeeded()
         }
     }
