@@ -250,11 +250,33 @@ class MoviesIpadViewController: UIViewController, UICollectionViewDataSource, TT
             }
         } else if object == movieSearcher {
             if keyPath == "pendingRequests" {
-                // Stop the slow request indicator only when there are no pending requests.
-                if movieSearcher.pendingRequests.isEmpty {
-                    activityIndicator.stopAnimating()
-                }
+                updateActivityIndicator()
             }
         }
+    }
+    
+    // MARK: - Activity indicator
+
+    /// Delay after which an activity indicator is shown (if a search is still ongoing).
+    let activityIndicatorDelay = 0.5
+
+    /// Timer used to start the activity indicator after a delay.
+    var activityIndicatorTimer: NSTimer?
+
+    /// Update the activity indicator's status.
+    private func updateActivityIndicator() {
+        if movieSearcher.pendingRequests.isEmpty {
+            activityIndicator.stopAnimating()
+            activityIndicatorTimer?.invalidate()
+            activityIndicatorTimer = nil
+        } else {
+            if !activityIndicator.isAnimating() && activityIndicatorTimer == nil {
+                activityIndicatorTimer = NSTimer.scheduledTimerWithTimeInterval(activityIndicatorDelay, target: self, selector: #selector(self.startActivityIndicator), userInfo: nil, repeats: false)
+            }
+        }
+    }
+    
+    @objc private func startActivityIndicator() {
+        activityIndicator.startAnimating()
     }
 }
