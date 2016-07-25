@@ -50,6 +50,9 @@ class MoviesIpadViewController: UIViewController, UICollectionViewDataSource, TT
         self.movieCountLabel.text = NSLocalizedString("movie_count_placeholder", comment: "")
         self.searchTimeLabel.text = nil
         
+        // Customize search bar.
+        searchBar.placeholder = NSLocalizedString("search_bar_placeholder", comment: "")
+        
         // Customize year range slider.
         yearRangeSlider.numberFormatterOverride = NSNumberFormatter()
         let tintColor = self.view.tintColor

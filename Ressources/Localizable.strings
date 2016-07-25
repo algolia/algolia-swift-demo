@@ -8,3 +8,4 @@
 
 "error_search" = "Search failed. Check your Internet settings.";
 "movie_count_placeholder" = "MOVIES";
+"search_bar_placeholder" = "Search for movies or actors…";

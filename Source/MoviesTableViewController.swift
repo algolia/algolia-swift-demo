@@ -51,6 +51,7 @@ class MoviesTableViewController: UITableViewController, UISearchBarDelegate, UIS
         searchController.searchResultsUpdater = self
         searchController.dimsBackgroundDuringPresentation = false
         searchController.searchBar.delegate = self
+        searchController.searchBar.placeholder = NSLocalizedString("search_bar_placeholder", comment: "")
         
         // Add the search bar
         tableView.tableHeaderView = self.searchController!.searchBar
