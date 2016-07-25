@@ -26,7 +26,7 @@ import InstantSearch
 import TTRangeSlider
 import UIKit
 
-class MoviesIpadViewController: UIViewController, UICollectionViewDataSource, TTRangeSliderDelegate, UISearchBarDelegate, UITableViewDataSource, UITableViewDelegate, SearchDelegate {
+class MoviesIpadViewController: UIViewController, UICollectionViewDataSource, TTRangeSliderDelegate, UISearchBarDelegate, UITableViewDataSource, UITableViewDelegate {
     @IBOutlet weak var searchBar: UISearchBar!
     @IBOutlet weak var genreTableView: UITableView!
     @IBOutlet weak var yearRangeSlider: TTRangeSlider!
@@ -76,8 +76,6 @@ class MoviesIpadViewController: UIViewController, UICollectionViewDataSource, TT
         movieSearcher.query.attributesToHighlight = ["title"]
         movieSearcher.query.hitsPerPage = 30
         
-        movieSearcher.delegate = self
-        movieSearcher.slowRequestThreshold = 0.5
         movieSearcher.addObserver(self, forKeyPath: "pendingRequests", options: [.New], context: nil)
 
         search()
@@ -263,12 +261,5 @@ class MoviesIpadViewController: UIViewController, UICollectionViewDataSource, TT
                 }
             }
         }
-    }
-    
-    // MARK: - SearchDelegate
-    
-    func slowRequestDetected(request: NSOperation, query: Query) {
-        // When a slow request is encountered, provide user feedback through the activity indicator.
-        activityIndicator.startAnimating()
     }
 }
