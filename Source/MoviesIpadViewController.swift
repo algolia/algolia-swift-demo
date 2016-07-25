@@ -161,19 +161,14 @@ class MoviesIpadViewController: UIViewController, UICollectionViewDataSource, TT
         let exhaustiveFacetsCount = results.exhaustiveFacetsCount == true
         genreTableViewFooter.hidden = exhaustiveFacetsCount
 
-        if let nbHits = results.nbHits {
-            let formatter = NSNumberFormatter()
-            formatter.locale = NSLocale.currentLocale()
-            formatter.numberStyle = .DecimalStyle
-            formatter.usesGroupingSeparator = true
-            formatter.groupingSize = 3
-            self.movieCountLabel.text = "\(formatter.stringFromNumber(nbHits)!) MOVIES"
-        } else {
-            self.movieCountLabel.text = "MOVIES"
-        }
-        if let processingTimeMS = results.processingTimeMS {
-            self.searchTimeLabel.text = "Found in \(processingTimeMS) ms"
-        }
+        let formatter = NSNumberFormatter()
+        formatter.locale = NSLocale.currentLocale()
+        formatter.numberStyle = .DecimalStyle
+        formatter.usesGroupingSeparator = true
+        formatter.groupingSize = 3
+        self.movieCountLabel.text = "\(formatter.stringFromNumber(results.nbHits)!) MOVIES"
+
+        self.searchTimeLabel.text = "Found in \(results.processingTimeMS) ms"
 
         self.genreTableView.reloadData()
         self.moviesCollectionView.reloadData()
