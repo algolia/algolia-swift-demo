@@ -22,7 +22,7 @@
 //
 
 import Foundation
-
+import InstantSearch
 
 
 struct Actor {

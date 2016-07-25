@@ -17,17 +17,12 @@
 		5D9EB6AE1B3C3DC100BA6737 /* Helpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D9EB6AD1B3C3DC100BA6737 /* Helpers.swift */; };
 		BC3A24E61D2AB3D70041870D /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = BC3A24E51D2AB3D70041870D /* Localizable.strings */; };
 		BC3FF4B51CEF0DF6005CCC78 /* AlgoliaManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC3FF4B41CEF0DF6005CCC78 /* AlgoliaManager.swift */; };
-		BC3FF4B71CEF1299005CCC78 /* SearchHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC3FF4B61CEF1299005CCC78 /* SearchHelper.swift */; };
 		BC3FF4B91CEF1526005CCC78 /* MovieCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC3FF4B81CEF1526005CCC78 /* MovieCell.swift */; };
 		BC3FF4BD1CEF4759005CCC78 /* ActorCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC3FF4BC1CEF4759005CCC78 /* ActorCell.swift */; };
 		BC3FF4BF1CEF4788005CCC78 /* Actor.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC3FF4BE1CEF4788005CCC78 /* Actor.swift */; };
-		BC6632AD1D256C7100A694BF /* SearchResults.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC6632AC1D256C7100A694BF /* SearchResults.swift */; };
-		BC7F2DCC1D00506C00C1B93F /* HighlightHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC7F2DCB1D00506C00C1B93F /* HighlightHelper.swift */; };
-		BC7F2DCE1D00513200C1B93F /* JSONHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC7F2DCD1D00513200C1B93F /* JSONHelper.swift */; };
 		BCA4DA641CEDFCBB00E16ACA /* Main_iPad.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = BCA4DA621CEDFCBB00E16ACA /* Main_iPad.storyboard */; };
 		BCA4DA671CEDFE0300E16ACA /* MoviesIpadViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCA4DA651CEDFE0300E16ACA /* MoviesIpadViewController.swift */; };
 		BCD754E91CF452EC006A05F1 /* GenreCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCD754E81CF452EC006A05F1 /* GenreCell.swift */; };
-		BCD754EB1CF45C1A006A05F1 /* QueryHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCD754EA1CF45C1A006A05F1 /* QueryHelper.swift */; };
 		BCD754ED1CF47E39006A05F1 /* star-yellow@4x.png in Resources */ = {isa = PBXBuildFile; fileRef = BCD754EC1CF47E39006A05F1 /* star-yellow@4x.png */; };
 		BCD754F21CF47EB6006A05F1 /* star-yellow.png in Resources */ = {isa = PBXBuildFile; fileRef = BCD754EF1CF47EB6006A05F1 /* star-yellow.png */; };
 		BCD754F31CF47EB6006A05F1 /* star-yellow@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = BCD754F01CF47EB6006A05F1 /* star-yellow@2x.png */; };
@@ -71,17 +66,12 @@
 		A2FF6DC00013B2F8CAAFA113 /* Pods_MoviesSearch.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_MoviesSearch.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		BC3A24E51D2AB3D70041870D /* Localizable.strings */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.strings; name = Localizable.strings; path = Ressources/Localizable.strings; sourceTree = "<group>"; };
 		BC3FF4B41CEF0DF6005CCC78 /* AlgoliaManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AlgoliaManager.swift; sourceTree = "<group>"; };
-		BC3FF4B61CEF1299005CCC78 /* SearchHelper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SearchHelper.swift; sourceTree = "<group>"; };
 		BC3FF4B81CEF1526005CCC78 /* MovieCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MovieCell.swift; sourceTree = "<group>"; };
 		BC3FF4BC1CEF4759005CCC78 /* ActorCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ActorCell.swift; sourceTree = "<group>"; };
 		BC3FF4BE1CEF4788005CCC78 /* Actor.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Actor.swift; sourceTree = "<group>"; };
-		BC6632AC1D256C7100A694BF /* SearchResults.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = SearchResults.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
-		BC7F2DCB1D00506C00C1B93F /* HighlightHelper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HighlightHelper.swift; sourceTree = "<group>"; };
-		BC7F2DCD1D00513200C1B93F /* JSONHelper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = JSONHelper.swift; path = ../JSONHelper.swift; sourceTree = "<group>"; };
 		BCA4DA631CEDFCBB00E16ACA /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main_iPad.storyboard; sourceTree = "<group>"; };
 		BCA4DA651CEDFE0300E16ACA /* MoviesIpadViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = MoviesIpadViewController.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
 		BCD754E81CF452EC006A05F1 /* GenreCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GenreCell.swift; sourceTree = "<group>"; };
-		BCD754EA1CF45C1A006A05F1 /* QueryHelper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = QueryHelper.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
 		BCD754EC1CF47E39006A05F1 /* star-yellow@4x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "star-yellow@4x.png"; path = "Ressources/star-yellow@4x.png"; sourceTree = SOURCE_ROOT; };
 		BCD754EF1CF47EB6006A05F1 /* star-yellow.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "star-yellow.png"; path = "Ressources/star-yellow.png"; sourceTree = "<group>"; };
 		BCD754F01CF47EB6006A05F1 /* star-yellow@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "star-yellow@2x.png"; path = "Ressources/star-yellow@2x.png"; sourceTree = "<group>"; };
@@ -148,16 +138,11 @@
 				BCA4DA621CEDFCBB00E16ACA /* Main_iPad.storyboard */,
 				BCA4DA651CEDFE0300E16ACA /* MoviesIpadViewController.swift */,
 				BC3FF4B41CEF0DF6005CCC78 /* AlgoliaManager.swift */,
-				BC3FF4B61CEF1299005CCC78 /* SearchHelper.swift */,
 				BC3FF4B81CEF1526005CCC78 /* MovieCell.swift */,
 				BC3FF4BC1CEF4759005CCC78 /* ActorCell.swift */,
 				BC3FF4BE1CEF4788005CCC78 /* Actor.swift */,
 				BCD754E81CF452EC006A05F1 /* GenreCell.swift */,
-				BCD754EA1CF45C1A006A05F1 /* QueryHelper.swift */,
 				BCD755011CF48168006A05F1 /* RatingSelectorView.swift */,
-				BC7F2DCB1D00506C00C1B93F /* HighlightHelper.swift */,
-				BC7F2DCD1D00513200C1B93F /* JSONHelper.swift */,
-				BC6632AC1D256C7100A694BF /* SearchResults.swift */,
 			);
 			path = Source;
 			sourceTree = "<group>";
@@ -230,12 +215,12 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 5D44D01C1B35F7B3008369AC /* Build configuration list for PBXNativeTarget "MoviesSearch" */;
 			buildPhases = (
-				073B008BF094C3613460DB4D /* 📦 Check Pods Manifest.lock */,
+				073B008BF094C3613460DB4D /* [CP] Check Pods Manifest.lock */,
 				5D44CFF91B35F7B3008369AC /* Sources */,
 				5D44CFFA1B35F7B3008369AC /* Frameworks */,
 				5D44CFFB1B35F7B3008369AC /* Resources */,
-				27819121FF8995793C4CFEA3 /* 📦 Embed Pods Frameworks */,
-				1F35BD3D3B964F386A6FCA62 /* 📦 Copy Pods Resources */,
+				27819121FF8995793C4CFEA3 /* [CP] Embed Pods Frameworks */,
+				1F35BD3D3B964F386A6FCA62 /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -335,14 +320,14 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
-		073B008BF094C3613460DB4D /* 📦 Check Pods Manifest.lock */ = {
+		073B008BF094C3613460DB4D /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			inputPaths = (
 			);
-			name = "📦 Check Pods Manifest.lock";
+			name = "[CP] Check Pods Manifest.lock";
 			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -350,14 +335,14 @@
 			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [[ $? != 0 ]] ; then\n    cat << EOM\nerror: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\nEOM\n    exit 1\nfi\n";
 			showEnvVarsInLog = 0;
 		};
-		1F35BD3D3B964F386A6FCA62 /* 📦 Copy Pods Resources */ = {
+		1F35BD3D3B964F386A6FCA62 /* [CP] Copy Pods Resources */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			inputPaths = (
 			);
-			name = "📦 Copy Pods Resources";
+			name = "[CP] Copy Pods Resources";
 			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -365,14 +350,14 @@
 			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-MoviesSearch/Pods-MoviesSearch-resources.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
-		27819121FF8995793C4CFEA3 /* 📦 Embed Pods Frameworks */ = {
+		27819121FF8995793C4CFEA3 /* [CP] Embed Pods Frameworks */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			inputPaths = (
 			);
-			name = "📦 Embed Pods Frameworks";
+			name = "[CP] Embed Pods Frameworks";
 			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -393,14 +378,9 @@
 				BC3FF4B91CEF1526005CCC78 /* MovieCell.swift in Sources */,
 				5D44D0251B3601E8008369AC /* MovieRecord.swift in Sources */,
 				5D44D0031B35F7B3008369AC /* AppDelegate.swift in Sources */,
-				BC6632AD1D256C7100A694BF /* SearchResults.swift in Sources */,
-				BCD754EB1CF45C1A006A05F1 /* QueryHelper.swift in Sources */,
 				5D9EB6AE1B3C3DC100BA6737 /* Helpers.swift in Sources */,
-				BC7F2DCC1D00506C00C1B93F /* HighlightHelper.swift in Sources */,
-				BC7F2DCE1D00513200C1B93F /* JSONHelper.swift in Sources */,
 				BC3FF4B51CEF0DF6005CCC78 /* AlgoliaManager.swift in Sources */,
 				BCD754E91CF452EC006A05F1 /* GenreCell.swift in Sources */,
-				BC3FF4B71CEF1299005CCC78 /* SearchHelper.swift in Sources */,
 				BC3FF4BF1CEF4788005CCC78 /* Actor.swift in Sources */,
 				BCD755021CF48168006A05F1 /* RatingSelectorView.swift in Sources */,
 			);

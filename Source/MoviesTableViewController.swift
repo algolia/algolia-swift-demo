@@ -21,16 +21,17 @@
 //  THE SOFTWARE.
 //
 
-import UIKit
 import AlgoliaSearch
 import AFNetworking
+import InstantSearch
+import UIKit
 
 
 class MoviesTableViewController: UITableViewController, UISearchBarDelegate, UISearchResultsUpdating {
 
     var searchController: UISearchController!
     
-    var movieSearcher: SearchHelper!
+    var movieSearcher: Searcher!
     
     let placeholder = UIImage(named: "white")
     
@@ -38,7 +39,7 @@ class MoviesTableViewController: UITableViewController, UISearchBarDelegate, UIS
         super.viewDidLoad()
 
         // Algolia Search
-        movieSearcher = SearchHelper(index: AlgoliaManager.sharedInstance.moviesIndex, resultHandler: { (results, error) in
+        movieSearcher = Searcher(index: AlgoliaManager.sharedInstance.moviesIndex, resultHandler: { (results, error) in
             self.tableView.reloadData()
         })
         movieSearcher.nextState.query.hitsPerPage = 15

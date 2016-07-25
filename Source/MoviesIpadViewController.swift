@@ -22,6 +22,7 @@
 //
 
 import AlgoliaSearch
+import InstantSearch
 import TTRangeSlider
 import UIKit
 
@@ -38,8 +39,8 @@ class MoviesIpadViewController: UIViewController, UICollectionViewDataSource, TT
     @IBOutlet weak var genreFilteringModeSwitch: UISwitch!
     @IBOutlet weak var activityIndicator: UIActivityIndicatorView!
 
-    var actorSearcher: SearchHelper!
-    var movieSearcher: SearchHelper!
+    var actorSearcher: Searcher!
+    var movieSearcher: Searcher!
     
     var genreFacets: [FacetValue] = []
     
@@ -65,12 +66,12 @@ class MoviesIpadViewController: UIViewController, UICollectionViewDataSource, TT
         genreTableViewFooter.hidden = true
         
         // Configure actor search.
-        actorSearcher = SearchHelper(index: AlgoliaManager.sharedInstance.actorsIndex, resultHandler: self.handleActorSearchResults)
+        actorSearcher = Searcher(index: AlgoliaManager.sharedInstance.actorsIndex, resultHandler: self.handleActorSearchResults)
         actorSearcher.nextState.query.hitsPerPage = 10
         actorSearcher.nextState.query.attributesToHighlight = ["name"]
 
         // Configure movie search.
-        movieSearcher = SearchHelper(index: AlgoliaManager.sharedInstance.moviesIndex, resultHandler: self.handleMovieSearchResults)
+        movieSearcher = Searcher(index: AlgoliaManager.sharedInstance.moviesIndex, resultHandler: self.handleMovieSearchResults)
         movieSearcher.nextState.query.facets = ["genre"]
         movieSearcher.nextState.query.attributesToHighlight = ["title"]
         movieSearcher.nextState.query.hitsPerPage = 30
