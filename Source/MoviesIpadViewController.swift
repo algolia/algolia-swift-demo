@@ -269,13 +269,21 @@ class MoviesIpadViewController: UIViewController, UICollectionViewDataSource, TT
     /// Update the activity indicator's status.
     private func updateActivityIndicator() {
         if movieSearcher.pendingRequests.isEmpty {
+            // Stop activity indicator.
             activityIndicator.stopAnimating()
             activityIndicatorTimer?.invalidate()
             activityIndicatorTimer = nil
+            
+            // Stop network indicator.
+            UIApplication.sharedApplication().networkActivityIndicatorVisible = false
         } else {
+            // Maybe start activity indicator.
             if !activityIndicator.isAnimating() && activityIndicatorTimer == nil {
                 activityIndicatorTimer = NSTimer.scheduledTimerWithTimeInterval(activityIndicatorDelay, target: self, selector: #selector(self.startActivityIndicator), userInfo: nil, repeats: false)
             }
+            
+            // Start network indicator.
+            UIApplication.sharedApplication().networkActivityIndicatorVisible = true
         }
     }
     
