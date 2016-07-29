@@ -24,7 +24,7 @@
 import UIKit
 import XCTest
 
-class MoviesSearchTests: XCTestCase {
+class MovieSearchTests: XCTestCase {
     
     override func setUp() {
         super.setUp()
