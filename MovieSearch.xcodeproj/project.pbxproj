@@ -21,6 +21,8 @@
 		BC3FF4B91CEF1526005CCC78 /* MovieCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC3FF4B81CEF1526005CCC78 /* MovieCell.swift */; };
 		BC3FF4BD1CEF4759005CCC78 /* ActorCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC3FF4BC1CEF4759005CCC78 /* ActorCell.swift */; };
 		BC3FF4BF1CEF4788005CCC78 /* Actor.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC3FF4BE1CEF4788005CCC78 /* Actor.swift */; };
+		BC58264A1D4B95E80047D27F /* ConfigViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = BC5826491D4B95E80047D27F /* ConfigViewController.xib */; };
+		BC58264D1D4B9A580047D27F /* ConfigViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC58264B1D4B9A580047D27F /* ConfigViewController.swift */; };
 		BCA4DA641CEDFCBB00E16ACA /* Main_iPad.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = BCA4DA621CEDFCBB00E16ACA /* Main_iPad.storyboard */; };
 		BCA4DA671CEDFE0300E16ACA /* MoviesIpadViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCA4DA651CEDFE0300E16ACA /* MoviesIpadViewController.swift */; };
 		BCD754E91CF452EC006A05F1 /* GenreCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCD754E81CF452EC006A05F1 /* GenreCell.swift */; };
@@ -70,6 +72,8 @@
 		BC3FF4B81CEF1526005CCC78 /* MovieCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MovieCell.swift; sourceTree = "<group>"; };
 		BC3FF4BC1CEF4759005CCC78 /* ActorCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ActorCell.swift; sourceTree = "<group>"; };
 		BC3FF4BE1CEF4788005CCC78 /* Actor.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Actor.swift; sourceTree = "<group>"; };
+		BC5826491D4B95E80047D27F /* ConfigViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ConfigViewController.xib; sourceTree = "<group>"; };
+		BC58264B1D4B9A580047D27F /* ConfigViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ConfigViewController.swift; sourceTree = "<group>"; };
 		BCA4DA631CEDFCBB00E16ACA /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main_iPad.storyboard; sourceTree = "<group>"; };
 		BCA4DA651CEDFE0300E16ACA /* MoviesIpadViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = MoviesIpadViewController.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
 		BCD754E81CF452EC006A05F1 /* GenreCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GenreCell.swift; sourceTree = "<group>"; };
@@ -145,6 +149,8 @@
 				BC3FF4BE1CEF4788005CCC78 /* Actor.swift */,
 				BCD754E81CF452EC006A05F1 /* GenreCell.swift */,
 				BCD755011CF48168006A05F1 /* RatingSelectorView.swift */,
+				BC5826491D4B95E80047D27F /* ConfigViewController.xib */,
+				BC58264B1D4B9A580047D27F /* ConfigViewController.swift */,
 			);
 			path = Source;
 			sourceTree = "<group>";
@@ -310,6 +316,7 @@
 				BCA4DA641CEDFCBB00E16ACA /* Main_iPad.storyboard in Resources */,
 				BCD754F21CF47EB6006A05F1 /* star-yellow.png in Resources */,
 				5D44D00D1B35F7B3008369AC /* LaunchScreen.xib in Resources */,
+				BC58264A1D4B95E80047D27F /* ConfigViewController.xib in Resources */,
 				5D44D00A1B35F7B3008369AC /* Images.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -378,6 +385,7 @@
 			files = (
 				5D44D0231B35F87B008369AC /* MoviesTableViewController.swift in Sources */,
 				BCA4DA671CEDFE0300E16ACA /* MoviesIpadViewController.swift in Sources */,
+				BC58264D1D4B9A580047D27F /* ConfigViewController.swift in Sources */,
 				BC3FF4BD1CEF4759005CCC78 /* ActorCell.swift in Sources */,
 				BC3FF4B91CEF1526005CCC78 /* MovieCell.swift in Sources */,
 				5D44D0251B3601E8008369AC /* MovieRecord.swift in Sources */,

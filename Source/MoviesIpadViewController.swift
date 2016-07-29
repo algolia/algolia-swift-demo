@@ -123,22 +123,8 @@ class MoviesIpadViewController: UIViewController, UICollectionViewDataSource, TT
     }
     
     @IBAction func configTapped(sender: AnyObject) {
-        let alertController = UIAlertController(title: "Config", message: "Choose offline strategy", preferredStyle: .Alert)
-        alertController.addAction(UIAlertAction(title: "Online only", style: .Default, handler: { (action) in
-            AlgoliaManager.sharedInstance.requestStrategy = .OnlineOnly
-        }))
-        alertController.addAction(UIAlertAction(title: "Offline only", style: .Default, handler: { (action) in
-            AlgoliaManager.sharedInstance.requestStrategy = .OfflineOnly
-        }))
-        alertController.addAction(UIAlertAction(title: "Fallback on failure", style: .Default, handler: { (action) in
-            AlgoliaManager.sharedInstance.requestStrategy = .FallbackOnFailure
-        }))
-        alertController.addAction(UIAlertAction(title: "Fallback on timeout", style: .Default, handler: { (action) in
-            AlgoliaManager.sharedInstance.requestStrategy = .FallbackOnTimeout
-        }))
-        alertController.addAction(UIAlertAction(title: "Cancel", style: .Cancel, handler: { (action) in
-        }))
-        self.presentViewController(alertController, animated: true, completion: nil)
+        let vc = ConfigViewController(nibName: "ConfigViewController", bundle: nil)
+        self.presentViewController(vc, animated: true, completion: nil)
     }
     
     // MARK: - UISearchBarDelegate

@@ -26,7 +26,7 @@ import AlgoliaSearch
 import Foundation
 
 
-class AlgoliaManager {
+class AlgoliaManager: NSObject {
     /// The singleton instance.
     static let sharedInstance = AlgoliaManager()
 
@@ -60,7 +60,9 @@ class AlgoliaManager {
         }
     }
     
-    private init() {
+    dynamic var syncing: Bool = false
+    
+    private override init() {
         let apiKey = NSBundle.mainBundle().infoDictionary!["AlgoliaApiKey"] as! String
         client = OfflineClient(appID: "latency", apiKey: apiKey)
         // NOTE: Edit your license key in the build settings.
@@ -84,9 +86,11 @@ class AlgoliaManager {
         ]
         actorsIndex.delayBetweenSyncs = delayBetweenSyncs
 
+        super.init()
+
         // Configure offline strategy.
-        requestStrategy = .OnlineOnly
-        offlineFallbackTimeout = 0.0
+        requestStrategy = .FallbackOnTimeout
+        offlineFallbackTimeout = 1.0
 
         NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(syncDidStart), name: MirroredIndex.SyncDidStartNotification, object: moviesIndex)
         NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(syncDidFinish), name: MirroredIndex.SyncDidFinishNotification, object: moviesIndex)
@@ -103,6 +107,7 @@ class AlgoliaManager {
     // MARK: - Listeners
 
     @objc func syncDidStart(notification: NSNotification) {
+        syncing = true
         NSLog("Sync did start: %@", notification)
     }
     
@@ -185,6 +190,7 @@ class AlgoliaManager {
     }
     
     private func syncFinished() {
+        syncing = false
         NSLog("Sync finished")
     }
 }
