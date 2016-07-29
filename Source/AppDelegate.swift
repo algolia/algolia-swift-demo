@@ -21,16 +21,35 @@
 //  THE SOFTWARE.
 //
 
+import Reachability
 import UIKit
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
+    static let colorForLocalOrigin = UIColor(red: 0.9, green: 0.97, blue: 1.0, alpha: 1.0)
+
     var window: UIWindow?
 
+    var reachability: Reachability!
 
     func application(application: UIApplication, didFinishLaunchingWithOptions launchOptions: [NSObject: AnyObject]?) -> Bool {
-        // Override point for customization after application launch.
+        // Listen for network reachability changes.
+        self.reachability = Reachability.reachabilityForInternetConnection()
+        self.reachability.reachableBlock = {
+            (reachability: Reachability!) -> Void in
+            AlgoliaManager.sharedInstance.syncIfNeededAndPossible()
+        }
+        self.reachability.unreachableBlock = {
+            (reachability: Reachability!) -> Void in
+            // Nothing to do
+        }
+        self.reachability.startNotifier()
+
+        // Set up an on-disk URL cache.
+        let urlCache = NSURLCache(memoryCapacity: 0, diskCapacity:50 * 1024 * 1024, diskPath:nil)
+        NSURLCache.setSharedURLCache(urlCache)
+
         return true
     }
 

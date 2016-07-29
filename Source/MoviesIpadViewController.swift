@@ -82,6 +82,9 @@ class MoviesIpadViewController: UIViewController, UICollectionViewDataSource, TT
         movieSearcher.addObserver(self, forKeyPath: "pendingRequests", options: [.New], context: nil)
 
         search()
+        
+        // Start a sync if needed.
+        AlgoliaManager.sharedInstance.syncIfNeededAndPossible()
     }
     
     override func didReceiveMemoryWarning() {
@@ -117,6 +120,25 @@ class MoviesIpadViewController: UIViewController, UICollectionViewDataSource, TT
             }
         }
         search()
+    }
+    
+    @IBAction func configTapped(sender: AnyObject) {
+        let alertController = UIAlertController(title: "Config", message: "Choose offline strategy", preferredStyle: .Alert)
+        alertController.addAction(UIAlertAction(title: "Online only", style: .Default, handler: { (action) in
+            AlgoliaManager.sharedInstance.requestStrategy = .OnlineOnly
+        }))
+        alertController.addAction(UIAlertAction(title: "Offline only", style: .Default, handler: { (action) in
+            AlgoliaManager.sharedInstance.requestStrategy = .OfflineOnly
+        }))
+        alertController.addAction(UIAlertAction(title: "Fallback on failure", style: .Default, handler: { (action) in
+            AlgoliaManager.sharedInstance.requestStrategy = .FallbackOnFailure
+        }))
+        alertController.addAction(UIAlertAction(title: "Fallback on timeout", style: .Default, handler: { (action) in
+            AlgoliaManager.sharedInstance.requestStrategy = .FallbackOnTimeout
+        }))
+        alertController.addAction(UIAlertAction(title: "Cancel", style: .Cancel, handler: { (action) in
+        }))
+        self.presentViewController(alertController, animated: true, completion: nil)
     }
     
     // MARK: - UISearchBarDelegate
@@ -172,6 +194,10 @@ class MoviesIpadViewController: UIViewController, UICollectionViewDataSource, TT
         self.movieCountLabel.text = "\(formatter.stringFromNumber(results.nbHits)!) MOVIES"
 
         self.searchTimeLabel.text = "Found in \(results.processingTimeMS) ms"
+        // Indicate origin of content.
+        if results.lastContent["origin"] as? String == "local" {
+            searchTimeLabel.text! += " (offline results)"
+        }
 
         self.genreTableView.reloadData()
         self.moviesCollectionView.reloadData()

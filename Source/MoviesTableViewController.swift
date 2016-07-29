@@ -32,6 +32,7 @@ class MoviesTableViewController: UITableViewController, UISearchBarDelegate, UIS
     var searchController: UISearchController!
     
     var movieSearcher: Searcher!
+    var originIsLocal: Bool = false
     
     let placeholder = UIImage(named: "white")
     
@@ -39,9 +40,7 @@ class MoviesTableViewController: UITableViewController, UISearchBarDelegate, UIS
         super.viewDidLoad()
 
         // Algolia Search
-        movieSearcher = Searcher(index: AlgoliaManager.sharedInstance.moviesIndex, resultHandler: { (results, error) in
-            self.tableView.reloadData()
-        })
+        movieSearcher = Searcher(index: AlgoliaManager.sharedInstance.moviesIndex, resultHandler: self.handleSearchResults)
         movieSearcher.query.hitsPerPage = 15
         movieSearcher.query.attributesToRetrieve = ["title", "image", "rating", "year"]
         movieSearcher.query.attributesToHighlight = ["title"]
@@ -62,13 +61,50 @@ class MoviesTableViewController: UITableViewController, UISearchBarDelegate, UIS
         updateSearchResultsForSearchController(searchController)
         
         movieSearcher.addObserver(self, forKeyPath: "pendingRequests", options: [.New], context: nil)
+
+        // Start a sync if needed.
+        AlgoliaManager.sharedInstance.syncIfNeededAndPossible()
     }
 
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
+    
+    // MARK: - Actions
+    
+    @IBAction func sync(sender: UIBarButtonItem) {
+        // Unconditionally trigger a sync.
+        AlgoliaManager.sharedInstance.moviesIndex.sync()
+    }
 
+    @IBAction func configTapped(sender: AnyObject) {
+        let alertController = UIAlertController(title: "Config", message: "Choose offline strategy", preferredStyle: .Alert)
+        alertController.addAction(UIAlertAction(title: "Online only", style: .Default, handler: { (action) in
+            AlgoliaManager.sharedInstance.requestStrategy = .OnlineOnly
+        }))
+        alertController.addAction(UIAlertAction(title: "Offline only", style: .Default, handler: { (action) in
+            AlgoliaManager.sharedInstance.requestStrategy = .OfflineOnly
+        }))
+        alertController.addAction(UIAlertAction(title: "Fallback on failure", style: .Default, handler: { (action) in
+            AlgoliaManager.sharedInstance.requestStrategy = .FallbackOnFailure
+        }))
+        alertController.addAction(UIAlertAction(title: "Fallback on timeout", style: .Default, handler: { (action) in
+            AlgoliaManager.sharedInstance.requestStrategy = .FallbackOnTimeout
+        }))
+        alertController.addAction(UIAlertAction(title: "Cancel", style: .Cancel, handler: { (action) in
+        }))
+        self.presentViewController(alertController, animated: true, completion: nil)
+    }
+
+    // MARK: - Search completion handlers
+    
+    private func handleSearchResults(results: SearchResults?, error: NSError?) {
+        guard let results = results else { return }
+        originIsLocal = results.lastContent["origin"] as? String == "local"
+        self.tableView.reloadData()
+    }
+    
     // MARK: - Table view data source
 
     override func numberOfSectionsInTableView(tableView: UITableView) -> Int {
@@ -99,11 +135,12 @@ class MoviesTableViewController: UITableViewController, UISearchBarDelegate, UIS
         else {
             cell.imageView?.image = nil
         }
+        cell.backgroundColor = originIsLocal ? AppDelegate.colorForLocalOrigin : UIColor.whiteColor()
 
         return cell
     }
     
-    // MARK: - Search bar
+    // MARK: - Search
     
     func updateSearchResultsForSearchController(searchController: UISearchController) {
         movieSearcher.query.query = searchController.searchBar.text

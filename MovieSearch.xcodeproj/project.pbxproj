@@ -15,6 +15,7 @@
 		5D44D0231B35F87B008369AC /* MoviesTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D44D0221B35F87B008369AC /* MoviesTableViewController.swift */; };
 		5D44D0251B3601E8008369AC /* MovieRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D44D0241B3601E8008369AC /* MovieRecord.swift */; };
 		5D9EB6AE1B3C3DC100BA6737 /* Helpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D9EB6AD1B3C3DC100BA6737 /* Helpers.swift */; };
+		751CCD604AA6A4A8F31209FF /* Pods_MovieSearch.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 43A7D5DF246F97C734900317 /* Pods_MovieSearch.framework */; };
 		BC3A24E61D2AB3D70041870D /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = BC3A24E51D2AB3D70041870D /* Localizable.strings */; };
 		BC3FF4B51CEF0DF6005CCC78 /* AlgoliaManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC3FF4B41CEF0DF6005CCC78 /* AlgoliaManager.swift */; };
 		BC3FF4B91CEF1526005CCC78 /* MovieCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC3FF4B81CEF1526005CCC78 /* MovieCell.swift */; };
@@ -49,6 +50,7 @@
 		31ABE9D8C86A2A514E5B1EDE /* Pods-MovieSearch.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MovieSearch.release.xcconfig"; path = "Pods/Target Support Files/Pods-MovieSearch/Pods-MovieSearch.release.xcconfig"; sourceTree = "<group>"; };
 		34639E34A7893E96B09FF12B /* Pods.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.release.xcconfig; path = "Pods/Target Support Files/Pods/Pods.release.xcconfig"; sourceTree = "<group>"; };
 		358F9F4813A5847C2F3EBD96 /* Pods-MoviesSearch.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MoviesSearch.release.xcconfig"; path = "Pods/Target Support Files/Pods-MoviesSearch/Pods-MoviesSearch.release.xcconfig"; sourceTree = "<group>"; };
+		43A7D5DF246F97C734900317 /* Pods_MovieSearch.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_MovieSearch.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		5D44CFFD1B35F7B3008369AC /* MovieSearch.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MovieSearch.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		5D44D0011B35F7B3008369AC /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		5D44D0021B35F7B3008369AC /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -89,6 +91,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				751CCD604AA6A4A8F31209FF /* Pods_MovieSearch.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -204,6 +207,7 @@
 		C34AD11619D3010C523C954D /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				43A7D5DF246F97C734900317 /* Pods_MovieSearch.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -522,7 +526,7 @@
 			baseConfigurationReference = D2954C98D66239E67B3B3D52 /* Pods-MovieSearch.debug.xcconfig */;
 			buildSettings = {
 				ALGOLIA_API_KEY = d0a23086ed4be550f70be98c0acf7d74;
-				ALGOLIA_OFFLINE_SDK_LICENSE_KEY = "ASMCAQEA/92FwwUAGEFsZ29saWEgRGV2ZWxvcG1lbnQgVGVhbTAtAhQTk7KEF8I+KoMb5UBPVOd3So4UewIVAKbFIqsVAqUL3p+5Tfz6dXqm/J/b";
+				ALGOLIA_OFFLINE_SDK_LICENSE_KEY = "AkUCAQH/xpXDBf/y3rwFlwcYQWxnb2xpYSBEZXZlbG9wbWVudCBUZWFtHGNvbS5hbGdvbGlhLmRlbW8uTW92aWVTZWFyY2gwLQIUbyf1iq0UYpn71/FU817dT6Jrna8CFQDN+6S7XfBA20r7/rn8A1oqBc2fZw==";
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				INFOPLIST_FILE = "$(SRCROOT)/Source/Info.plist";
@@ -538,7 +542,7 @@
 			baseConfigurationReference = 31ABE9D8C86A2A514E5B1EDE /* Pods-MovieSearch.release.xcconfig */;
 			buildSettings = {
 				ALGOLIA_API_KEY = d0a23086ed4be550f70be98c0acf7d74;
-				ALGOLIA_OFFLINE_SDK_LICENSE_KEY = "ASMCAQEA/92FwwUAGEFsZ29saWEgRGV2ZWxvcG1lbnQgVGVhbTAtAhQTk7KEF8I+KoMb5UBPVOd3So4UewIVAKbFIqsVAqUL3p+5Tfz6dXqm/J/b";
+				ALGOLIA_OFFLINE_SDK_LICENSE_KEY = "AkUCAQH/xpXDBf/y3rwFlwcYQWxnb2xpYSBEZXZlbG9wbWVudCBUZWFtHGNvbS5hbGdvbGlhLmRlbW8uTW92aWVTZWFyY2gwLQIUbyf1iq0UYpn71/FU817dT6Jrna8CFQDN+6S7XfBA20r7/rn8A1oqBc2fZw==";
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				INFOPLIST_FILE = "$(SRCROOT)/Source/Info.plist";
