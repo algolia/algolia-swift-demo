@@ -44,6 +44,8 @@ class MoviesIpadViewController: UIViewController, UICollectionViewDataSource, TT
     
     var genreFacets: [FacetValue] = []
     
+    var yearFilterDebouncer = Debouncer(delay: 0.3)
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -252,7 +254,9 @@ class MoviesIpadViewController: UIViewController, UICollectionViewDataSource, TT
     // MARK: - TTRangeSliderDelegate
     
     func rangeSlider(sender: TTRangeSlider!, didChangeSelectedMinimumValue selectedMinimum: Float, andMaximumValue selectedMaximum: Float) {
-        search()
+        yearFilterDebouncer.call {
+            self.search()
+        }
     }
     
     // MARK: - KVO
