@@ -22,8 +22,8 @@
 //
 
 import AlgoliaSearch
+import AlgoliaSearchHelper
 import AFNetworking
-import InstantSearch
 import UIKit
 
 

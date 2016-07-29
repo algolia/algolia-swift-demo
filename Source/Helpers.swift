@@ -21,7 +21,7 @@
 //  THE SOFTWARE.
 //
 
-import InstantSearch
+import AlgoliaSearchHelper
 import UIKit
 
 extension UILabel {

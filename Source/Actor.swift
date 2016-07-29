@@ -21,8 +21,8 @@
 //  THE SOFTWARE.
 //
 
+import AlgoliaSearchHelper
 import Foundation
-import InstantSearch
 
 
 struct Actor {

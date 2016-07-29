@@ -22,7 +22,7 @@
 //
 
 import Foundation
-import InstantSearch
+import AlgoliaSearchHelper
 
 
 struct MovieRecord {
