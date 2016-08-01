@@ -32,6 +32,7 @@ class ConfigViewController: UIViewController {
     @IBOutlet weak var strategySegmentedControl: UISegmentedControl!
     @IBOutlet weak var timeoutValueSlider: UISlider!
     @IBOutlet weak var timeoutValueLabel: UILabel!
+    @IBOutlet weak var mirroredSwitch: UISwitch!
 
     var manager: AlgoliaManager!
     var index: MirroredIndex!
@@ -55,6 +56,7 @@ class ConfigViewController: UIViewController {
     // MARK: - State
     
     private func update() {
+        mirroredSwitch.on = index.mirrored
         if let syncDate = index.lastSuccessfulSyncDate {
             syncStatusLabel.text = "Last successful sync: \(syncDate)"
         } else {
@@ -63,17 +65,18 @@ class ConfigViewController: UIViewController {
         if manager.syncing {
             syncActivityIndicator.hidden = false
             syncActivityIndicator.startAnimating()
-            syncNowButton.enabled = false
         } else {
             syncActivityIndicator.hidden = true
             syncActivityIndicator.stopAnimating()
-            syncNowButton.enabled = true
         }
+        syncNowButton.enabled = index.mirrored && !manager.syncing
+        strategySegmentedControl.enabled = index.mirrored
         switch (manager.requestStrategy) {
         case .OfflineOnly: strategySegmentedControl.selectedSegmentIndex = 0
         case .OnlineOnly: strategySegmentedControl.selectedSegmentIndex = 1
         default: strategySegmentedControl.selectedSegmentIndex = 2
         }
+        timeoutValueSlider.enabled = index.mirrored
         timeoutValueSlider.value = Float(index.offlineFallbackTimeout)
         timeoutValueLabel.text = "\(Int(index.offlineFallbackTimeout * 1000))ms"
     }
@@ -99,6 +102,11 @@ class ConfigViewController: UIViewController {
     
     @IBAction func done(sender: AnyObject) {
         self.dismissViewControllerAnimated(true, completion: nil)
+    }
+    
+    @IBAction func mirroredDidChange(sender: AnyObject) {
+        index.mirrored = mirroredSwitch.on
+        update()
     }
     
     // MARK: - KVO

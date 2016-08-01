@@ -99,8 +99,12 @@ class AlgoliaManager: NSObject {
     func syncIfNeededAndPossible() {
         let appDelegate = UIApplication.sharedApplication().delegate as! AppDelegate
         if appDelegate.reachability.isReachableViaWiFi() {
-            actorsIndex.syncIfNeeded()
-            moviesIndex.syncIfNeeded()
+            if actorsIndex.mirrored {
+                actorsIndex.syncIfNeeded()
+            }
+            if moviesIndex.mirrored {
+                moviesIndex.syncIfNeeded()
+            }
         }
     }
 
