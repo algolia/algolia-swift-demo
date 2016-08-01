@@ -114,7 +114,11 @@ class AlgoliaManager: NSObject {
         super.init()
 
         // Read settings from defaults.
-        self.mirrored = NSUserDefaults.standardUserDefaults().boolForKey(DEFAULTS_KEY_MIRRORED) // defaults to false
+        if let wasMirrored = NSUserDefaults.standardUserDefaults().valueForKey(DEFAULTS_KEY_MIRRORED) as? Bool {
+            self.mirrored = wasMirrored
+        } else {
+            self.mirrored = true
+        }
         if let strategyRawValue = NSUserDefaults.standardUserDefaults().valueForKey(DEFAULTS_KEY_STRATEGY) as? Int, strategy = MirroredIndex.Strategy(rawValue: strategyRawValue) {
             requestStrategy = strategy
         } else {
