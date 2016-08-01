@@ -72,8 +72,8 @@ class ConfigViewController: UIViewController {
         syncNowButton.enabled = manager.mirrored && !manager.syncing
         strategySegmentedControl.enabled = manager.mirrored
         switch (manager.requestStrategy) {
-        case .OfflineOnly: strategySegmentedControl.selectedSegmentIndex = 0
-        case .OnlineOnly: strategySegmentedControl.selectedSegmentIndex = 1
+        case .OnlineOnly: strategySegmentedControl.selectedSegmentIndex = 0
+        case .OfflineOnly: strategySegmentedControl.selectedSegmentIndex = 1
         default: strategySegmentedControl.selectedSegmentIndex = 2
         }
         timeoutValueSlider.enabled = manager.mirrored
