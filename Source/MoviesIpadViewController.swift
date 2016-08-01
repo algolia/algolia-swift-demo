@@ -152,6 +152,7 @@ class MoviesIpadViewController: UIViewController, UICollectionViewDataSource, TT
 
     private func handleMovieSearchResults(results: SearchResults?, error: NSError?) {
         guard let results = results else {
+            self.searchTimeLabel.textColor = UIColor.redColor()
             self.searchTimeLabel.text = NSLocalizedString("error_search", comment: "")
             return
         }
@@ -181,9 +182,11 @@ class MoviesIpadViewController: UIViewController, UICollectionViewDataSource, TT
         formatter.groupingSize = 3
         self.movieCountLabel.text = "\(formatter.stringFromNumber(results.nbHits)!) MOVIES"
 
+        searchTimeLabel.textColor = UIColor.lightGrayColor()
         self.searchTimeLabel.text = "Found in \(results.processingTimeMS) ms"
         // Indicate origin of content.
         if results.lastContent["origin"] as? String == "local" {
+            searchTimeLabel.textColor = searchTimeLabel.highlightedTextColor
             searchTimeLabel.text! += " (offline results)"
         }
 
