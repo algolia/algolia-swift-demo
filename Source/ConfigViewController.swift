@@ -56,7 +56,7 @@ class ConfigViewController: UIViewController {
     // MARK: - State
     
     private func update() {
-        mirroredSwitch.on = index.mirrored
+        mirroredSwitch.on = manager.mirrored
         if let syncDate = index.lastSuccessfulSyncDate {
             syncStatusLabel.text = "Last successful sync: \(syncDate)"
         } else {
@@ -69,16 +69,20 @@ class ConfigViewController: UIViewController {
             syncActivityIndicator.hidden = true
             syncActivityIndicator.stopAnimating()
         }
-        syncNowButton.enabled = index.mirrored && !manager.syncing
-        strategySegmentedControl.enabled = index.mirrored
+        syncNowButton.enabled = manager.mirrored && !manager.syncing
+        strategySegmentedControl.enabled = manager.mirrored
         switch (manager.requestStrategy) {
         case .OfflineOnly: strategySegmentedControl.selectedSegmentIndex = 0
         case .OnlineOnly: strategySegmentedControl.selectedSegmentIndex = 1
         default: strategySegmentedControl.selectedSegmentIndex = 2
         }
-        timeoutValueSlider.enabled = index.mirrored
-        timeoutValueSlider.value = Float(index.offlineFallbackTimeout)
-        timeoutValueLabel.text = "\(Int(index.offlineFallbackTimeout * 1000))ms"
+        timeoutValueSlider.enabled = manager.mirrored
+        timeoutValueSlider.value = Float(manager.offlineFallbackTimeout)
+        updateTimeout(manager.offlineFallbackTimeout)
+    }
+    
+    private func updateTimeout(value: NSTimeInterval) {
+        timeoutValueLabel.text = "\(Int(value * 1000))ms"
     }
 
     // MARK: - Actions
@@ -96,7 +100,11 @@ class ConfigViewController: UIViewController {
     }
     
     @IBAction func timeoutDidChange(sender: AnyObject) {
-        index.offlineFallbackTimeout = Double(timeoutValueSlider.value)
+        updateTimeout(Double(timeoutValueSlider.value))
+    }
+    
+    @IBAction func timeoutDidStopDragging(sender: AnyObject) {
+        manager.offlineFallbackTimeout = Double(timeoutValueSlider.value)
         update()
     }
     
@@ -105,7 +113,7 @@ class ConfigViewController: UIViewController {
     }
     
     @IBAction func mirroredDidChange(sender: AnyObject) {
-        index.mirrored = mirroredSwitch.on
+        manager.mirrored = mirroredSwitch.on
         update()
     }
     

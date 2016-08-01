@@ -26,6 +26,11 @@ import AlgoliaSearch
 import Foundation
 
 
+private let DEFAULTS_KEY_MIRRORED       = "algolia.mirrored"
+private let DEFAULTS_KEY_STRATEGY       = "algolia.requestStrategy"
+private let DEFAULTS_KEY_TIMEOUT        = "algolia.offlineFallbackTimeout"
+
+
 class AlgoliaManager: NSObject {
     /// The singleton instance.
     static let sharedInstance = AlgoliaManager()
@@ -43,20 +48,40 @@ class AlgoliaManager: NSObject {
     // TODO: Should be moved to a default value in `Client` class.
     var requestStrategy: MirroredIndex.Strategy {
         get {
-            return actorsIndex.requestStrategy
+            return moviesIndex.requestStrategy
         }
         set {
             for index in [ actorsIndex, moviesIndex ] {
                 index.requestStrategy = newValue
             }
+            NSUserDefaults.standardUserDefaults().setInteger(newValue.rawValue, forKey: DEFAULTS_KEY_STRATEGY)
+            NSUserDefaults.standardUserDefaults().synchronize()
         }
     }
     
-    var offlineFallbackTimeout: NSTimeInterval = 0.5 {
-        didSet {
+    var offlineFallbackTimeout: NSTimeInterval {
+        get {
+            return moviesIndex.offlineFallbackTimeout
+        }
+        set {
             for index in [ actorsIndex, moviesIndex ] {
-                index.offlineFallbackTimeout = offlineFallbackTimeout
+                index.offlineFallbackTimeout = newValue
             }
+            NSUserDefaults.standardUserDefaults().setDouble(newValue, forKey: DEFAULTS_KEY_TIMEOUT)
+            NSUserDefaults.standardUserDefaults().synchronize()
+        }
+    }
+    
+    var mirrored: Bool {
+        get {
+            return moviesIndex.mirrored
+        }
+        set {
+            for index in [ actorsIndex, moviesIndex ] {
+                index.mirrored = newValue
+            }
+            NSUserDefaults.standardUserDefaults().setBool(newValue, forKey: DEFAULTS_KEY_MIRRORED)
+            NSUserDefaults.standardUserDefaults().synchronize()
         }
     }
     
@@ -85,12 +110,21 @@ class AlgoliaManager: NSObject {
             DataSelectionQuery(query: Query(), maxObjects: 500) // should mirror the entire index
         ]
         actorsIndex.delayBetweenSyncs = delayBetweenSyncs
-
+        
         super.init()
 
-        // Configure offline strategy.
-        requestStrategy = .FallbackOnTimeout
-        offlineFallbackTimeout = 1.0
+        // Read settings from defaults.
+        self.mirrored = NSUserDefaults.standardUserDefaults().boolForKey(DEFAULTS_KEY_MIRRORED) // defaults to false
+        if let strategyRawValue = NSUserDefaults.standardUserDefaults().valueForKey(DEFAULTS_KEY_STRATEGY) as? Int, strategy = MirroredIndex.Strategy(rawValue: strategyRawValue) {
+            requestStrategy = strategy
+        } else {
+            requestStrategy = .FallbackOnTimeout
+        }
+        if let timeout = NSUserDefaults.standardUserDefaults().valueForKey(DEFAULTS_KEY_TIMEOUT) as? NSTimeInterval {
+            offlineFallbackTimeout = timeout
+        } else {
+            offlineFallbackTimeout = 1.0
+        }
 
         NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(syncDidStart), name: MirroredIndex.SyncDidStartNotification, object: moviesIndex)
         NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(syncDidFinish), name: MirroredIndex.SyncDidFinishNotification, object: moviesIndex)

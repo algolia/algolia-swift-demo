@@ -13,7 +13,7 @@
                 <outlet property="syncNowButton" destination="xef-Wc-lSd" id="ETy-pd-jMv"/>
                 <outlet property="syncStatusLabel" destination="EBn-AE-9Zn" id="V1c-2L-J3t"/>
                 <outlet property="timeoutValueLabel" destination="4hW-1i-jtf" id="0MC-bD-Dxi"/>
-                <outlet property="timeoutValueSlider" destination="Ppe-QQ-xrE" id="iQN-Z9-qbW"/>
+                <outlet property="timeoutValueSlider" destination="Ppe-QQ-xrE" id="AlU-PU-p7u"/>
                 <outlet property="view" destination="iN0-l3-epB" id="ibh-oa-xVc"/>
             </connections>
         </placeholder>
@@ -110,7 +110,8 @@
                         <constraint firstAttribute="width" constant="200" id="nQR-UY-m0s"/>
                     </constraints>
                     <connections>
-                        <action selector="timeoutDidChange:" destination="-1" eventType="valueChanged" id="fe0-Kg-USs"/>
+                        <action selector="timeoutDidChange:" destination="-1" eventType="valueChanged" id="sP3-TC-JI7"/>
+                        <action selector="timeoutDidStopDragging:" destination="-1" eventType="touchUpInside" id="f2p-wm-cit"/>
                     </connections>
                 </slider>
                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="1000ms" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="4hW-1i-jtf">
