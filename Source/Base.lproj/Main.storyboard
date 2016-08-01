@@ -3,7 +3,6 @@
     <dependencies>
         <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="10085"/>
-        <capability name="Navigation items with more than one left or right bar item" minToolsVersion="7.0"/>
     </dependencies>
     <scenes>
         <!--Movies-->
@@ -46,18 +45,11 @@
                         </connections>
                     </tableView>
                     <navigationItem key="navigationItem" title="Movies" id="WBe-ig-Kpo">
-                        <rightBarButtonItems>
-                            <barButtonItem title="Sync" id="a96-xV-cxw">
-                                <connections>
-                                    <action selector="sync:" destination="M2l-a2-2CW" id="5lD-b0-eSY"/>
-                                </connections>
-                            </barButtonItem>
-                            <barButtonItem title="Config" id="wFn-mn-pZw">
-                                <connections>
-                                    <action selector="configTapped:" destination="M2l-a2-2CW" id="J6v-FR-h3D"/>
-                                </connections>
-                            </barButtonItem>
-                        </rightBarButtonItems>
+                        <barButtonItem key="rightBarButtonItem" title="Config" id="wFn-mn-pZw">
+                            <connections>
+                                <action selector="configTapped:" destination="M2l-a2-2CW" id="J6v-FR-h3D"/>
+                            </connections>
+                        </barButtonItem>
                     </navigationItem>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="bth-PA-k3J" userLabel="First Responder" sceneMemberID="firstResponder"/>

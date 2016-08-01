@@ -73,11 +73,6 @@ class MoviesTableViewController: UITableViewController, UISearchBarDelegate, UIS
     
     // MARK: - Actions
     
-    @IBAction func sync(sender: UIBarButtonItem) {
-        // Unconditionally trigger a sync.
-        AlgoliaManager.sharedInstance.moviesIndex.sync()
-    }
-
     @IBAction func configTapped(sender: AnyObject) {
         let vc = ConfigViewController(nibName: "ConfigViewController", bundle: nil)
         self.presentViewController(vc, animated: true, completion: nil)
