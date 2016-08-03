@@ -107,20 +107,7 @@ class MoviesIpadViewController: UIViewController, UICollectionViewDataSource, TT
     }
     
     @IBAction func genreFilteringModeDidChange(sender: AnyObject) {
-        // Convert conjunctive refinements into disjunctive and vice versa.
-        let queryHelper = QueryHelper(query: movieSearcher.query)
-        let refinements = queryHelper.getFacetRefinements() { $0.name == "genre" }
-        for refinement in refinements {
-            queryHelper.removeFacetRefinement(refinement)
-        }
-        let disjunctive = genreFilteringModeSwitch.on
-        for refinement in refinements {
-            if disjunctive {
-                queryHelper.addDisjunctiveFacetRefinement(refinement)
-            } else {
-                queryHelper.addConjunctiveFacetRefinement(refinement)
-            }
-        }
+        movieSearcher.setFacet("genre", disjunctive: genreFilteringModeSwitch.on)
         search()
     }
     
@@ -157,13 +144,12 @@ class MoviesIpadViewController: UIViewController, UICollectionViewDataSource, TT
             return
         }
         // Sort facets: first selected facets, then by decreasing count, then by name.
-        let receivedQueryHelper = QueryHelper(query: results.lastQuery)
         genreFacets = results.facets("genre")?.sort({ (lhs, rhs) in
             // When using cunjunctive faceting ("AND"), all refined facet values are displayed first.
             // But when using disjunctive faceting ("OR"), refined facet values are left where they are.
             let disjunctiveFaceting = results.disjunctiveFacets.contains("genre") ?? false
-            let lhsChecked = receivedQueryHelper.hasFacetRefinement(FacetRefinement(name: "genre", value: lhs.value))
-            let rhsChecked = receivedQueryHelper.hasFacetRefinement(FacetRefinement(name: "genre", value: rhs.value))
+            let lhsChecked = self.movieSearcher.hasFacetRefinement("genre", value: lhs.value)
+            let rhsChecked = self.movieSearcher.hasFacetRefinement("genre", value: rhs.value)
             if !disjunctiveFaceting && lhsChecked != rhsChecked {
                 return lhsChecked
             } else if lhs.count != rhs.count {
@@ -236,7 +222,7 @@ class MoviesIpadViewController: UIViewController, UICollectionViewDataSource, TT
             case genreTableView:
                 let cell = tableView.dequeueReusableCellWithIdentifier("genreCell", forIndexPath: indexPath) as! GenreCell
                 cell.value = genreFacets[indexPath.item]
-                cell.checked = QueryHelper(query: movieSearcher.results!.lastQuery).hasFacetRefinement(FacetRefinement(name: "genre", value: genreFacets[indexPath.item].value))
+                cell.checked = movieSearcher.hasFacetRefinement("genre", value: genreFacets[indexPath.item].value)
                 return cell
             default: assert(false); return UITableViewCell()
         }
@@ -247,7 +233,7 @@ class MoviesIpadViewController: UIViewController, UICollectionViewDataSource, TT
     func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
         switch tableView {
             case genreTableView:
-                movieSearcher.toggleFacetRefinement(FacetRefinement(name: "genre", value: genreFacets[indexPath.item].value))
+                movieSearcher.toggleFacetRefinement("genre", value: genreFacets[indexPath.item].value)
                 movieSearcher.search()
                 break
             default: return
