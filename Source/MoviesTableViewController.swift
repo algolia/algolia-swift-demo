@@ -32,6 +32,7 @@ class MoviesTableViewController: UITableViewController, UISearchBarDelegate, UIS
     var searchController: UISearchController!
     
     var movieSearcher: Searcher!
+    var movieHits: [[String: AnyObject]] = []
     var originIsLocal: Bool = false
     
     let placeholder = UIImage(named: "white")
@@ -82,7 +83,12 @@ class MoviesTableViewController: UITableViewController, UISearchBarDelegate, UIS
     
     private func handleSearchResults(results: SearchResults?, error: NSError?) {
         guard let results = results else { return }
-        originIsLocal = results.lastContent["origin"] as? String == "local"
+        if results.params.page == 0 {
+            movieHits = results.hits
+        } else {
+            movieHits.appendContentsOf(results.hits)
+        }
+        originIsLocal = results.content["origin"] as? String == "local"
         self.tableView.reloadData()
     }
     
@@ -93,19 +99,19 @@ class MoviesTableViewController: UITableViewController, UISearchBarDelegate, UIS
     }
 
     override func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return movieSearcher.results?.hits.count ?? 0
+        return movieHits.count
     }
     
     override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCellWithIdentifier("movieCell", forIndexPath: indexPath) 
 
         // Load more?
-        if indexPath.row + 5 >= movieSearcher.results!.hits.count {
+        if indexPath.row + 5 >= movieHits.count {
             movieSearcher.loadMore()
         }
         
         // Configure the cell...
-        let movie = MovieRecord(json: movieSearcher.results!.hits[indexPath.row])
+        let movie = MovieRecord(json: movieHits[indexPath.row])
         cell.textLabel?.highlightedText = movie.title_highlighted
         
         cell.detailTextLabel?.text = movie.year != nil ? "\(movie.year!)" : nil

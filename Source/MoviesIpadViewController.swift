@@ -41,7 +41,8 @@ class MoviesIpadViewController: UIViewController, UICollectionViewDataSource, TT
 
     var actorSearcher: Searcher!
     var movieSearcher: Searcher!
-    
+    var actorHits: [[String: AnyObject]] = []
+    var movieHits: [[String: AnyObject]] = []
     var genreFacets: [FacetValue] = []
     
     var yearFilterDebouncer = Debouncer(delay: 0.3)
@@ -128,11 +129,15 @@ class MoviesIpadViewController: UIViewController, UICollectionViewDataSource, TT
 
     private func handleActorSearchResults(results: SearchResults?, error: NSError?) {
         guard let results = results else { return }
-        
+        if results.params.page == 0 {
+            actorHits = results.hits
+        } else {
+            actorHits.appendContentsOf(results.hits)
+        }
         self.actorsTableView.reloadData()
         
         // Scroll to top.
-        if results.lastQuery.page == 0 {
+        if results.params.page == 0 {
             self.moviesCollectionView.contentOffset = CGPointZero
         }
     }
@@ -142,6 +147,11 @@ class MoviesIpadViewController: UIViewController, UICollectionViewDataSource, TT
             self.searchTimeLabel.textColor = UIColor.redColor()
             self.searchTimeLabel.text = NSLocalizedString("error_search", comment: "")
             return
+        }
+        if results.params.page == 0 {
+            movieHits = results.hits
+        } else {
+            movieHits.appendContentsOf(results.hits)
         }
         // Sort facets: first selected facets, then by decreasing count, then by name.
         genreFacets = results.facets("genre")?.sort({ (lhs, rhs) in
@@ -171,7 +181,7 @@ class MoviesIpadViewController: UIViewController, UICollectionViewDataSource, TT
         searchTimeLabel.textColor = UIColor.lightGrayColor()
         self.searchTimeLabel.text = "Found in \(results.processingTimeMS) ms"
         // Indicate origin of content.
-        if results.lastContent["origin"] as? String == "local" {
+        if results.content["origin"] as? String == "local" {
             searchTimeLabel.textColor = searchTimeLabel.highlightedTextColor
             searchTimeLabel.text! += " (offline results)"
         }
@@ -180,7 +190,7 @@ class MoviesIpadViewController: UIViewController, UICollectionViewDataSource, TT
         self.moviesCollectionView.reloadData()
         
         // Scroll to top.
-        if results.lastQuery.page == 0 {
+        if results.params.page == 0 {
             self.moviesCollectionView.contentOffset = CGPointZero
         }
     }
@@ -188,13 +198,13 @@ class MoviesIpadViewController: UIViewController, UICollectionViewDataSource, TT
     // MARK: - UICollectionViewDataSource
     
     func collectionView(collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return movieSearcher.results?.hits.count ?? 0
+        return movieHits.count
     }
     
     func collectionView(collectionView: UICollectionView, cellForItemAtIndexPath indexPath: NSIndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCellWithReuseIdentifier("movieCell", forIndexPath: indexPath) as! MovieCell
-        cell.movie = MovieRecord(json: movieSearcher.results!.hits[indexPath.item])
-        if indexPath.item + 5 >= movieSearcher.results?.hits.count {
+        cell.movie = MovieRecord(json: movieHits[indexPath.item])
+        if indexPath.item + 5 >= movieHits.count {
             movieSearcher.loadMore()
         }
         return cell
@@ -204,7 +214,7 @@ class MoviesIpadViewController: UIViewController, UICollectionViewDataSource, TT
     
     func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         switch tableView {
-            case actorsTableView: return actorSearcher.results?.hits.count ?? 0
+            case actorsTableView: return actorHits.count ?? 0
             case genreTableView: return genreFacets.count
             default: assert(false); return 0
         }
@@ -214,8 +224,8 @@ class MoviesIpadViewController: UIViewController, UICollectionViewDataSource, TT
         switch tableView {
             case actorsTableView:
                 let cell = tableView.dequeueReusableCellWithIdentifier("actorCell", forIndexPath: indexPath) as! ActorCell
-                cell.actor = Actor(json: actorSearcher.results!.hits[indexPath.item])
-                if indexPath.item + 5 >= actorSearcher.results!.hits.count {
+                cell.actor = Actor(json: actorHits[indexPath.item])
+                if indexPath.item + 5 >= actorHits.count {
                     actorSearcher.loadMore()
                 }
                 return cell
