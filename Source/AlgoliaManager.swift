@@ -97,7 +97,7 @@ class AlgoliaManager: NSObject {
         moviesIndex = client.getIndex("movies")
         
         // Sync the indices for offline use.
-        let delayBetweenSyncs: NSTimeInterval = 30 * 60 // 30 minutes
+        let delayBetweenSyncs: NSTimeInterval = 24 * 60 * 60 // 1 day
         moviesIndex.mirrored = true
         moviesIndex.dataSelectionQueries = [
             DataSelectionQuery(query: Query(parameters: ["filters": "year >= 2000"]), maxObjects: 500),
