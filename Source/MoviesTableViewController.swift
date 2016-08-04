@@ -83,7 +83,7 @@ class MoviesTableViewController: UITableViewController, UISearchBarDelegate, UIS
     
     private func handleSearchResults(results: SearchResults?, error: NSError?) {
         guard let results = results else { return }
-        if results.params.page == 0 {
+        if results.page == 0 {
             movieHits = results.hits
         } else {
             movieHits.appendContentsOf(results.hits)

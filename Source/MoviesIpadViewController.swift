@@ -129,7 +129,7 @@ class MoviesIpadViewController: UIViewController, UICollectionViewDataSource, TT
 
     private func handleActorSearchResults(results: SearchResults?, error: NSError?) {
         guard let results = results else { return }
-        if results.params.page == 0 {
+        if results.page == 0 {
             actorHits = results.hits
         } else {
             actorHits.appendContentsOf(results.hits)
@@ -137,7 +137,7 @@ class MoviesIpadViewController: UIViewController, UICollectionViewDataSource, TT
         self.actorsTableView.reloadData()
         
         // Scroll to top.
-        if results.params.page == 0 {
+        if results.page == 0 {
             self.moviesCollectionView.contentOffset = CGPointZero
         }
     }
@@ -148,7 +148,7 @@ class MoviesIpadViewController: UIViewController, UICollectionViewDataSource, TT
             self.searchTimeLabel.text = NSLocalizedString("error_search", comment: "")
             return
         }
-        if results.params.page == 0 {
+        if results.page == 0 {
             movieHits = results.hits
         } else {
             movieHits.appendContentsOf(results.hits)
@@ -190,7 +190,7 @@ class MoviesIpadViewController: UIViewController, UICollectionViewDataSource, TT
         self.moviesCollectionView.reloadData()
         
         // Scroll to top.
-        if results.params.page == 0 {
+        if results.page == 0 {
             self.moviesCollectionView.contentOffset = CGPointZero
         }
     }
