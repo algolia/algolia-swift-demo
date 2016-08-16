@@ -283,7 +283,7 @@ class MoviesIpadViewController: UIViewController, UICollectionViewDataSource, TT
 
     /// Update the activity indicator's status.
     private func updateActivityIndicator() {
-        if movieSearcher.pendingRequests.isEmpty {
+        if !movieSearcher.hasPendingRequests {
             // Stop activity indicator.
             activityIndicator.stopAnimating()
             activityIndicatorTimer?.invalidate()

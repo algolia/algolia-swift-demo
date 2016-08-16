@@ -149,6 +149,6 @@ class MoviesTableViewController: UITableViewController, UISearchBarDelegate, UIS
     
     /// Update the activity indicator's status.
     private func updateActivityIndicator() {
-        UIApplication.sharedApplication().networkActivityIndicatorVisible = !movieSearcher.pendingRequests.isEmpty
+        UIApplication.sharedApplication().networkActivityIndicatorVisible = movieSearcher.hasPendingRequests
     }
 }
