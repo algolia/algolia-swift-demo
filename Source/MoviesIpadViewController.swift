@@ -85,9 +85,6 @@ class MoviesIpadViewController: UIViewController, UICollectionViewDataSource, TT
         movieSearcher.addObserver(self, forKeyPath: "pendingRequests", options: [.New], context: nil)
 
         search()
-
-        // Start a sync if needed.
-        AlgoliaManager.sharedInstance.syncIfNeededAndPossible()
     }
 
     override func didReceiveMemoryWarning() {

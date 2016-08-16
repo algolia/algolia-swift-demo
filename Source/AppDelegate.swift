@@ -38,7 +38,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         self.reachability = Reachability.reachabilityForInternetConnection()
         self.reachability.reachableBlock = {
             (reachability: Reachability!) -> Void in
-            AlgoliaManager.sharedInstance.syncIfNeededAndPossible()
+            // Nothing to do
         }
         self.reachability.unreachableBlock = {
             (reachability: Reachability!) -> Void in

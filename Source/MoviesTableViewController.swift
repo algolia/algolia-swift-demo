@@ -60,9 +60,6 @@ class MoviesTableViewController: UITableViewController, UISearchBarDelegate, UIS
 
         // First load
         updateSearchResultsForSearchController(searchController)
-
-        // Start a sync if needed.
-        AlgoliaManager.sharedInstance.syncIfNeededAndPossible()
     }
 
     override func didReceiveMemoryWarning() {
