@@ -14,28 +14,21 @@ PODS:
   - AFNetworking/Serialization (3.1.0)
   - AFNetworking/UIKit (3.1.0):
     - AFNetworking/NSURLSession
-  - AlgoliaSearch-Helper-Swift (0.1):
-    - AlgoliaSearch-Helper-Swift/Offline (= 0.1)
-  - AlgoliaSearch-Helper-Swift/Offline (0.1):
+  - AlgoliaSearch-Helper-Offline-Swift (0.1):
     - AlgoliaSearch-Offline-Swift (~> 3.3)
-  - AlgoliaSearch-Offline-Swift (3.5):
+  - AlgoliaSearch-Offline-Swift (3.6):
     - AlgoliaSearchOfflineCore-iOS (~> 0.2)
-  - AlgoliaSearchOfflineCore-iOS (0.2)
+  - AlgoliaSearchOfflineCore-iOS (0.2.1)
   - Reachability (3.2)
   - TTRangeSlider (1.0.4)
 
 DEPENDENCIES:
   - AFNetworking (~> 3.0)
-  - AlgoliaSearch-Helper-Swift (from `~/devt/workspace/libs-master/algoliasearch-helper-swift`)
-  - AlgoliaSearch-Offline-Swift (from `~/devt/workspace/clients-master/algoliasearch-client-swift`)
+  - AlgoliaSearch-Helper-Offline-Swift (~> 0.1)
   - Reachability (~> 3.2)
   - TTRangeSlider (from `https://github.com/TomThorpe/TTRangeSlider`, branch `master`)
 
 EXTERNAL SOURCES:
-  AlgoliaSearch-Helper-Swift:
-    :path: ~/devt/workspace/libs-master/algoliasearch-helper-swift
-  AlgoliaSearch-Offline-Swift:
-    :path: ~/devt/workspace/clients-master/algoliasearch-client-swift
   TTRangeSlider:
     :branch: master
     :git: https://github.com/TomThorpe/TTRangeSlider
@@ -47,12 +40,12 @@ CHECKOUT OPTIONS:
 
 SPEC CHECKSUMS:
   AFNetworking: 5e0e199f73d8626b11e79750991f5d173d1f8b67
-  AlgoliaSearch-Helper-Swift: cf1a82e6426fef65b47c2ae5d7ba8c8415d6fa74
-  AlgoliaSearch-Offline-Swift: d2e9cd4ee7cd9c72f5cbce334676aa542dac2f50
-  AlgoliaSearchOfflineCore-iOS: 5cfeb295c4e8412182cc7450b0487806901472ec
+  AlgoliaSearch-Helper-Offline-Swift: 28cf7e84b0451207cec9dfb2be2595bac29381c3
+  AlgoliaSearch-Offline-Swift: 30492426b544d4f15b910b7fc5389fbf24d26249
+  AlgoliaSearchOfflineCore-iOS: 37d76ccada33254b6bad6529fb3c0d4ddcd70e94
   Reachability: 33e18b67625424e47b6cde6d202dce689ad7af96
   TTRangeSlider: 7c04d9cf84cd5fba96e86b3ded8e5e0b534758b0
 
-PODFILE CHECKSUM: a01bc7fa2b6adb67cd21d55d93b2458534179ed1
+PODFILE CHECKSUM: e9e2de814e5c6b2ae228f18a4be832437bbaed57
 
 COCOAPODS: 1.0.1
