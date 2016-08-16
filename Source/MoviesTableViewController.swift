@@ -21,43 +21,46 @@
 //  THE SOFTWARE.
 //
 
-import UIKit
 import AlgoliaSearch
+import AlgoliaSearchHelper
 import AFNetworking
+import UIKit
 
 
 class MoviesTableViewController: UITableViewController, UISearchBarDelegate, UISearchResultsUpdating {
 
     var searchController: UISearchController!
-    
-    var movieSearcher: SearchHelper!
+
+    var movieSearcher: Searcher!
+    var movieHits: [[String: AnyObject]] = []
     var originIsLocal: Bool = false
-    
+
     let placeholder = UIImage(named: "white")
-    
+
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+
         // Algolia Search
-        movieSearcher = SearchHelper(index: AlgoliaManager.sharedInstance.moviesIndex, resultHandler: self.handleSearchResults)
-        movieSearcher.nextState.query.hitsPerPage = 15
-        movieSearcher.nextState.query.attributesToRetrieve = ["title", "image", "rating", "year"]
-        movieSearcher.nextState.query.attributesToHighlight = ["title"]
-        
+        movieSearcher = Searcher(index: AlgoliaManager.sharedInstance.moviesIndex, resultHandler: self.handleSearchResults)
+        movieSearcher.query.hitsPerPage = 15
+        movieSearcher.query.attributesToRetrieve = ["title", "image", "rating", "year"]
+        movieSearcher.query.attributesToHighlight = ["title"]
+
         // Search controller
         searchController = UISearchController(searchResultsController: nil)
         searchController.searchResultsUpdater = self
         searchController.dimsBackgroundDuringPresentation = false
         searchController.searchBar.delegate = self
-        
+        searchController.searchBar.placeholder = NSLocalizedString("search_bar_placeholder", comment: "")
+
         // Add the search bar
         tableView.tableHeaderView = self.searchController!.searchBar
         definesPresentationContext = true
         searchController!.searchBar.sizeToFit()
-        
+
         // First load
         updateSearchResultsForSearchController(searchController)
-        
+
         // Start a sync if needed.
         AlgoliaManager.sharedInstance.syncIfNeededAndPossible()
     }
@@ -66,42 +69,27 @@ class MoviesTableViewController: UITableViewController, UISearchBarDelegate, UIS
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
-    
+
     // MARK: - Actions
-    
-    @IBAction func sync(sender: UIBarButtonItem) {
-        // Unconditionally trigger a sync.
-        AlgoliaManager.sharedInstance.moviesIndex.sync()
-    }
 
     @IBAction func configTapped(sender: AnyObject) {
-        stats.save()
-        let alertController = UIAlertController(title: "Config", message: "Choose offline strategy", preferredStyle: .Alert)
-        alertController.addAction(UIAlertAction(title: "Online only", style: .Default, handler: { (action) in
-            AlgoliaManager.sharedInstance.requestStrategy = .OnlineOnly
-        }))
-        alertController.addAction(UIAlertAction(title: "Offline only", style: .Default, handler: { (action) in
-            AlgoliaManager.sharedInstance.requestStrategy = .OfflineOnly
-        }))
-        alertController.addAction(UIAlertAction(title: "Fallback on failure", style: .Default, handler: { (action) in
-            AlgoliaManager.sharedInstance.requestStrategy = .FallbackOnFailure
-        }))
-        alertController.addAction(UIAlertAction(title: "Fallback on timeout", style: .Default, handler: { (action) in
-            AlgoliaManager.sharedInstance.requestStrategy = .FallbackOnTimeout
-        }))
-        alertController.addAction(UIAlertAction(title: "Cancel", style: .Cancel, handler: { (action) in
-        }))
-        self.presentViewController(alertController, animated: true, completion: nil)
+        let vc = ConfigViewController(nibName: "ConfigViewController", bundle: nil)
+        self.presentViewController(vc, animated: true, completion: nil)
     }
 
     // MARK: - Search completion handlers
-    
+
     private func handleSearchResults(results: SearchResults?, error: NSError?) {
         guard let results = results else { return }
-        originIsLocal = results.lastContent["origin"] as? String == "local"
+        if results.page == 0 {
+            movieHits = results.hits
+        } else {
+            movieHits.appendContentsOf(results.hits)
+        }
+        originIsLocal = results.content["origin"] as? String == "local"
         self.tableView.reloadData()
     }
-    
+
     // MARK: - Table view data source
 
     override func numberOfSectionsInTableView(tableView: UITableView) -> Int {
@@ -109,21 +97,21 @@ class MoviesTableViewController: UITableViewController, UISearchBarDelegate, UIS
     }
 
     override func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return movieSearcher.results?.hits.count ?? 0
+        return movieHits.count
     }
-    
+
     override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCellWithIdentifier("movieCell", forIndexPath: indexPath) 
+        let cell = tableView.dequeueReusableCellWithIdentifier("movieCell", forIndexPath: indexPath)
 
         // Load more?
-        if indexPath.row + 5 >= movieSearcher.results!.hits.count {
+        if indexPath.row + 5 >= movieHits.count {
             movieSearcher.loadMore()
         }
-        
+
         // Configure the cell...
-        let movie = MovieRecord(json: movieSearcher.results!.hits[indexPath.row])
+        let movie = MovieRecord(json: movieHits[indexPath.row])
         cell.textLabel?.highlightedText = movie.title_highlighted
-        
+
         cell.detailTextLabel?.text = movie.year != nil ? "\(movie.year!)" : nil
         cell.imageView?.cancelImageDownloadTask()
         if let url = movie.imageUrl {
@@ -136,12 +124,29 @@ class MoviesTableViewController: UITableViewController, UISearchBarDelegate, UIS
 
         return cell
     }
-    
+
     // MARK: - Search
-    
+
     func updateSearchResultsForSearchController(searchController: UISearchController) {
-        movieSearcher.nextState.query.query = searchController.searchBar.text
+        movieSearcher.query.query = searchController.searchBar.text
         movieSearcher.search()
     }
-    
+
+    // MARK: - KVO
+
+    override func observeValueForKeyPath(keyPath: String?, ofObject object: AnyObject?, change: [String : AnyObject]?, context: UnsafeMutablePointer<Void>) {
+        guard let object = object as? NSObject else { return }
+        if object == movieSearcher {
+            if keyPath == "pendingRequests" {
+                updateActivityIndicator()
+            }
+        }
+    }
+
+    // MARK: - Activity indicator
+
+    /// Update the activity indicator's status.
+    private func updateActivityIndicator() {
+        UIApplication.sharedApplication().networkActivityIndicatorVisible = movieSearcher.hasPendingRequests
+    }
 }

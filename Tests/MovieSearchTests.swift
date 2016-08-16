@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2016 Algolia
+//  Copyright (c) 2015 Algolia
 //  http://www.algolia.com/
 //
 //  Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -21,31 +21,31 @@
 //  THE SOFTWARE.
 //
 
-import Foundation
+import UIKit
+import XCTest
 
-
-/// Various helpers to deal with JSON data.
-///
-public class JSONHelper {
-    // NOTE: Should be an extension, but restricting a generic type non the non-protocol type String does not compile.
+class MovieSearchTests: XCTestCase {
     
-    /// Get the value for an attribute with a "deep" path (dot notation).
-    /// Example: asking for "foo.bar" will retrieve the "bar" attribute of the "foo" attribute, provided that the
-    /// latter exists and is a dictionary.
-    ///
-    /// - parameter json: The root JSON object.
-    /// - parameter path: Path of the attribute to retrieve, in dot notation.
-    /// - return The corresponding value, or nil if it does not exist.
-    ///
-    public static func valueForKeyPath(json: [String: AnyObject], path: String) -> AnyObject? {
-        var value: AnyObject = json
-        for name in path.componentsSeparatedByString(".") {
-            if let newValue = (value as? [String: AnyObject])?[name] {
-                value = newValue
-            } else {
-                return nil
-            }
-        }
-        return value
+    override func setUp() {
+        super.setUp()
+        // Put setup code here. This method is called before the invocation of each test method in the class.
     }
+    
+    override func tearDown() {
+        // Put teardown code here. This method is called after the invocation of each test method in the class.
+        super.tearDown()
+    }
+    
+    func testExample() {
+        // This is an example of a functional test case.
+        XCTAssert(true, "Pass")
+    }
+    
+    func testPerformanceExample() {
+        // This is an example of a performance test case.
+        self.measureBlock() {
+            // Put the code you want to measure the time of here.
+        }
+    }
+    
 }

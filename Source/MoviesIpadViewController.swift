@@ -22,10 +22,11 @@
 //
 
 import AlgoliaSearch
+import AlgoliaSearchHelper
 import TTRangeSlider
 import UIKit
 
-class MoviesIpadViewController: UIViewController, UICollectionViewDataSource, TTRangeSliderDelegate, UISearchBarDelegate, UITableViewDataSource, UITableViewDelegate, SearchDelegate {
+class MoviesIpadViewController: UIViewController, UICollectionViewDataSource, TTRangeSliderDelegate, UISearchBarDelegate, UITableViewDataSource, UITableViewDelegate {
     @IBOutlet weak var searchBar: UISearchBar!
     @IBOutlet weak var genreTableView: UITableView!
     @IBOutlet weak var yearRangeSlider: TTRangeSlider!
@@ -38,17 +39,23 @@ class MoviesIpadViewController: UIViewController, UICollectionViewDataSource, TT
     @IBOutlet weak var genreFilteringModeSwitch: UISwitch!
     @IBOutlet weak var activityIndicator: UIActivityIndicatorView!
 
-    var actorSearcher: SearchHelper!
-    var movieSearcher: SearchHelper!
-    
+    var actorSearcher: Searcher!
+    var movieSearcher: Searcher!
+    var actorHits: [[String: AnyObject]] = []
+    var movieHits: [[String: AnyObject]] = []
     var genreFacets: [FacetValue] = []
-    
+
+    var yearFilterDebouncer = Debouncer(delay: 0.3)
+
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+
         self.movieCountLabel.text = NSLocalizedString("movie_count_placeholder", comment: "")
         self.searchTimeLabel.text = nil
-        
+
+        // Customize search bar.
+        searchBar.placeholder = NSLocalizedString("search_bar_placeholder", comment: "")
+
         // Customize year range slider.
         yearRangeSlider.numberFormatterOverride = NSNumberFormatter()
         let tintColor = self.view.tintColor
@@ -57,124 +64,102 @@ class MoviesIpadViewController: UIViewController, UICollectionViewDataSource, TT
         yearRangeSlider.lineHeight = 3
         yearRangeSlider.minLabelFont = UIFont.systemFontOfSize(12)
         yearRangeSlider.maxLabelFont = yearRangeSlider.minLabelFont
-        
+
         ratingSelectorView.addObserver(self, forKeyPath: "rating", options: .New, context: nil)
-        
+
         // Customize genre table view.
         genreTableView.tableFooterView = genreTableViewFooter
         genreTableViewFooter.hidden = true
-        
+
         // Configure actor search.
-        actorSearcher = SearchHelper(index: AlgoliaManager.sharedInstance.actorsIndex, resultHandler: self.handleActorSearchResults)
-        actorSearcher.nextState.query.hitsPerPage = 10
-        actorSearcher.nextState.query.attributesToHighlight = ["name"]
+        actorSearcher = Searcher(index: AlgoliaManager.sharedInstance.actorsIndex, resultHandler: self.handleActorSearchResults)
+        actorSearcher.query.hitsPerPage = 10
+        actorSearcher.query.attributesToHighlight = ["name"]
 
         // Configure movie search.
-        movieSearcher = SearchHelper(index: AlgoliaManager.sharedInstance.moviesIndex, resultHandler: self.handleMovieSearchResults)
-        movieSearcher.nextState.query.facets = ["genre"]
-        movieSearcher.nextState.query.attributesToHighlight = ["title"]
-        movieSearcher.nextState.query.hitsPerPage = 30
-        
-        movieSearcher.delegate = self
-        movieSearcher.slowRequestThreshold = 0.5
+        movieSearcher = Searcher(index: AlgoliaManager.sharedInstance.moviesIndex, resultHandler: self.handleMovieSearchResults)
+        movieSearcher.query.facets = ["genre"]
+        movieSearcher.query.attributesToHighlight = ["title"]
+        movieSearcher.query.hitsPerPage = 30
+
         movieSearcher.addObserver(self, forKeyPath: "pendingRequests", options: [.New], context: nil)
 
         search()
-        
+
         // Start a sync if needed.
         AlgoliaManager.sharedInstance.syncIfNeededAndPossible()
     }
-    
+
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
     }
-    
+
     // MARK: - Actions
-    
+
     private func search() {
         actorSearcher.search()
-        movieSearcher.nextState.disjunctiveFacets = genreFilteringModeSwitch.on ? ["genre"] : []
-        movieSearcher.nextState.query.numericFilters = [
+        movieSearcher.disjunctiveFacets = genreFilteringModeSwitch.on ? ["genre"] : []
+        movieSearcher.query.numericFilters = [
             "year >= \(Int(yearRangeSlider.selectedMinimum))",
             "year <= \(Int(yearRangeSlider.selectedMaximum))",
             "rating >= \(ratingSelectorView.rating)"
         ]
         movieSearcher.search()
     }
-    
+
     @IBAction func genreFilteringModeDidChange(sender: AnyObject) {
-        // Convert conjunctive refinements into disjunctive and vice versa.
-        let queryHelper = QueryHelper(query: movieSearcher.nextState.query)
-        let refinements = queryHelper.getFacetRefinements() { $0.name == "genre" }
-        for refinement in refinements {
-            queryHelper.removeFacetRefinement(refinement)
-        }
-        let disjunctive = genreFilteringModeSwitch.on
-        for refinement in refinements {
-            if disjunctive {
-                queryHelper.addDisjunctiveFacetRefinement(refinement)
-            } else {
-                queryHelper.addConjunctiveFacetRefinement(refinement)
-            }
-        }
+        movieSearcher.setFacet("genre", disjunctive: genreFilteringModeSwitch.on)
         search()
     }
-    
+
     @IBAction func configTapped(sender: AnyObject) {
-        stats.save()
-        let alertController = UIAlertController(title: "Config", message: "Choose offline strategy", preferredStyle: .Alert)
-        alertController.addAction(UIAlertAction(title: "Online only", style: .Default, handler: { (action) in
-            AlgoliaManager.sharedInstance.requestStrategy = .OnlineOnly
-        }))
-        alertController.addAction(UIAlertAction(title: "Offline only", style: .Default, handler: { (action) in
-            AlgoliaManager.sharedInstance.requestStrategy = .OfflineOnly
-        }))
-        alertController.addAction(UIAlertAction(title: "Fallback on failure", style: .Default, handler: { (action) in
-            AlgoliaManager.sharedInstance.requestStrategy = .FallbackOnFailure
-        }))
-        alertController.addAction(UIAlertAction(title: "Fallback on timeout", style: .Default, handler: { (action) in
-            AlgoliaManager.sharedInstance.requestStrategy = .FallbackOnTimeout
-        }))
-        alertController.addAction(UIAlertAction(title: "Cancel", style: .Cancel, handler: { (action) in
-        }))
-        self.presentViewController(alertController, animated: true, completion: nil)
+        let vc = ConfigViewController(nibName: "ConfigViewController", bundle: nil)
+        self.presentViewController(vc, animated: true, completion: nil)
     }
-    
+
     // MARK: - UISearchBarDelegate
-    
+
     func searchBar(searchBar: UISearchBar, textDidChange searchText: String) {
-        actorSearcher.nextState.query.query = searchText
-        movieSearcher.nextState.query.query = searchText
+        actorSearcher.query.query = searchText
+        movieSearcher.query.query = searchText
         search()
     }
-    
+
     // MARK: - Search completion handlers
 
     private func handleActorSearchResults(results: SearchResults?, error: NSError?) {
-        if results == nil {
-            return
+        guard let results = results else { return }
+        if results.page == 0 {
+            actorHits = results.hits
+        } else {
+            actorHits.appendContentsOf(results.hits)
         }
         self.actorsTableView.reloadData()
-        
+
         // Scroll to top.
-        if actorSearcher.receivedState.isInitialPage {
+        if results.page == 0 {
             self.moviesCollectionView.contentOffset = CGPointZero
         }
     }
 
     private func handleMovieSearchResults(results: SearchResults?, error: NSError?) {
         guard let results = results else {
+            self.searchTimeLabel.textColor = UIColor.redColor()
             self.searchTimeLabel.text = NSLocalizedString("error_search", comment: "")
             return
         }
+        if results.page == 0 {
+            movieHits = results.hits
+        } else {
+            movieHits.appendContentsOf(results.hits)
+        }
         // Sort facets: first selected facets, then by decreasing count, then by name.
-        let receivedQueryHelper = QueryHelper(query: movieSearcher.receivedState.query)
         genreFacets = results.facets("genre")?.sort({ (lhs, rhs) in
             // When using cunjunctive faceting ("AND"), all refined facet values are displayed first.
             // But when using disjunctive faceting ("OR"), refined facet values are left where they are.
             let disjunctiveFaceting = results.disjunctiveFacets.contains("genre") ?? false
-            let lhsChecked = receivedQueryHelper.hasFacetRefinement(FacetRefinement(name: "genre", value: lhs.value))
-            let rhsChecked = receivedQueryHelper.hasFacetRefinement(FacetRefinement(name: "genre", value: rhs.value))
+            let lhsChecked = self.movieSearcher.hasFacetRefinement("genre", value: lhs.value)
+            let rhsChecked = self.movieSearcher.hasFacetRefinement("genre", value: rhs.value)
             if !disjunctiveFaceting && lhsChecked != rhsChecked {
                 return lhsChecked
             } else if lhs.count != rhs.count {
@@ -186,96 +171,95 @@ class MoviesIpadViewController: UIViewController, UICollectionViewDataSource, TT
         let exhaustiveFacetsCount = results.exhaustiveFacetsCount == true
         genreTableViewFooter.hidden = exhaustiveFacetsCount
 
-        if let nbHits = results.nbHits {
-            let formatter = NSNumberFormatter()
-            formatter.locale = NSLocale.currentLocale()
-            formatter.numberStyle = .DecimalStyle
-            formatter.usesGroupingSeparator = true
-            formatter.groupingSize = 3
-            self.movieCountLabel.text = "\(formatter.stringFromNumber(nbHits)!) MOVIES"
-        } else {
-            self.movieCountLabel.text = "MOVIES"
-        }
-        if let processingTimeMS = results.processingTimeMS {
-            self.searchTimeLabel.text = "Found in \(processingTimeMS) ms"
-            // Indicate origin of content.
-            if results.lastContent["origin"] as? String == "local" {
-                searchTimeLabel.text! += " (offline results)"
-            }
+        let formatter = NSNumberFormatter()
+        formatter.locale = NSLocale.currentLocale()
+        formatter.numberStyle = .DecimalStyle
+        formatter.usesGroupingSeparator = true
+        formatter.groupingSize = 3
+        self.movieCountLabel.text = "\(formatter.stringFromNumber(results.nbHits)!) MOVIES"
+
+        searchTimeLabel.textColor = UIColor.lightGrayColor()
+        self.searchTimeLabel.text = "Found in \(results.processingTimeMS) ms"
+        // Indicate origin of content.
+        if results.content["origin"] as? String == "local" {
+            searchTimeLabel.textColor = searchTimeLabel.highlightedTextColor
+            searchTimeLabel.text! += " (offline results)"
         }
 
         self.genreTableView.reloadData()
         self.moviesCollectionView.reloadData()
-        
+
         // Scroll to top.
-        if movieSearcher.receivedState.isInitialPage {
+        if results.page == 0 {
             self.moviesCollectionView.contentOffset = CGPointZero
         }
     }
-    
+
     // MARK: - UICollectionViewDataSource
-    
+
     func collectionView(collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return movieSearcher.results?.hits.count ?? 0
+        return movieHits.count
     }
-    
+
     func collectionView(collectionView: UICollectionView, cellForItemAtIndexPath indexPath: NSIndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCellWithReuseIdentifier("movieCell", forIndexPath: indexPath) as! MovieCell
-        cell.movie = MovieRecord(json: movieSearcher.results!.hits[indexPath.item])
-        if indexPath.item + 5 >= movieSearcher.results?.hits.count {
+        cell.movie = MovieRecord(json: movieHits[indexPath.item])
+        if indexPath.item + 5 >= movieHits.count {
             movieSearcher.loadMore()
         }
         return cell
     }
-    
+
     // MARK: - UITableViewDataSource
-    
+
     func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         switch tableView {
-            case actorsTableView: return actorSearcher.results?.hits.count ?? 0
+            case actorsTableView: return actorHits.count ?? 0
             case genreTableView: return genreFacets.count
             default: assert(false); return 0
         }
     }
-    
+
     func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
         switch tableView {
             case actorsTableView:
                 let cell = tableView.dequeueReusableCellWithIdentifier("actorCell", forIndexPath: indexPath) as! ActorCell
-                cell.actor = Actor(json: actorSearcher.results!.hits[indexPath.item])
-                if indexPath.item + 5 >= actorSearcher.results!.hits.count {
+                cell.actor = Actor(json: actorHits[indexPath.item])
+                if indexPath.item + 5 >= actorHits.count {
                     actorSearcher.loadMore()
                 }
                 return cell
             case genreTableView:
                 let cell = tableView.dequeueReusableCellWithIdentifier("genreCell", forIndexPath: indexPath) as! GenreCell
                 cell.value = genreFacets[indexPath.item]
-                cell.checked = QueryHelper(query: movieSearcher.receivedState.query).hasFacetRefinement(FacetRefinement(name: "genre", value: genreFacets[indexPath.item].value))
+                cell.checked = movieSearcher.hasFacetRefinement("genre", value: genreFacets[indexPath.item].value)
                 return cell
             default: assert(false); return UITableViewCell()
         }
     }
-    
+
     // MARK: - UITableViewDelegate
-    
+
     func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
         switch tableView {
             case genreTableView:
-                movieSearcher.toggleFacetRefinement(FacetRefinement(name: "genre", value: genreFacets[indexPath.item].value))
+                movieSearcher.toggleFacetRefinement("genre", value: genreFacets[indexPath.item].value)
                 movieSearcher.search()
                 break
             default: return
         }
     }
-    
+
     // MARK: - TTRangeSliderDelegate
-    
+
     func rangeSlider(sender: TTRangeSlider!, didChangeSelectedMinimumValue selectedMinimum: Float, andMaximumValue selectedMaximum: Float) {
-        search()
+        yearFilterDebouncer.call {
+            self.search()
+        }
     }
-    
+
     // MARK: - KVO
-    
+
     override func observeValueForKeyPath(keyPath: String?, ofObject object: AnyObject?, change: [String : AnyObject]?, context: UnsafeMutablePointer<Void>) {
         guard let object = object as? NSObject else { return }
         if object == ratingSelectorView {
@@ -284,18 +268,41 @@ class MoviesIpadViewController: UIViewController, UICollectionViewDataSource, TT
             }
         } else if object == movieSearcher {
             if keyPath == "pendingRequests" {
-                // Stop the slow request indicator only when there are no pending requests.
-                if movieSearcher.pendingRequests.isEmpty {
-                    activityIndicator.stopAnimating()
-                }
+                updateActivityIndicator()
             }
         }
     }
-    
-    // MARK: - SearchDelegate
-    
-    func slowRequestDetected(request: NSOperation, query: Query) {
-        // When a slow request is encountered, provide user feedback through the activity indicator.
+
+    // MARK: - Activity indicator
+
+    /// Delay after which an activity indicator is shown (if a search is still ongoing).
+    let activityIndicatorDelay = 0.5
+
+    /// Timer used to start the activity indicator after a delay.
+    var activityIndicatorTimer: NSTimer?
+
+    /// Update the activity indicator's status.
+    private func updateActivityIndicator() {
+        if !movieSearcher.hasPendingRequests {
+            // Stop activity indicator.
+            activityIndicator.stopAnimating()
+            activityIndicatorTimer?.invalidate()
+            activityIndicatorTimer = nil
+
+            // Stop network indicator.
+            UIApplication.sharedApplication().networkActivityIndicatorVisible = false
+        } else {
+            // Maybe start activity indicator.
+            if !activityIndicator.isAnimating() && activityIndicatorTimer == nil {
+                activityIndicatorTimer = NSTimer.scheduledTimerWithTimeInterval(activityIndicatorDelay, target: self, selector: #selector(self.startActivityIndicator), userInfo: nil, repeats: false)
+            }
+
+            // Start network indicator.
+            UIApplication.sharedApplication().networkActivityIndicatorVisible = true
+        }
+    }
+
+    @objc private func startActivityIndicator() {
         activityIndicator.startAnimating()
     }
 }

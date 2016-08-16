@@ -26,7 +26,12 @@ import AlgoliaSearch
 import Foundation
 
 
-class AlgoliaManager {
+private let DEFAULTS_KEY_MIRRORED       = "algolia.mirrored"
+private let DEFAULTS_KEY_STRATEGY       = "algolia.requestStrategy"
+private let DEFAULTS_KEY_TIMEOUT        = "algolia.offlineFallbackTimeout"
+
+
+class AlgoliaManager: NSObject {
     /// The singleton instance.
     static let sharedInstance = AlgoliaManager()
 
@@ -39,8 +44,50 @@ class AlgoliaManager {
     var imagesLoading = 0
     
     let imageQueue = dispatch_queue_create("Image download queue", DISPATCH_QUEUE_SERIAL)
+
+    // TODO: Should be moved to a default value in `Client` class.
+    var requestStrategy: MirroredIndex.Strategy {
+        get {
+            return moviesIndex.requestStrategy
+        }
+        set {
+            for index in [ actorsIndex, moviesIndex ] {
+                index.requestStrategy = newValue
+            }
+            NSUserDefaults.standardUserDefaults().setInteger(newValue.rawValue, forKey: DEFAULTS_KEY_STRATEGY)
+            NSUserDefaults.standardUserDefaults().synchronize()
+        }
+    }
     
-    private init() {
+    var offlineFallbackTimeout: NSTimeInterval {
+        get {
+            return moviesIndex.offlineFallbackTimeout
+        }
+        set {
+            for index in [ actorsIndex, moviesIndex ] {
+                index.offlineFallbackTimeout = newValue
+            }
+            NSUserDefaults.standardUserDefaults().setDouble(newValue, forKey: DEFAULTS_KEY_TIMEOUT)
+            NSUserDefaults.standardUserDefaults().synchronize()
+        }
+    }
+    
+    var mirrored: Bool {
+        get {
+            return moviesIndex.mirrored
+        }
+        set {
+            for index in [ actorsIndex, moviesIndex ] {
+                index.mirrored = newValue
+            }
+            NSUserDefaults.standardUserDefaults().setBool(newValue, forKey: DEFAULTS_KEY_MIRRORED)
+            NSUserDefaults.standardUserDefaults().synchronize()
+        }
+    }
+    
+    dynamic var syncing: Bool = false
+    
+    private override init() {
         let apiKey = NSBundle.mainBundle().infoDictionary!["AlgoliaApiKey"] as! String
         client = OfflineClient(appID: "latency", apiKey: apiKey)
         // NOTE: Edit your license key in the build settings.
@@ -50,7 +97,7 @@ class AlgoliaManager {
         moviesIndex = client.getIndex("movies")
         
         // Sync the indices for offline use.
-        let delayBetweenSyncs: NSTimeInterval = 30 * 60 // 30 minutes
+        let delayBetweenSyncs: NSTimeInterval = 24 * 60 * 60 // 1 day
         moviesIndex.mirrored = true
         moviesIndex.dataSelectionQueries = [
             DataSelectionQuery(query: Query(parameters: ["filters": "year >= 2000"]), maxObjects: 500),
@@ -64,6 +111,25 @@ class AlgoliaManager {
         ]
         actorsIndex.delayBetweenSyncs = delayBetweenSyncs
         
+        super.init()
+
+        // Read settings from defaults.
+        if let wasMirrored = NSUserDefaults.standardUserDefaults().valueForKey(DEFAULTS_KEY_MIRRORED) as? Bool {
+            self.mirrored = wasMirrored
+        } else {
+            self.mirrored = true
+        }
+        if let strategyRawValue = NSUserDefaults.standardUserDefaults().valueForKey(DEFAULTS_KEY_STRATEGY) as? Int, strategy = MirroredIndex.Strategy(rawValue: strategyRawValue) {
+            requestStrategy = strategy
+        } else {
+            requestStrategy = .FallbackOnTimeout
+        }
+        if let timeout = NSUserDefaults.standardUserDefaults().valueForKey(DEFAULTS_KEY_TIMEOUT) as? NSTimeInterval {
+            offlineFallbackTimeout = timeout
+        } else {
+            offlineFallbackTimeout = 1.0
+        }
+
         NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(syncDidStart), name: MirroredIndex.SyncDidStartNotification, object: moviesIndex)
         NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(syncDidFinish), name: MirroredIndex.SyncDidFinishNotification, object: moviesIndex)
     }
@@ -71,14 +137,19 @@ class AlgoliaManager {
     func syncIfNeededAndPossible() {
         let appDelegate = UIApplication.sharedApplication().delegate as! AppDelegate
         if appDelegate.reachability.isReachableViaWiFi() {
-            actorsIndex.syncIfNeeded()
-            moviesIndex.syncIfNeeded()
+            if actorsIndex.mirrored {
+                actorsIndex.syncIfNeeded()
+            }
+            if moviesIndex.mirrored {
+                moviesIndex.syncIfNeeded()
+            }
         }
     }
 
     // MARK: - Listeners
 
     @objc func syncDidStart(notification: NSNotification) {
+        syncing = true
         NSLog("Sync did start: %@", notification)
     }
     
@@ -161,6 +232,7 @@ class AlgoliaManager {
     }
     
     private func syncFinished() {
+        syncing = false
         NSLog("Sync finished")
     }
 }
