@@ -60,8 +60,16 @@ class MoviesTableViewController: UITableViewController, UISearchBarDelegate, UIS
 
         // First load
         updateSearchResultsForSearchController(searchController)
+
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(self.updateActivityIndicator), name: Searcher.SearchNotification, object: nil)
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(self.updateActivityIndicator), name: Searcher.ResultNotification, object: nil)
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(self.updateActivityIndicator), name: Searcher.ErrorNotification, object: nil)
     }
 
+    deinit {
+        NSNotificationCenter.defaultCenter().removeObserver(self)
+    }
+    
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
@@ -132,18 +140,12 @@ class MoviesTableViewController: UITableViewController, UISearchBarDelegate, UIS
     // MARK: - KVO
 
     override func observeValueForKeyPath(keyPath: String?, ofObject object: AnyObject?, change: [String : AnyObject]?, context: UnsafeMutablePointer<Void>) {
-        guard let object = object as? NSObject else { return }
-        if object == movieSearcher {
-            if keyPath == "pendingRequests" {
-                updateActivityIndicator()
-            }
-        }
     }
 
     // MARK: - Activity indicator
 
     /// Update the activity indicator's status.
-    private func updateActivityIndicator() {
+    @objc private func updateActivityIndicator() {
         UIApplication.sharedApplication().networkActivityIndicatorVisible = movieSearcher.hasPendingRequests
     }
 }

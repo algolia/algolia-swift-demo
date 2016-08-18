@@ -82,9 +82,15 @@ class MoviesIpadViewController: UIViewController, UICollectionViewDataSource, TT
         movieSearcher.query.attributesToHighlight = ["title"]
         movieSearcher.query.hitsPerPage = 30
 
-        movieSearcher.addObserver(self, forKeyPath: "pendingRequests", options: [.New], context: nil)
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(self.updateActivityIndicator), name: Searcher.SearchNotification, object: nil)
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(self.updateActivityIndicator), name: Searcher.ResultNotification, object: nil)
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(self.updateActivityIndicator), name: Searcher.ErrorNotification, object: nil)
 
         search()
+    }
+    
+    deinit {
+        NSNotificationCenter.defaultCenter().removeObserver(self)
     }
 
     override func didReceiveMemoryWarning() {
@@ -263,10 +269,6 @@ class MoviesIpadViewController: UIViewController, UICollectionViewDataSource, TT
             if keyPath == "rating" {
                 search()
             }
-        } else if object == movieSearcher {
-            if keyPath == "pendingRequests" {
-                updateActivityIndicator()
-            }
         }
     }
 
@@ -279,7 +281,7 @@ class MoviesIpadViewController: UIViewController, UICollectionViewDataSource, TT
     var activityIndicatorTimer: NSTimer?
 
     /// Update the activity indicator's status.
-    private func updateActivityIndicator() {
+    @objc private func updateActivityIndicator() {
         if !movieSearcher.hasPendingRequests {
             // Stop activity indicator.
             activityIndicator.stopAnimating()
