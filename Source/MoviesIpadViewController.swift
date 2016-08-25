@@ -273,7 +273,7 @@ class MoviesIpadViewController: UIViewController, UICollectionViewDataSource, TT
 
     override func observeValueForKeyPath(keyPath: String?, ofObject object: AnyObject?, change: [String : AnyObject]?, context: UnsafeMutablePointer<Void>) {
         guard let object = object as? NSObject else { return }
-        if object == ratingSelectorView {
+        if object === ratingSelectorView {
             if keyPath == "rating" {
                 search()
             }
