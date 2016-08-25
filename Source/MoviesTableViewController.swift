@@ -27,13 +27,14 @@ import AFNetworking
 import UIKit
 
 
-class MoviesTableViewController: UITableViewController, UISearchBarDelegate, UISearchResultsUpdating {
+class MoviesTableViewController: UITableViewController, UISearchBarDelegate, UISearchResultsUpdating, SearchProgressDelegate {
 
     var searchController: UISearchController!
 
     var movieSearcher: Searcher!
     var movieHits: [[String: AnyObject]] = []
     var originIsLocal: Bool = false
+    var progressController: SearchProgressController!
 
     let placeholder = UIImage(named: "white")
 
@@ -61,9 +62,9 @@ class MoviesTableViewController: UITableViewController, UISearchBarDelegate, UIS
         // First load
         updateSearchResultsForSearchController(searchController)
 
-        NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(self.updateActivityIndicator), name: Searcher.SearchNotification, object: nil)
-        NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(self.updateActivityIndicator), name: Searcher.ResultNotification, object: nil)
-        NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(self.updateActivityIndicator), name: Searcher.ErrorNotification, object: nil)
+        // Track progress to update activity indicator.
+        progressController = SearchProgressController(searcher: movieSearcher)
+        progressController.delegate = self
 
         // Start a sync if needed.
         AlgoliaManager.sharedInstance.syncIfNeededAndPossible()
@@ -147,8 +148,11 @@ class MoviesTableViewController: UITableViewController, UISearchBarDelegate, UIS
 
     // MARK: - Activity indicator
 
-    /// Update the activity indicator's status.
-    @objc private func updateActivityIndicator() {
-        UIApplication.sharedApplication().networkActivityIndicatorVisible = movieSearcher.hasPendingRequests
+    @objc func searchDidStart(searchProgressController: SearchProgressController) {
+        UIApplication.sharedApplication().networkActivityIndicatorVisible = true
+    }
+
+    @objc func searchDidStop(searchProgressController: SearchProgressController) {
+        UIApplication.sharedApplication().networkActivityIndicatorVisible = false
     }
 }
