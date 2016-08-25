@@ -53,6 +53,7 @@ class MoviesTableViewController: UITableViewController, UISearchBarDelegate, UIS
         searchController.dimsBackgroundDuringPresentation = false
         searchController.searchBar.delegate = self
         searchController.searchBar.placeholder = NSLocalizedString("search_bar_placeholder", comment: "")
+        searchController.searchBar.enablesReturnKeyAutomatically = false
 
         // Add the search bar
         tableView.tableHeaderView = self.searchController!.searchBar

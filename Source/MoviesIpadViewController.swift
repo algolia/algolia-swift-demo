@@ -57,6 +57,7 @@ class MoviesIpadViewController: UIViewController, UICollectionViewDataSource, TT
 
         // Customize search bar.
         searchBar.placeholder = NSLocalizedString("search_bar_placeholder", comment: "")
+        searchBar.enablesReturnKeyAutomatically = false
 
         // Customize year range slider.
         yearRangeSlider.numberFormatterOverride = NSNumberFormatter()
