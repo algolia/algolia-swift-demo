@@ -1,3 +1,2 @@
 github "AFNetworking/AFNetworking" "3.1.0"
-github "SwiftyJSON/SwiftyJSON" "2.3.3"
-github "algolia/algoliasearch-client-swift" "3.1"
+github "algolia/algoliasearch-client-swift" "189f70e5225752db79ad40c42eb8a45b52b5577d"

@@ -1,3 +1,3 @@
-github "algolia/algoliasearch-client-swift"
+github "algolia/algoliasearch-client-swift" "v4"
 github "AFNetworking/AFNetworking" ~> 3.0
 
