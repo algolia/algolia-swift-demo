@@ -52,8 +52,8 @@ class GenreCell: UITableViewCell {
 
     var checked: Bool = false {
         didSet {
-            nameLabel.font = checked ? UIFont.boldSystemFontOfSize(nameLabel.font.pointSize) : UIFont.systemFontOfSize(nameLabel.font.pointSize)
-            nameLabel.textColor = checked ? nameLabel.tintColor : UIColor.blackColor()
+            nameLabel.font = checked ? UIFont.boldSystemFont(ofSize: nameLabel.font.pointSize) : UIFont.systemFont(ofSize: nameLabel.font.pointSize)
+            nameLabel.textColor = checked ? nameLabel.tintColor : UIColor.black
         }
     }
 }

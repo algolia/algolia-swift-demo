@@ -41,8 +41,8 @@ class MoviesIpadViewController: UIViewController, UICollectionViewDataSource, TT
 
     var actorSearcher: Searcher!
     var movieSearcher: Searcher!
-    var actorHits: [[String: AnyObject]] = []
-    var movieHits: [[String: AnyObject]] = []
+    var actorHits: [JSONObject] = []
+    var movieHits: [JSONObject] = []
     var genreFacets: [FacetValue] = []
 
     var yearFilterDebouncer = Debouncer(delay: 0.3)
@@ -57,19 +57,19 @@ class MoviesIpadViewController: UIViewController, UICollectionViewDataSource, TT
         searchBar.placeholder = NSLocalizedString("search_bar_placeholder", comment: "")
 
         // Customize year range slider.
-        yearRangeSlider.numberFormatterOverride = NSNumberFormatter()
+        yearRangeSlider.numberFormatterOverride = NumberFormatter()
         let tintColor = self.view.tintColor
         yearRangeSlider.tintColorBetweenHandles = tintColor
         yearRangeSlider.handleColor = tintColor
         yearRangeSlider.lineHeight = 3
-        yearRangeSlider.minLabelFont = UIFont.systemFontOfSize(12)
+        yearRangeSlider.minLabelFont = UIFont.systemFont(ofSize: 12)
         yearRangeSlider.maxLabelFont = yearRangeSlider.minLabelFont
 
-        ratingSelectorView.addObserver(self, forKeyPath: "rating", options: .New, context: nil)
+        ratingSelectorView.addObserver(self, forKeyPath: "rating", options: .new, context: nil)
 
         // Customize genre table view.
         genreTableView.tableFooterView = genreTableViewFooter
-        genreTableViewFooter.hidden = true
+        genreTableViewFooter.isHidden = true
 
         // Configure actor search.
         actorSearcher = Searcher(index: AlgoliaManager.sharedInstance.actorsIndex, resultHandler: self.handleActorSearchResults)
@@ -82,15 +82,15 @@ class MoviesIpadViewController: UIViewController, UICollectionViewDataSource, TT
         movieSearcher.query.attributesToHighlight = ["title"]
         movieSearcher.query.hitsPerPage = 30
 
-        NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(self.updateActivityIndicator), name: Searcher.SearchNotification, object: nil)
-        NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(self.updateActivityIndicator), name: Searcher.ResultNotification, object: nil)
-        NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(self.updateActivityIndicator), name: Searcher.ErrorNotification, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(self.updateActivityIndicator), name: Searcher.SearchNotification, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(self.updateActivityIndicator), name: Searcher.ResultNotification, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(self.updateActivityIndicator), name: Searcher.ErrorNotification, object: nil)
 
         search()
     }
     
     deinit {
-        NSNotificationCenter.defaultCenter().removeObserver(self)
+        NotificationCenter.default.removeObserver(self)
     }
 
     override func didReceiveMemoryWarning() {
@@ -101,7 +101,7 @@ class MoviesIpadViewController: UIViewController, UICollectionViewDataSource, TT
 
     private func search() {
         actorSearcher.search()
-        movieSearcher.disjunctiveFacets = genreFilteringModeSwitch.on ? ["genre"] : []
+        movieSearcher.disjunctiveFacets = genreFilteringModeSwitch.isOn ? ["genre"] : []
         movieSearcher.query.numericFilters = [
             "year >= \(Int(yearRangeSlider.selectedMinimum))",
             "year <= \(Int(yearRangeSlider.selectedMaximum))",
@@ -111,18 +111,18 @@ class MoviesIpadViewController: UIViewController, UICollectionViewDataSource, TT
     }
 
     @IBAction func genreFilteringModeDidChange(sender: AnyObject) {
-        movieSearcher.setFacet("genre", disjunctive: genreFilteringModeSwitch.on)
+        movieSearcher.setFacet(withName: "genre", disjunctive: genreFilteringModeSwitch.isOn)
         search()
     }
 
     @IBAction func configTapped(sender: AnyObject) {
         let vc = ConfigViewController(nibName: "ConfigViewController", bundle: nil)
-        self.presentViewController(vc, animated: true, completion: nil)
+        self.present(vc, animated: true, completion: nil)
     }
 
     // MARK: - UISearchBarDelegate
 
-    func searchBar(searchBar: UISearchBar, textDidChange searchText: String) {
+    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
         actorSearcher.query.query = searchText
         movieSearcher.query.query = searchText
         search()
@@ -130,39 +130,39 @@ class MoviesIpadViewController: UIViewController, UICollectionViewDataSource, TT
 
     // MARK: - Search completion handlers
 
-    private func handleActorSearchResults(results: SearchResults?, error: NSError?) {
+    private func handleActorSearchResults(results: SearchResults?, error: Error?) {
         guard let results = results else { return }
         if results.page == 0 {
             actorHits = results.hits
         } else {
-            actorHits.appendContentsOf(results.hits)
+            actorHits.append(contentsOf: results.hits)
         }
         self.actorsTableView.reloadData()
 
         // Scroll to top.
         if results.page == 0 {
-            self.moviesCollectionView.contentOffset = CGPointZero
+            self.moviesCollectionView.contentOffset = CGPoint.zero
         }
     }
 
-    private func handleMovieSearchResults(results: SearchResults?, error: NSError?) {
+    private func handleMovieSearchResults(results: SearchResults?, error: Error?) {
         guard let results = results else {
-            self.searchTimeLabel.textColor = UIColor.redColor()
+            self.searchTimeLabel.textColor = UIColor.red
             self.searchTimeLabel.text = NSLocalizedString("error_search", comment: "")
             return
         }
         if results.page == 0 {
             movieHits = results.hits
         } else {
-            movieHits.appendContentsOf(results.hits)
+            movieHits.append(contentsOf: results.hits)
         }
         // Sort facets: first selected facets, then by decreasing count, then by name.
-        genreFacets = results.facets("genre")?.sort({ (lhs, rhs) in
+        genreFacets = results.facets(name: "genre")?.sorted(by: { (lhs, rhs) in
             // When using cunjunctive faceting ("AND"), all refined facet values are displayed first.
             // But when using disjunctive faceting ("OR"), refined facet values are left where they are.
-            let disjunctiveFaceting = results.disjunctiveFacets.contains("genre") ?? false
-            let lhsChecked = self.movieSearcher.hasFacetRefinement("genre", value: lhs.value)
-            let rhsChecked = self.movieSearcher.hasFacetRefinement("genre", value: rhs.value)
+            let disjunctiveFaceting = results.disjunctiveFacets.contains("genre")
+            let lhsChecked = self.movieSearcher.hasFacetRefinement(name: "genre", value: lhs.value)
+            let rhsChecked = self.movieSearcher.hasFacetRefinement(name: "genre", value: rhs.value)
             if !disjunctiveFaceting && lhsChecked != rhsChecked {
                 return lhsChecked
             } else if lhs.count != rhs.count {
@@ -172,16 +172,16 @@ class MoviesIpadViewController: UIViewController, UICollectionViewDataSource, TT
             }
         }) ?? []
         let exhaustiveFacetsCount = results.exhaustiveFacetsCount == true
-        genreTableViewFooter.hidden = exhaustiveFacetsCount
+        genreTableViewFooter.isHidden = exhaustiveFacetsCount
 
-        let formatter = NSNumberFormatter()
-        formatter.locale = NSLocale.currentLocale()
-        formatter.numberStyle = .DecimalStyle
+        let formatter = NumberFormatter()
+        formatter.locale = NSLocale.current
+        formatter.numberStyle = .decimal
         formatter.usesGroupingSeparator = true
         formatter.groupingSize = 3
-        self.movieCountLabel.text = "\(formatter.stringFromNumber(results.nbHits)!) MOVIES"
+        self.movieCountLabel.text = "\(formatter.string(for: results.nbHits)!) MOVIES"
 
-        searchTimeLabel.textColor = UIColor.lightGrayColor()
+        searchTimeLabel.textColor = UIColor.lightGray
         self.searchTimeLabel.text = "Found in \(results.processingTimeMS) ms"
         // Indicate origin of content.
         if results.content["origin"] as? String == "local" {
@@ -194,18 +194,18 @@ class MoviesIpadViewController: UIViewController, UICollectionViewDataSource, TT
 
         // Scroll to top.
         if results.page == 0 {
-            self.moviesCollectionView.contentOffset = CGPointZero
+            self.moviesCollectionView.contentOffset = CGPoint.zero
         }
     }
 
     // MARK: - UICollectionViewDataSource
 
-    func collectionView(collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         return movieHits.count
     }
 
-    func collectionView(collectionView: UICollectionView, cellForItemAtIndexPath indexPath: NSIndexPath) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCellWithReuseIdentifier("movieCell", forIndexPath: indexPath) as! MovieCell
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "movieCell", for: indexPath) as! MovieCell
         cell.movie = MovieRecord(json: movieHits[indexPath.item])
         if indexPath.item + 5 >= movieHits.count {
             movieSearcher.loadMore()
@@ -215,27 +215,27 @@ class MoviesIpadViewController: UIViewController, UICollectionViewDataSource, TT
 
     // MARK: - UITableViewDataSource
 
-    func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         switch tableView {
-            case actorsTableView: return actorHits.count ?? 0
+            case actorsTableView: return actorHits.count
             case genreTableView: return genreFacets.count
             default: assert(false); return 0
         }
     }
 
-    func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         switch tableView {
             case actorsTableView:
-                let cell = tableView.dequeueReusableCellWithIdentifier("actorCell", forIndexPath: indexPath) as! ActorCell
+                let cell = tableView.dequeueReusableCell(withIdentifier: "actorCell", for: indexPath) as! ActorCell
                 cell.actor = Actor(json: actorHits[indexPath.item])
                 if indexPath.item + 5 >= actorHits.count {
                     actorSearcher.loadMore()
                 }
                 return cell
             case genreTableView:
-                let cell = tableView.dequeueReusableCellWithIdentifier("genreCell", forIndexPath: indexPath) as! GenreCell
+                let cell = tableView.dequeueReusableCell(withIdentifier: "genreCell", for: indexPath) as! GenreCell
                 cell.value = genreFacets[indexPath.item]
-                cell.checked = movieSearcher.hasFacetRefinement("genre", value: genreFacets[indexPath.item].value)
+                cell.checked = movieSearcher.hasFacetRefinement(name: "genre", value: genreFacets[indexPath.item].value)
                 return cell
             default: assert(false); return UITableViewCell()
         }
@@ -243,10 +243,10 @@ class MoviesIpadViewController: UIViewController, UICollectionViewDataSource, TT
 
     // MARK: - UITableViewDelegate
 
-    func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         switch tableView {
             case genreTableView:
-                movieSearcher.toggleFacetRefinement("genre", value: genreFacets[indexPath.item].value)
+                movieSearcher.toggleFacetRefinement(name: "genre", value: genreFacets[indexPath.item].value)
                 movieSearcher.search()
                 break
             default: return
@@ -255,7 +255,7 @@ class MoviesIpadViewController: UIViewController, UICollectionViewDataSource, TT
 
     // MARK: - TTRangeSliderDelegate
 
-    func rangeSlider(sender: TTRangeSlider!, didChangeSelectedMinimumValue selectedMinimum: Float, andMaximumValue selectedMaximum: Float) {
+    func rangeSlider(_ sender: TTRangeSlider!, didChangeSelectedMinimumValue selectedMinimum: Float, andMaximumValue selectedMaximum: Float) {
         yearFilterDebouncer.call {
             self.search()
         }
@@ -263,9 +263,9 @@ class MoviesIpadViewController: UIViewController, UICollectionViewDataSource, TT
 
     // MARK: - KVO
 
-    override func observeValueForKeyPath(keyPath: String?, ofObject object: AnyObject?, change: [String : AnyObject]?, context: UnsafeMutablePointer<Void>) {
+    override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
         guard let object = object as? NSObject else { return }
-        if object == ratingSelectorView {
+        if object === ratingSelectorView {
             if keyPath == "rating" {
                 search()
             }
@@ -278,7 +278,7 @@ class MoviesIpadViewController: UIViewController, UICollectionViewDataSource, TT
     let activityIndicatorDelay = 0.5
 
     /// Timer used to start the activity indicator after a delay.
-    var activityIndicatorTimer: NSTimer?
+    var activityIndicatorTimer: Timer?
 
     /// Update the activity indicator's status.
     @objc private func updateActivityIndicator() {
@@ -289,15 +289,15 @@ class MoviesIpadViewController: UIViewController, UICollectionViewDataSource, TT
             activityIndicatorTimer = nil
 
             // Stop network indicator.
-            UIApplication.sharedApplication().networkActivityIndicatorVisible = false
+            UIApplication.shared.isNetworkActivityIndicatorVisible = false
         } else {
             // Maybe start activity indicator.
-            if !activityIndicator.isAnimating() && activityIndicatorTimer == nil {
-                activityIndicatorTimer = NSTimer.scheduledTimerWithTimeInterval(activityIndicatorDelay, target: self, selector: #selector(self.startActivityIndicator), userInfo: nil, repeats: false)
+            if !activityIndicator.isAnimating && activityIndicatorTimer == nil {
+                activityIndicatorTimer = Timer.scheduledTimer(timeInterval: activityIndicatorDelay, target: self, selector: #selector(self.startActivityIndicator), userInfo: nil, repeats: false)
             }
 
             // Start network indicator.
-            UIApplication.sharedApplication().networkActivityIndicatorVisible = true
+            UIApplication.shared.isNetworkActivityIndicatorVisible = true
         }
     }
 

@@ -40,9 +40,9 @@ class AlgoliaManager: NSObject {
     var moviesIndex: Index
     
     private override init() {
-        let apiKey = NSBundle.mainBundle().infoDictionary!["AlgoliaApiKey"] as! String
+        let apiKey = Bundle.main.infoDictionary!["AlgoliaApiKey"] as! String
         client = Client(appID: "latency", apiKey: apiKey)
-        actorsIndex = client.getIndex("actors")
-        moviesIndex = client.getIndex("movies")
+        actorsIndex = client.index(withName: "actors")
+        moviesIndex = client.index(withName: "movies")
     }
 }

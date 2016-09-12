@@ -21,14 +21,15 @@
 //  THE SOFTWARE.
 //
 
+import AlgoliaSearch
 import AlgoliaSearchHelper
 import Foundation
 
 
 struct Actor {
-    private let json: [String: AnyObject]
+    private let json: JSONObject
     
-    init(json: [String: AnyObject]) {
+    init(json: JSONObject) {
         self.json = json
     }
     
@@ -37,13 +38,13 @@ struct Actor {
     }
     
     var name_highlighted: String? {
-        return SearchResults.getHighlightResult(json, path: "name")?.value
+        return SearchResults.highlightResult(hit: json, path: "name")?.value
     }
 
-    var imageUrl: NSURL? {
+    var imageUrl: URL? {
         guard let imagePath = json["image_path"] as? String else {
             return nil
         }
-        return NSURL(string: "https://image.tmdb.org/t/p/w300" + imagePath)
+        return URL(string: "https://image.tmdb.org/t/p/w300" + imagePath)
     }
 }

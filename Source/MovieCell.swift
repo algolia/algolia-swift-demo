@@ -44,7 +44,7 @@ class MovieCell: UICollectionViewCell {
         didSet {
             titleLabel.highlightedText = movie?.title_highlighted
             if let url = movie?.imageUrl {
-                posterImageView.setImageWithURL(url, placeholderImage: MovieCell.placeholder)
+                posterImageView.setImageWith(url, placeholderImage: MovieCell.placeholder)
             } else {
                 posterImageView.cancelImageDownloadTask()
                 posterImageView.image = MovieCell.placeholder
