@@ -17,7 +17,6 @@
 		5D9EB6AE1B3C3DC100BA6737 /* Helpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D9EB6AD1B3C3DC100BA6737 /* Helpers.swift */; };
 		BC703AF61CE1C3060090ECC3 /* AFNetworking.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BC703AF51CE1C3060090ECC3 /* AFNetworking.framework */; };
 		BC703AF81CE1C3090090ECC3 /* AlgoliaSearch.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BC703AF71CE1C3090090ECC3 /* AlgoliaSearch.framework */; };
-		BC703AFA1CE1C30C0090ECC3 /* SwiftyJSON.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BC703AF91CE1C30C0090ECC3 /* SwiftyJSON.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -45,7 +44,6 @@
 		5D9EB6AD1B3C3DC100BA6737 /* Helpers.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Helpers.swift; sourceTree = "<group>"; };
 		BC703AF51CE1C3060090ECC3 /* AFNetworking.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AFNetworking.framework; path = Carthage/Build/iOS/AFNetworking.framework; sourceTree = "<group>"; };
 		BC703AF71CE1C3090090ECC3 /* AlgoliaSearch.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AlgoliaSearch.framework; path = Carthage/Build/iOS/AlgoliaSearch.framework; sourceTree = "<group>"; };
-		BC703AF91CE1C30C0090ECC3 /* SwiftyJSON.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftyJSON.framework; path = Carthage/Build/iOS/SwiftyJSON.framework; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -55,7 +53,6 @@
 			files = (
 				BC703AF61CE1C3060090ECC3 /* AFNetworking.framework in Frameworks */,
 				BC703AF81CE1C3090090ECC3 /* AlgoliaSearch.framework in Frameworks */,
-				BC703AFA1CE1C30C0090ECC3 /* SwiftyJSON.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -131,7 +128,6 @@
 		C34AD11619D3010C523C954D /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				BC703AF91CE1C30C0090ECC3 /* SwiftyJSON.framework */,
 				BC703AF71CE1C3090090ECC3 /* AlgoliaSearch.framework */,
 				BC703AF51CE1C3060090ECC3 /* AFNetworking.framework */,
 			);
@@ -148,7 +144,7 @@
 				5D44CFF91B35F7B3008369AC /* Sources */,
 				5D44CFFA1B35F7B3008369AC /* Frameworks */,
 				5D44CFFB1B35F7B3008369AC /* Resources */,
-				BC703AFB1CE1C3270090ECC3 /* ShellScript */,
+				BC703AFB1CE1C3270090ECC3 /* [Carthage] Copy frameworks */,
 			);
 			buildRules = (
 			);
@@ -190,9 +186,11 @@
 				TargetAttributes = {
 					5D44CFFC1B35F7B3008369AC = {
 						CreatedOnToolsVersion = 6.3.2;
+						LastSwiftMigration = 0800;
 					};
 					5D44D0111B35F7B3008369AC = {
 						CreatedOnToolsVersion = 6.3.2;
+						LastSwiftMigration = 0800;
 						TestTargetID = 5D44CFFC1B35F7B3008369AC;
 					};
 				};
@@ -237,7 +235,7 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
-		BC703AFB1CE1C3270090ECC3 /* ShellScript */ = {
+		BC703AFB1CE1C3270090ECC3 /* [Carthage] Copy frameworks */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -245,8 +243,8 @@
 			inputPaths = (
 				"$(SRCROOT)/Carthage/Build/iOS/AFNetworking.framework",
 				"$(SRCROOT)/Carthage/Build/iOS/AlgoliaSearch.framework",
-				"$(SRCROOT)/Carthage/Build/iOS/SwiftyJSON.framework",
 			);
+			name = "[Carthage] Copy frameworks";
 			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -402,6 +400,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "com.algolia.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 3.0;
 			};
 			name = Debug;
 		};
@@ -418,6 +417,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "com.algolia.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 3.0;
 			};
 			name = Release;
 		};
@@ -437,6 +437,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "com.algolia.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 3.0;
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/MoviesSearch.app/MoviesSearch";
 			};
 			name = Debug;
@@ -453,6 +454,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "com.algolia.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 3.0;
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/MoviesSearch.app/MoviesSearch";
 			};
 			name = Release;

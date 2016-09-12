@@ -21,8 +21,9 @@
 //  THE SOFTWARE.
 //
 
+import AlgoliaSearch
 import Foundation
-import SwiftyJSON
+
 
 struct MovieRecord {
     let title: String
@@ -30,10 +31,10 @@ struct MovieRecord {
     let rating: Int
     let year: Int
     
-    init(json: JSON) {
-        title = json["_highlightResult", "title", "value"].stringValue
-        image = json["image"].stringValue
-        rating = json["rating"].intValue
-        year = json["year"].intValue
+    init(json: JSONObject) {
+        title = ((json["_highlightResult"] as! JSONObject)["title"] as! JSONObject)["value"] as! String
+        image = json["image"] as! String
+        rating = json["rating"] as! Int
+        year = json["year"] as! Int
     }
 }

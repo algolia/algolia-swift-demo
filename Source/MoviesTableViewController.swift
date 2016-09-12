@@ -24,7 +24,7 @@
 import UIKit
 import AlgoliaSearch
 import AFNetworking
-import SwiftyJSON
+
 
 class MoviesTableViewController: UITableViewController, UISearchBarDelegate, UISearchResultsUpdating {
 
@@ -59,14 +59,14 @@ class MoviesTableViewController: UITableViewController, UISearchBarDelegate, UIS
         
         // Algolia Search
         let apiClient = Client(appID: "latency", apiKey: "dce4286c2833e8cf4b7b1f2d3fa1dbcb")
-        movieIndex = apiClient.getIndex("movies")
+        movieIndex = apiClient.index(withName: "movies")
         
         query.hitsPerPage = 15
         query.attributesToRetrieve = ["title", "image", "rating", "year"]
         query.attributesToHighlight = ["title"]
         
         // First load
-        updateSearchResultsForSearchController(searchController)
+        updateSearchResults(for: searchController)
     }
 
     override func didReceiveMemoryWarning() {
@@ -76,31 +76,31 @@ class MoviesTableViewController: UITableViewController, UISearchBarDelegate, UIS
 
     // MARK: - Table view data source
 
-    override func numberOfSectionsInTableView(tableView: UITableView) -> Int {
+    override func numberOfSections(in tableView: UITableView) -> Int {
         return 1
     }
 
-    override func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+    override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return movies.count
     }
     
-    override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCellWithIdentifier("movieCell", forIndexPath: indexPath) 
+    override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell = tableView.dequeueReusableCell(withIdentifier: "movieCell", for: indexPath) 
 
         // Load more?
-        if (indexPath.row + 5) >= (movies.count - 1) {
+        if ((indexPath as NSIndexPath).row + 5) >= (movies.count - 1) {
             loadMore()
         }
         
         // Configure the cell...
-        let movie = movies[indexPath.row]
+        let movie = movies[(indexPath as NSIndexPath).row]
         cell.textLabel?.highlightedTextColor = UIColor(red:1, green:1, blue:0.898, alpha:1)
         cell.textLabel?.highlightedText = movie.title
         
         cell.detailTextLabel?.text = "\(movie.year)"
         cell.imageView?.cancelImageDownloadTask()
-        if let url = NSURL(string: movie.image) {
-            cell.imageView?.setImageWithURL(url, placeholderImage: placeholder)
+        if let url = URL(string: movie.image) {
+            cell.imageView?.setImageWith(url, placeholderImage: placeholder)
         }
         else {
             cell.imageView?.image = nil
@@ -111,11 +111,12 @@ class MoviesTableViewController: UITableViewController, UISearchBarDelegate, UIS
     
     // MARK: - Search bar
     
-    func updateSearchResultsForSearchController(searchController: UISearchController) {
+    func updateSearchResults(for searchController: UISearchController) {
         query.query = searchController.searchBar.text
         let curSearchId = searchId
         
-        movieIndex.search(query, completionHandler: { (data, error) -> Void in
+        movieIndex.search(query, completionHandler: { (json, error) -> Void in
+            guard let json = json else { return }
             if (curSearchId <= self.displayedSearchId) || (error != nil) {
                 return
             }
@@ -124,9 +125,8 @@ class MoviesTableViewController: UITableViewController, UISearchBarDelegate, UIS
             self.loadedPage = 0 // reset loaded page
             self.loadingPage = 0 // reset the loading page
             
-            let json = JSON(data!)
-            let hits: [JSON] = json["hits"].arrayValue
-            self.nbPages = UInt(json["nbPages"].intValue)
+            let hits: [JSONObject] = json["hits"] as! [JSONObject]
+            self.nbPages = json["nbPages"] as!UInt
             
             var tmp = [MovieRecord]()
             for record in hits {
@@ -154,23 +154,23 @@ class MoviesTableViewController: UITableViewController, UISearchBarDelegate, UIS
         
         let nextQuery = Query(copy: query)
         nextQuery.page = loadedPage + 1
-        movieIndex.search(nextQuery, completionHandler: { (data , error) -> Void in
+        movieIndex.search(nextQuery, completionHandler: { (json , error) -> Void in
+            guard let json = json else { return }
             // Reject if query has changed
             if (nextQuery.query != self.query.query) || (error != nil) {
                 return
             }
             
-            self.loadedPage = nextQuery.page!.unsignedIntegerValue
+            self.loadedPage = nextQuery.page!
             
-            let json = JSON(data!)
-            let hits: [JSON] = json["hits"].arrayValue
+            let hits: [JSONObject] = json["hits"] as! [JSONObject]
             
             var tmp = [MovieRecord]()
             for record in hits {
                 tmp.append(MovieRecord(json: record))
             }
             
-            self.movies.appendContentsOf(tmp)
+            self.movies.append(contentsOf: tmp)
             self.tableView.reloadData()
         })
     }
