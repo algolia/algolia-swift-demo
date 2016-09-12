@@ -36,10 +36,10 @@ class RatingSelectorView: UIView {
     
     var rating: Int = 0 {
         willSet {
-            willChangeValueForKey("rating")
+            willChangeValue(forKey: "rating")
         }
         didSet {
-            didChangeValueForKey("rating")
+            didChangeValue(forKey: "rating")
             update()
         }
     }
@@ -49,13 +49,13 @@ class RatingSelectorView: UIView {
         update()
     }
     
-    @IBAction func didPressStar(sender: UIButton) {
-        rating = buttons.indexOf(sender)! + 1
+    @IBAction func didPressStar(_ sender: UIButton) {
+        rating = buttons.index(of: sender)! + 1
     }
     
     private func update() {
         for i in 0..<buttons.count {
-            buttons[i].selected = i + 1 >= rating
+            buttons[i].isSelected = i + 1 >= rating
         }
     }
 }

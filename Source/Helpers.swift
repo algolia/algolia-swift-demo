@@ -30,8 +30,8 @@ extension UILabel {
             return attributedText?.string
         }
         set {
-            let color = highlightedTextColor ?? self.tintColor ?? UIColor.blueColor()
-            attributedText = newValue == nil ? nil : HighlightRenderer(highlightAttrs: [NSForegroundColorAttributeName: color]).render(newValue!)
+            let color = highlightedTextColor ?? self.tintColor ?? UIColor.blue
+            attributedText = newValue == nil ? nil : HighlightRenderer(highlightAttrs: [NSForegroundColorAttributeName: color]).render(text: newValue!)
         }
     }
 }

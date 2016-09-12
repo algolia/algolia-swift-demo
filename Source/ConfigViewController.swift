@@ -44,7 +44,7 @@ class ConfigViewController: UIViewController {
         
         manager = AlgoliaManager.sharedInstance
         index = manager.moviesIndex
-        manager.addObserver(self, forKeyPath: "syncing", options: .New, context: nil)
+        manager.addObserver(self, forKeyPath: "syncing", options: .new, context: nil)
         
         update()
     }
@@ -56,73 +56,73 @@ class ConfigViewController: UIViewController {
     // MARK: - State
     
     private func update() {
-        mirroredSwitch.on = manager.mirrored
+        mirroredSwitch.isOn = manager.mirrored
         if let syncDate = index.lastSuccessfulSyncDate {
             syncStatusLabel.text = "Last successful sync: \(syncDate)"
         } else {
             syncStatusLabel.text = "Not yet synced"
         }
         if manager.syncing {
-            syncActivityIndicator.hidden = false
+            syncActivityIndicator.isHidden = false
             syncActivityIndicator.startAnimating()
         } else {
-            syncActivityIndicator.hidden = true
+            syncActivityIndicator.isHidden = true
             syncActivityIndicator.stopAnimating()
         }
-        syncNowButton.enabled = manager.mirrored && !manager.syncing
-        strategySegmentedControl.enabled = manager.mirrored
+        syncNowButton.isEnabled = manager.mirrored && !manager.syncing
+        strategySegmentedControl.isEnabled = manager.mirrored
         switch (manager.requestStrategy) {
-        case .OnlineOnly: strategySegmentedControl.selectedSegmentIndex = 0
-        case .OfflineOnly: strategySegmentedControl.selectedSegmentIndex = 1
+        case .onlineOnly: strategySegmentedControl.selectedSegmentIndex = 0
+        case .offlineOnly: strategySegmentedControl.selectedSegmentIndex = 1
         default: strategySegmentedControl.selectedSegmentIndex = 2
         }
-        timeoutValueSlider.enabled = manager.mirrored
+        timeoutValueSlider.isEnabled = manager.mirrored
         timeoutValueSlider.value = Float(manager.offlineFallbackTimeout)
-        updateTimeout(manager.offlineFallbackTimeout)
+        updateTimeout(value: manager.offlineFallbackTimeout)
     }
     
-    private func updateTimeout(value: NSTimeInterval) {
+    private func updateTimeout(value: TimeInterval) {
         timeoutValueLabel.text = "\(Int(value * 1000))ms"
     }
 
     // MARK: - Actions
     
-    @IBAction func syncNow(sender: AnyObject) {
+    @IBAction func syncNow(_ sender: AnyObject) {
         index.sync()
     }
 
-    @IBAction func requestStrategyDidChange(sender: AnyObject) {
+    @IBAction func requestStrategyDidChange(_ sender: AnyObject) {
         switch (strategySegmentedControl.selectedSegmentIndex) {
-        case 0: manager.requestStrategy = .OnlineOnly
-        case 1: manager.requestStrategy = .OfflineOnly
-        default: manager.requestStrategy = .FallbackOnTimeout
+        case 0: manager.requestStrategy = .onlineOnly
+        case 1: manager.requestStrategy = .offlineOnly
+        default: manager.requestStrategy = .fallbackOnTimeout
         }
     }
     
-    @IBAction func timeoutDidChange(sender: AnyObject) {
-        updateTimeout(Double(timeoutValueSlider.value))
+    @IBAction func timeoutDidChange(_ sender: AnyObject) {
+        updateTimeout(value: TimeInterval(timeoutValueSlider.value))
     }
     
-    @IBAction func timeoutDidStopDragging(sender: AnyObject) {
+    @IBAction func timeoutDidStopDragging(_ sender: AnyObject) {
         manager.offlineFallbackTimeout = Double(timeoutValueSlider.value)
         update()
     }
     
-    @IBAction func done(sender: AnyObject) {
-        self.dismissViewControllerAnimated(true, completion: nil)
+    @IBAction func done(_ sender: AnyObject) {
+        self.dismiss(animated: true, completion: nil)
     }
     
-    @IBAction func mirroredDidChange(sender: AnyObject) {
-        manager.mirrored = mirroredSwitch.on
+    @IBAction func mirroredDidChange(_ sender: AnyObject) {
+        manager.mirrored = mirroredSwitch.isOn
         update()
     }
     
     // MARK: - KVO
     
-    override func observeValueForKeyPath(keyPath: String?, ofObject object: AnyObject?, change: [String : AnyObject]?, context: UnsafeMutablePointer<Void>) {
-        if object === AlgoliaManager.sharedInstance {
+    override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
+        if object as AnyObject === AlgoliaManager.sharedInstance {
             if keyPath == "syncing" {
-                dispatch_async(dispatch_get_main_queue()) {
+                DispatchQueue.main.async {
                     self.update()
                 }
             }

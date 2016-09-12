@@ -40,10 +40,10 @@ class AlgoliaManager: NSObject {
     var moviesIndex: MirroredIndex
     
     var shouldLoadImages = true
-    var imagesToLoad: [NSURL] = []
+    var imagesToLoad: [URL] = []
     var imagesLoading = 0
     
-    let imageQueue = dispatch_queue_create("Image download queue", DISPATCH_QUEUE_SERIAL)
+    let imageQueue = DispatchQueue(label: "Image download queue")
 
     // TODO: Should be moved to a default value in `Client` class.
     var requestStrategy: MirroredIndex.Strategy {
@@ -54,12 +54,12 @@ class AlgoliaManager: NSObject {
             for index in [ actorsIndex, moviesIndex ] {
                 index.requestStrategy = newValue
             }
-            NSUserDefaults.standardUserDefaults().setInteger(newValue.rawValue, forKey: DEFAULTS_KEY_STRATEGY)
-            NSUserDefaults.standardUserDefaults().synchronize()
+            UserDefaults.standard.set(newValue.rawValue, forKey: DEFAULTS_KEY_STRATEGY)
+            UserDefaults.standard.synchronize()
         }
     }
     
-    var offlineFallbackTimeout: NSTimeInterval {
+    var offlineFallbackTimeout: TimeInterval {
         get {
             return moviesIndex.offlineFallbackTimeout
         }
@@ -67,8 +67,8 @@ class AlgoliaManager: NSObject {
             for index in [ actorsIndex, moviesIndex ] {
                 index.offlineFallbackTimeout = newValue
             }
-            NSUserDefaults.standardUserDefaults().setDouble(newValue, forKey: DEFAULTS_KEY_TIMEOUT)
-            NSUserDefaults.standardUserDefaults().synchronize()
+            UserDefaults.standard.set(newValue, forKey: DEFAULTS_KEY_TIMEOUT)
+            UserDefaults.standard.synchronize()
         }
     }
     
@@ -80,24 +80,24 @@ class AlgoliaManager: NSObject {
             for index in [ actorsIndex, moviesIndex ] {
                 index.mirrored = newValue
             }
-            NSUserDefaults.standardUserDefaults().setBool(newValue, forKey: DEFAULTS_KEY_MIRRORED)
-            NSUserDefaults.standardUserDefaults().synchronize()
+            UserDefaults.standard.set(newValue, forKey: DEFAULTS_KEY_MIRRORED)
+            UserDefaults.standard.synchronize()
         }
     }
     
     dynamic var syncing: Bool = false
     
     private override init() {
-        let apiKey = NSBundle.mainBundle().infoDictionary!["AlgoliaApiKey"] as! String
+        let apiKey = Bundle.main.infoDictionary!["AlgoliaApiKey"] as! String
         client = OfflineClient(appID: "latency", apiKey: apiKey)
         // NOTE: Edit your license key in the build settings.
-        let licenseKey = NSBundle.mainBundle().infoDictionary!["AlgoliaOfflineSdkLicenseKey"] as! String
-        client.enableOfflineMode(licenseKey)
-        actorsIndex = client.getIndex("actors")
-        moviesIndex = client.getIndex("movies")
+        let licenseKey = Bundle.main.infoDictionary!["AlgoliaOfflineSdkLicenseKey"] as! String
+        client.enableOfflineMode(licenseData: licenseKey)
+        actorsIndex = client.index(withName: "actors")
+        moviesIndex = client.index(withName: "movies")
         
         // Sync the indices for offline use.
-        let delayBetweenSyncs: NSTimeInterval = 24 * 60 * 60 // 1 day
+        let delayBetweenSyncs: TimeInterval = 24 * 60 * 60 // 1 day
         moviesIndex.mirrored = true
         moviesIndex.dataSelectionQueries = [
             DataSelectionQuery(query: Query(parameters: ["filters": "year >= 2000"]), maxObjects: 500),
@@ -114,28 +114,28 @@ class AlgoliaManager: NSObject {
         super.init()
 
         // Read settings from defaults.
-        if let wasMirrored = NSUserDefaults.standardUserDefaults().valueForKey(DEFAULTS_KEY_MIRRORED) as? Bool {
+        if let wasMirrored = UserDefaults.standard.object(forKey: DEFAULTS_KEY_MIRRORED) as? Bool {
             self.mirrored = wasMirrored
         } else {
             self.mirrored = true
         }
-        if let strategyRawValue = NSUserDefaults.standardUserDefaults().valueForKey(DEFAULTS_KEY_STRATEGY) as? Int, strategy = MirroredIndex.Strategy(rawValue: strategyRawValue) {
+        if let strategyRawValue = UserDefaults.standard.object(forKey: DEFAULTS_KEY_STRATEGY) as? Int, let strategy = MirroredIndex.Strategy(rawValue: strategyRawValue) {
             requestStrategy = strategy
         } else {
-            requestStrategy = .FallbackOnTimeout
+            requestStrategy = .fallbackOnTimeout
         }
-        if let timeout = NSUserDefaults.standardUserDefaults().valueForKey(DEFAULTS_KEY_TIMEOUT) as? NSTimeInterval {
+        if let timeout = UserDefaults.standard.object(forKey: DEFAULTS_KEY_TIMEOUT) as? TimeInterval {
             offlineFallbackTimeout = timeout
         } else {
             offlineFallbackTimeout = 1.0
         }
 
-        NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(syncDidStart), name: MirroredIndex.SyncDidStartNotification, object: moviesIndex)
-        NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(syncDidFinish), name: MirroredIndex.SyncDidFinishNotification, object: moviesIndex)
+        NotificationCenter.default.addObserver(self, selector: #selector(syncDidStart), name: MirroredIndex.SyncDidStartNotification, object: moviesIndex)
+        NotificationCenter.default.addObserver(self, selector: #selector(syncDidFinish), name: MirroredIndex.SyncDidFinishNotification, object: moviesIndex)
     }
     
     func syncIfNeededAndPossible() {
-        let appDelegate = UIApplication.sharedApplication().delegate as! AppDelegate
+        let appDelegate = UIApplication.shared.delegate as! AppDelegate
         if appDelegate.reachability.isReachableViaWiFi() {
             if actorsIndex.mirrored {
                 actorsIndex.syncIfNeeded()
@@ -163,15 +163,15 @@ class AlgoliaManager: NSObject {
     }
     
     private func preloadImages() {
-        moviesIndex.browseMirror(Query()) {
+        moviesIndex.browseMirror(query: Query()) {
             (content, error) in
-            dispatch_async(self.imageQueue) {
-                self.handleBrowse(content, error: error)
+            self.imageQueue.async {
+                self.handleBrowse(content: content, error: error)
             }
         }
     }
     
-    private func handleBrowse(content: [String: AnyObject]?, error: NSError?) {
+    private func handleBrowse(content: JSONObject?, error: Error?) {
         if error != nil {
             syncFinished()
             return
@@ -187,10 +187,10 @@ class AlgoliaManager: NSObject {
             self.dequeueNext()
         }
         if cursor != nil {
-            moviesIndex.browseMirrorFrom(cursor!) {
+            moviesIndex.browseMirror(from: cursor!) {
                 (content, error) in
-                dispatch_async(self.imageQueue) {
-                    self.handleBrowse(content, error: error)
+                self.imageQueue.async {
+                    self.handleBrowse(content: content, error: error)
                 }
             }
         }
@@ -201,22 +201,22 @@ class AlgoliaManager: NSObject {
         if !imagesToLoad.isEmpty {
             let url = imagesToLoad.removeFirst()
             // Check if the image is already in the URL cache.
-            let request = NSURLRequest(URL: url)
-            let cachedResponse = NSURLCache.sharedURLCache().cachedResponseForRequest(request)
+            let request = URLRequest(url: url)
+            let cachedResponse = URLCache.shared.cachedResponse(for: request)
             if cachedResponse != nil {
-                NSLog("Image %@ already in cache", url)
-                dispatch_async(self.imageQueue) {
+                NSLog("Image already in cache: \(url)")
+                self.imageQueue.async {
                     self.dequeueNext()
                 }
             } else {
-                NSLog("Loading image %@", url)
+                NSLog("Loading image \(url)")
                 imagesLoading += 1
                 // Load the image. We don't care about the content now. We just want the URL cache to intercept it
                 // and store it on disk.
-                let task = NSURLSession.sharedSession().dataTaskWithRequest(request) {
+                let task = URLSession.shared.dataTask(with: request) {
                     (data, response, error) in
-                    dispatch_async(self.imageQueue) {
-                        self.handleImageDownloaded(data, response: response, error: error)
+                    self.imageQueue.async {
+                        self.handleImageDownloaded(data: data, response: response, error: error)
                     }
                 }
                 task.resume()
@@ -226,7 +226,7 @@ class AlgoliaManager: NSObject {
         }
     }
     
-    private func handleImageDownloaded(data: NSData?, response: NSURLResponse?, error: NSError?) {
+    private func handleImageDownloaded(data: Data?, response: URLResponse?, error: Error?) {
         imagesLoading -= 1
         dequeueNext()
     }

@@ -21,14 +21,15 @@
 //  THE SOFTWARE.
 //
 
-import Foundation
+import AlgoliaSearch
 import AlgoliaSearchHelper
+import Foundation
 
 
 struct MovieRecord {
-    private let json: [String: AnyObject]
+    private let json: JSONObject
     
-    init(json: [String: AnyObject]) {
+    init(json: JSONObject) {
         self.json = json
     }
 
@@ -36,15 +37,15 @@ struct MovieRecord {
         return json["title"] as? String
     }
     
-    var imageUrl: NSURL? {
+    var imageUrl: URL? {
         guard let urlString = json["image"] as? String else {
             return nil
         }
-        return NSURL(string: urlString)
+        return URL(string: urlString)
     }
     
     var title_highlighted: String? {
-        return SearchResults.getHighlightResult(json, path: "title")?.value
+        return SearchResults.highlightResult(hit: json, path: "title")?.value
     }
 
     var rating: Int? {

@@ -32,7 +32,7 @@ class MoviesTableViewController: UITableViewController, UISearchBarDelegate, UIS
     var searchController: UISearchController!
 
     var movieSearcher: Searcher!
-    var movieHits: [[String: AnyObject]] = []
+    var movieHits: [JSONObject] = []
     var originIsLocal: Bool = false
     var progressController: SearchProgressController!
 
@@ -61,7 +61,7 @@ class MoviesTableViewController: UITableViewController, UISearchBarDelegate, UIS
         searchController!.searchBar.sizeToFit()
 
         // First load
-        updateSearchResultsForSearchController(searchController)
+        updateSearchResults(for: searchController)
 
         // Track progress to update activity indicator.
         progressController = SearchProgressController(searcher: movieSearcher)
@@ -72,7 +72,7 @@ class MoviesTableViewController: UITableViewController, UISearchBarDelegate, UIS
     }
 
     deinit {
-        NSNotificationCenter.defaultCenter().removeObserver(self)
+        NotificationCenter.default.removeObserver(self)
     }
     
     override func didReceiveMemoryWarning() {
@@ -82,19 +82,19 @@ class MoviesTableViewController: UITableViewController, UISearchBarDelegate, UIS
 
     // MARK: - Actions
 
-    @IBAction func configTapped(sender: AnyObject) {
+    @IBAction func configTapped(_ sender: AnyObject) {
         let vc = ConfigViewController(nibName: "ConfigViewController", bundle: nil)
-        self.presentViewController(vc, animated: true, completion: nil)
+        self.present(vc, animated: true, completion: nil)
     }
 
     // MARK: - Search completion handlers
 
-    private func handleSearchResults(results: SearchResults?, error: NSError?) {
+    private func handleSearchResults(results: SearchResults?, error: Error?) {
         guard let results = results else { return }
         if results.page == 0 {
             movieHits = results.hits
         } else {
-            movieHits.appendContentsOf(results.hits)
+            movieHits.append(contentsOf: results.hits)
         }
         originIsLocal = results.content["origin"] as? String == "local"
         self.tableView.reloadData()
@@ -102,16 +102,16 @@ class MoviesTableViewController: UITableViewController, UISearchBarDelegate, UIS
 
     // MARK: - Table view data source
 
-    override func numberOfSectionsInTableView(tableView: UITableView) -> Int {
+    override func numberOfSections(in tableView: UITableView) -> Int {
         return 1
     }
 
-    override func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+    override func tableView(_ tableView: UITableView, numberOfRowsInSection: Int) -> Int {
         return movieHits.count
     }
 
-    override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCellWithIdentifier("movieCell", forIndexPath: indexPath)
+    override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell = tableView.dequeueReusableCell(withIdentifier: "movieCell", for: indexPath)
 
         // Load more?
         if indexPath.row + 5 >= movieHits.count {
@@ -125,35 +125,35 @@ class MoviesTableViewController: UITableViewController, UISearchBarDelegate, UIS
         cell.detailTextLabel?.text = movie.year != nil ? "\(movie.year!)" : nil
         cell.imageView?.cancelImageDownloadTask()
         if let url = movie.imageUrl {
-            cell.imageView?.setImageWithURL(url, placeholderImage: placeholder)
+            cell.imageView?.setImageWith(url, placeholderImage: placeholder)
         }
         else {
             cell.imageView?.image = nil
         }
-        cell.backgroundColor = originIsLocal ? AppDelegate.colorForLocalOrigin : UIColor.whiteColor()
+        cell.backgroundColor = originIsLocal ? AppDelegate.colorForLocalOrigin : UIColor.white
 
         return cell
     }
 
     // MARK: - Search
 
-    func updateSearchResultsForSearchController(searchController: UISearchController) {
+    func updateSearchResults(for searchController: UISearchController) {
         movieSearcher.query.query = searchController.searchBar.text
         movieSearcher.search()
     }
 
     // MARK: - KVO
 
-    override func observeValueForKeyPath(keyPath: String?, ofObject object: AnyObject?, change: [String : AnyObject]?, context: UnsafeMutablePointer<Void>) {
+    override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
     }
 
     // MARK: - Activity indicator
 
-    @objc func searchDidStart(searchProgressController: SearchProgressController) {
-        UIApplication.sharedApplication().networkActivityIndicatorVisible = true
+    @objc func searchDidStart(_ searchProgressController: SearchProgressController) {
+        UIApplication.shared.isNetworkActivityIndicatorVisible = true
     }
 
-    @objc func searchDidStop(searchProgressController: SearchProgressController) {
-        UIApplication.sharedApplication().networkActivityIndicatorVisible = false
+    @objc func searchDidStop(_ searchProgressController: SearchProgressController) {
+        UIApplication.shared.isNetworkActivityIndicatorVisible = false
     }
 }
