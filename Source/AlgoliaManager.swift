@@ -92,7 +92,7 @@ class AlgoliaManager: NSObject {
         client = OfflineClient(appID: "latency", apiKey: apiKey)
         // NOTE: Edit your license key in the build settings.
         let licenseKey = Bundle.main.infoDictionary!["AlgoliaOfflineSdkLicenseKey"] as! String
-        client.enableOfflineMode(licenseData: licenseKey)
+        client.enableOfflineMode(licenseKey: licenseKey)
         actorsIndex = client.index(withName: "actors")
         moviesIndex = client.index(withName: "movies")
         

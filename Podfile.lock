@@ -14,9 +14,9 @@ PODS:
   - AFNetworking/Serialization (3.1.0)
   - AFNetworking/UIKit (3.1.0):
     - AFNetworking/NSURLSession
-  - AlgoliaSearch-Helper-Offline-Swift (0.1):
-    - AlgoliaSearch-Offline-Swift (~> 3.3)
-  - AlgoliaSearch-Offline-Swift (3.6):
+  - AlgoliaSearch-Helper-Offline-Swift (0.2):
+    - AlgoliaSearch-Offline-Swift (~> 4.0)
+  - AlgoliaSearch-Offline-Swift (4.0):
     - AlgoliaSearchOfflineCore-iOS (~> 0.2)
   - AlgoliaSearchOfflineCore-iOS (0.2.1)
   - Reachability (3.2)
@@ -24,7 +24,7 @@ PODS:
 
 DEPENDENCIES:
   - AFNetworking (~> 3.0)
-  - AlgoliaSearch-Helper-Offline-Swift (~> 0.1)
+  - AlgoliaSearch-Helper-Offline-Swift (~> 0.2)
   - Reachability (~> 3.2)
   - TTRangeSlider (from `https://github.com/TomThorpe/TTRangeSlider`, branch `master`)
 
@@ -40,12 +40,12 @@ CHECKOUT OPTIONS:
 
 SPEC CHECKSUMS:
   AFNetworking: 5e0e199f73d8626b11e79750991f5d173d1f8b67
-  AlgoliaSearch-Helper-Offline-Swift: 28cf7e84b0451207cec9dfb2be2595bac29381c3
-  AlgoliaSearch-Offline-Swift: 30492426b544d4f15b910b7fc5389fbf24d26249
+  AlgoliaSearch-Helper-Offline-Swift: c9cc7277480c6d469a90594e9aecd54223ef97bf
+  AlgoliaSearch-Offline-Swift: aebc03dc36c636712fc98693841533d7feb0ef98
   AlgoliaSearchOfflineCore-iOS: 37d76ccada33254b6bad6529fb3c0d4ddcd70e94
   Reachability: 33e18b67625424e47b6cde6d202dce689ad7af96
   TTRangeSlider: 7c04d9cf84cd5fba96e86b3ded8e5e0b534758b0
 
-PODFILE CHECKSUM: 26cdd37c3e67dce5049e081d93d734a963ea02c7
+PODFILE CHECKSUM: ac8165efa81e762a5a0a64c645987012e4eac8de
 
-COCOAPODS: 1.0.1
+COCOAPODS: 1.1.0.rc.2
