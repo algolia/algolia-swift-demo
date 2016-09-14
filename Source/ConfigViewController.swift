@@ -48,7 +48,7 @@ class ConfigViewController: UIViewController {
     
     // MARK: - Actions
     
-    @IBAction func done(sender: AnyObject) {
+    @IBAction func done(_ sender: AnyObject) {
         self.dismiss(animated: true, completion: nil)
     }
     

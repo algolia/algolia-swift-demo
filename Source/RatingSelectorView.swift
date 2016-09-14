@@ -49,7 +49,7 @@ class RatingSelectorView: UIView {
         update()
     }
     
-    @IBAction func didPressStar(sender: UIButton) {
+    @IBAction func didPressStar(_ sender: UIButton) {
         rating = buttons.index(of: sender)! + 1
     }
     

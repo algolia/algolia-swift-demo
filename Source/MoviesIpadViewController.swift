@@ -110,12 +110,12 @@ class MoviesIpadViewController: UIViewController, UICollectionViewDataSource, TT
         movieSearcher.search()
     }
 
-    @IBAction func genreFilteringModeDidChange(sender: AnyObject) {
+    @IBAction func genreFilteringModeDidChange(_ sender: AnyObject) {
         movieSearcher.setFacet(withName: "genre", disjunctive: genreFilteringModeSwitch.isOn)
         search()
     }
 
-    @IBAction func configTapped(sender: AnyObject) {
+    @IBAction func configTapped(_ sender: AnyObject) {
         let vc = ConfigViewController(nibName: "ConfigViewController", bundle: nil)
         self.present(vc, animated: true, completion: nil)
     }

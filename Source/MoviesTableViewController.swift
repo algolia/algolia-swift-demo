@@ -77,7 +77,7 @@ class MoviesTableViewController: UITableViewController, UISearchBarDelegate, UIS
 
     // MARK: - Actions
 
-    @IBAction func configTapped(sender: AnyObject) {
+    @IBAction func configTapped(_ sender: AnyObject) {
         let vc = ConfigViewController(nibName: "ConfigViewController", bundle: nil)
         self.present(vc, animated: true, completion: nil)
     }
