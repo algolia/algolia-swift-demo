@@ -164,7 +164,7 @@ class MoviesIpadViewController: UIViewController, UICollectionViewDataSource, TT
             movieHits.append(contentsOf: results.hits)
         }
         // Sort facets: first selected facets, then by decreasing count, then by name.
-        genreFacets = results.facets(name: "genre")?.sorted(by: { (lhs, rhs) in
+        genreFacets = FacetValue.listFrom(facetCounts: results.facets(name: "genre"), refinements: self.movieSearcher.refinements["genre"]).sorted() { (lhs, rhs) in
             // When using cunjunctive faceting ("AND"), all refined facet values are displayed first.
             // But when using disjunctive faceting ("OR"), refined facet values are left where they are.
             let disjunctiveFaceting = results.disjunctiveFacets.contains("genre")
@@ -177,7 +177,7 @@ class MoviesIpadViewController: UIViewController, UICollectionViewDataSource, TT
             } else {
                 return lhs.value < rhs.value
             }
-        }) ?? []
+        }
         let exhaustiveFacetsCount = results.exhaustiveFacetsCount == true
         genreTableViewFooter.isHidden = exhaustiveFacetsCount
 
