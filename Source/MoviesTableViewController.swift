@@ -27,9 +27,10 @@ import AFNetworking
 import UIKit
 
 
-class MoviesTableViewController: UITableViewController, UISearchBarDelegate, UISearchResultsUpdating {
+class MoviesTableViewController: UITableViewController, UISearchBarDelegate, UISearchResultsUpdating, SearchProgressDelegate {
 
     var searchController: UISearchController!
+    var searchProgressController: SearchProgressController!
 
     var movieSearcher: Searcher!
     var movieHits: [JSONObject] = []
@@ -58,12 +59,12 @@ class MoviesTableViewController: UITableViewController, UISearchBarDelegate, UIS
         definesPresentationContext = true
         searchController!.searchBar.sizeToFit()
 
+        // Configure search progress monitoring.
+        searchProgressController = SearchProgressController(searcher: movieSearcher)
+        searchProgressController.delegate = self
+
         // First load
         updateSearchResults(for: searchController)
-
-        NotificationCenter.default.addObserver(self, selector: #selector(self.updateActivityIndicator), name: Searcher.SearchNotification, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(self.updateActivityIndicator), name: Searcher.ResultNotification, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(self.updateActivityIndicator), name: Searcher.ErrorNotification, object: nil)
     }
 
     deinit {
@@ -144,8 +145,13 @@ class MoviesTableViewController: UITableViewController, UISearchBarDelegate, UIS
 
     // MARK: - Activity indicator
 
-    /// Update the activity indicator's status.
-    @objc private func updateActivityIndicator() {
-        UIApplication.shared.isNetworkActivityIndicatorVisible = movieSearcher.hasPendingRequests
+    // MARK: - SearchProgressDelegate
+    
+    func searchDidStart(_ searchProgressController: SearchProgressController) {
+        UIApplication.shared.isNetworkActivityIndicatorVisible = true
+    }
+    
+    func searchDidStop(_ searchProgressController: SearchProgressController) {
+        UIApplication.shared.isNetworkActivityIndicatorVisible = false
     }
 }

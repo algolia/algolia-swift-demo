@@ -26,7 +26,7 @@ import AlgoliaSearchHelper
 import TTRangeSlider
 import UIKit
 
-class MoviesIpadViewController: UIViewController, UICollectionViewDataSource, TTRangeSliderDelegate, UISearchBarDelegate, UITableViewDataSource, UITableViewDelegate {
+class MoviesIpadViewController: UIViewController, UICollectionViewDataSource, TTRangeSliderDelegate, UISearchBarDelegate, UITableViewDataSource, UITableViewDelegate, SearchProgressDelegate {
     @IBOutlet weak var searchBar: UISearchBar!
     @IBOutlet weak var genreTableView: UITableView!
     @IBOutlet weak var yearRangeSlider: TTRangeSlider!
@@ -46,6 +46,7 @@ class MoviesIpadViewController: UIViewController, UICollectionViewDataSource, TT
     var genreFacets: [FacetValue] = []
 
     var yearFilterDebouncer = Debouncer(delay: 0.3)
+    var searchProgressController: SearchProgressController!
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -82,9 +83,10 @@ class MoviesIpadViewController: UIViewController, UICollectionViewDataSource, TT
         movieSearcher.params.attributesToHighlight = ["title"]
         movieSearcher.params.hitsPerPage = 30
 
-        NotificationCenter.default.addObserver(self, selector: #selector(self.updateActivityIndicator), name: Searcher.SearchNotification, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(self.updateActivityIndicator), name: Searcher.ResultNotification, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(self.updateActivityIndicator), name: Searcher.ErrorNotification, object: nil)
+        // Configure search progress monitoring.
+        searchProgressController = SearchProgressController(searcher: movieSearcher)
+        searchProgressController.graceDelay = 0.5
+        searchProgressController.delegate = self
 
         search()
     }
@@ -272,36 +274,15 @@ class MoviesIpadViewController: UIViewController, UICollectionViewDataSource, TT
         }
     }
 
-    // MARK: - Activity indicator
-
-    /// Delay after which an activity indicator is shown (if a search is still ongoing).
-    let activityIndicatorDelay = 0.5
-
-    /// Timer used to start the activity indicator after a delay.
-    var activityIndicatorTimer: Timer?
-
-    /// Update the activity indicator's status.
-    @objc private func updateActivityIndicator() {
-        if !movieSearcher.hasPendingRequests {
-            // Stop activity indicator.
-            activityIndicator.stopAnimating()
-            activityIndicatorTimer?.invalidate()
-            activityIndicatorTimer = nil
-
-            // Stop network indicator.
-            UIApplication.shared.isNetworkActivityIndicatorVisible = false
-        } else {
-            // Maybe start activity indicator.
-            if !activityIndicator.isAnimating && activityIndicatorTimer == nil {
-                activityIndicatorTimer = Timer.scheduledTimer(timeInterval: activityIndicatorDelay, target: self, selector: #selector(self.startActivityIndicator), userInfo: nil, repeats: false)
-            }
-
-            // Start network indicator.
-            UIApplication.shared.isNetworkActivityIndicatorVisible = true
-        }
-    }
-
-    @objc private func startActivityIndicator() {
+    // MARK: - SearchProgressDelegate
+    
+    func searchDidStart(_ searchProgressController: SearchProgressController) {
+        UIApplication.shared.isNetworkActivityIndicatorVisible = true
         activityIndicator.startAnimating()
+    }
+    
+    func searchDidStop(_ searchProgressController: SearchProgressController) {
+        UIApplication.shared.isNetworkActivityIndicatorVisible = false
+        activityIndicator.stopAnimating()
     }
 }
