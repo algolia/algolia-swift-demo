@@ -73,14 +73,14 @@ class MoviesIpadViewController: UIViewController, UICollectionViewDataSource, TT
 
         // Configure actor search.
         actorSearcher = Searcher(index: AlgoliaManager.sharedInstance.actorsIndex, resultHandler: self.handleActorSearchResults)
-        actorSearcher.query.hitsPerPage = 10
-        actorSearcher.query.attributesToHighlight = ["name"]
+        actorSearcher.params.hitsPerPage = 10
+        actorSearcher.params.attributesToHighlight = ["name"]
 
         // Configure movie search.
         movieSearcher = Searcher(index: AlgoliaManager.sharedInstance.moviesIndex, resultHandler: self.handleMovieSearchResults)
-        movieSearcher.query.facets = ["genre"]
-        movieSearcher.query.attributesToHighlight = ["title"]
-        movieSearcher.query.hitsPerPage = 30
+        movieSearcher.params.facets = ["genre"]
+        movieSearcher.params.attributesToHighlight = ["title"]
+        movieSearcher.params.hitsPerPage = 30
 
         NotificationCenter.default.addObserver(self, selector: #selector(self.updateActivityIndicator), name: Searcher.SearchNotification, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(self.updateActivityIndicator), name: Searcher.ResultNotification, object: nil)
@@ -101,8 +101,8 @@ class MoviesIpadViewController: UIViewController, UICollectionViewDataSource, TT
 
     private func search() {
         actorSearcher.search()
-        movieSearcher.disjunctiveFacets = genreFilteringModeSwitch.isOn ? ["genre"] : []
-        movieSearcher.query.numericFilters = [
+        movieSearcher.params.setFacet(withName: "genre", disjunctive: genreFilteringModeSwitch.isOn)
+        movieSearcher.params.numericFilters = [
             "year >= \(Int(yearRangeSlider.selectedMinimum))",
             "year <= \(Int(yearRangeSlider.selectedMaximum))",
             "rating >= \(ratingSelectorView.rating)"
@@ -111,7 +111,7 @@ class MoviesIpadViewController: UIViewController, UICollectionViewDataSource, TT
     }
 
     @IBAction func genreFilteringModeDidChange(_ sender: AnyObject) {
-        movieSearcher.setFacet(withName: "genre", disjunctive: genreFilteringModeSwitch.isOn)
+        movieSearcher.params.setFacet(withName: "genre", disjunctive: genreFilteringModeSwitch.isOn)
         search()
     }
 
@@ -123,8 +123,8 @@ class MoviesIpadViewController: UIViewController, UICollectionViewDataSource, TT
     // MARK: - UISearchBarDelegate
 
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
-        actorSearcher.query.query = searchText
-        movieSearcher.query.query = searchText
+        actorSearcher.params.query = searchText
+        movieSearcher.params.query = searchText
         search()
     }
 
@@ -157,12 +157,12 @@ class MoviesIpadViewController: UIViewController, UICollectionViewDataSource, TT
             movieHits.append(contentsOf: results.hits)
         }
         // Sort facets: first selected facets, then by decreasing count, then by name.
-        genreFacets = FacetValue.listFrom(facetCounts: results.facets(name: "genre"), refinements: self.movieSearcher.refinements["genre"]).sorted() { (lhs, rhs) in
+        genreFacets = FacetValue.listFrom(facetCounts: results.facets(name: "genre"), refinements: movieSearcher.params.buildFacetRefinements()["genre"]).sorted() { (lhs, rhs) in
             // When using cunjunctive faceting ("AND"), all refined facet values are displayed first.
             // But when using disjunctive faceting ("OR"), refined facet values are left where they are.
             let disjunctiveFaceting = results.disjunctiveFacets.contains("genre")
-            let lhsChecked = self.movieSearcher.hasFacetRefinement(name: "genre", value: lhs.value)
-            let rhsChecked = self.movieSearcher.hasFacetRefinement(name: "genre", value: rhs.value)
+            let lhsChecked = self.movieSearcher.params.hasFacetRefinement(name: "genre", value: lhs.value)
+            let rhsChecked = self.movieSearcher.params.hasFacetRefinement(name: "genre", value: rhs.value)
             if !disjunctiveFaceting && lhsChecked != rhsChecked {
                 return lhsChecked
             } else if lhs.count != rhs.count {
@@ -235,7 +235,7 @@ class MoviesIpadViewController: UIViewController, UICollectionViewDataSource, TT
             case genreTableView:
                 let cell = tableView.dequeueReusableCell(withIdentifier: "genreCell", for: indexPath) as! GenreCell
                 cell.value = genreFacets[indexPath.item]
-                cell.checked = movieSearcher.hasFacetRefinement(name: "genre", value: genreFacets[indexPath.item].value)
+                cell.checked = movieSearcher.params.hasFacetRefinement(name: "genre", value: genreFacets[indexPath.item].value)
                 return cell
             default: assert(false); return UITableViewCell()
         }
@@ -246,7 +246,7 @@ class MoviesIpadViewController: UIViewController, UICollectionViewDataSource, TT
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         switch tableView {
             case genreTableView:
-                movieSearcher.toggleFacetRefinement(name: "genre", value: genreFacets[indexPath.item].value)
+                movieSearcher.params.toggleFacetRefinement(name: "genre", value: genreFacets[indexPath.item].value)
                 movieSearcher.search()
                 break
             default: return
