@@ -22,7 +22,7 @@
 //
 
 import AlgoliaSearch
-import AlgoliaSearchHelper
+import InstantSearchCore
 import TTRangeSlider
 import UIKit
 

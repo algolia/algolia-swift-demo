@@ -21,7 +21,7 @@
 //  THE SOFTWARE.
 //
 
-import AlgoliaSearchHelper
+import InstantSearchCore
 import UIKit
 
 extension UILabel {
@@ -31,7 +31,7 @@ extension UILabel {
         }
         set {
             let color = highlightedTextColor ?? self.tintColor ?? UIColor.blue
-            attributedText = newValue == nil ? nil : HighlightRenderer(highlightAttrs: [NSForegroundColorAttributeName: color]).render(text: newValue!)
+            attributedText = newValue == nil ? nil : Highlighter(highlightAttrs: [NSForegroundColorAttributeName: color]).render(text: newValue!)
         }
     }
 }

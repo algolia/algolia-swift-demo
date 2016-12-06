@@ -21,7 +21,7 @@
 //  THE SOFTWARE.
 //
 
-import AlgoliaSearchHelper
+import InstantSearchCore
 import UIKit
 
 
