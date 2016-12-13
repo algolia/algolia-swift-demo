@@ -14,8 +14,8 @@ PODS:
   - AFNetworking/Serialization (3.1.0)
   - AFNetworking/UIKit (3.1.0):
     - AFNetworking/NSURLSession
-  - AlgoliaSearch-Client-Swift (4.4)
-  - InstantSearch-Core-Swift (0.3):
+  - AlgoliaSearch-Client-Swift (4.5)
+  - InstantSearch-Core-Swift (0.3.1):
     - AlgoliaSearch-Client-Swift (~> 4.0)
   - Reachability (3.2)
   - TTRangeSlider (1.0.5)
@@ -38,8 +38,8 @@ CHECKOUT OPTIONS:
 
 SPEC CHECKSUMS:
   AFNetworking: 5e0e199f73d8626b11e79750991f5d173d1f8b67
-  AlgoliaSearch-Client-Swift: 4ce299bf353d1d5b6a4b57db2a8bcbafc46f9fa7
-  InstantSearch-Core-Swift: ccc3b08b94ded8080c74650d48979581b6368fb9
+  AlgoliaSearch-Client-Swift: c7662215a44392430635a922234c1c04e64ee17b
+  InstantSearch-Core-Swift: c7f1a912081a0feeb1c0335a08e587d0c3029982
   Reachability: 33e18b67625424e47b6cde6d202dce689ad7af96
   TTRangeSlider: 2f2ce4a33b32bb323c6575b9f5161c4664459c58
 
