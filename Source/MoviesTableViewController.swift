@@ -22,7 +22,7 @@
 //
 
 import AlgoliaSearch
-import AlgoliaSearchHelper
+import InstantSearchCore
 import AFNetworking
 import UIKit
 
@@ -30,11 +30,11 @@ import UIKit
 class MoviesTableViewController: UITableViewController, UISearchBarDelegate, UISearchResultsUpdating, SearchProgressDelegate {
 
     var searchController: UISearchController!
+    var searchProgressController: SearchProgressController!
 
     var movieSearcher: Searcher!
     var movieHits: [JSONObject] = []
     var originIsLocal: Bool = false
-    var progressController: SearchProgressController!
 
     let placeholder = UIImage(named: "white")
 
@@ -43,9 +43,9 @@ class MoviesTableViewController: UITableViewController, UISearchBarDelegate, UIS
 
         // Algolia Search
         movieSearcher = Searcher(index: AlgoliaManager.sharedInstance.moviesIndex, resultHandler: self.handleSearchResults)
-        movieSearcher.query.hitsPerPage = 15
-        movieSearcher.query.attributesToRetrieve = ["title", "image", "rating", "year"]
-        movieSearcher.query.attributesToHighlight = ["title"]
+        movieSearcher.params.hitsPerPage = 15
+        movieSearcher.params.attributesToRetrieve = ["title", "image", "rating", "year"]
+        movieSearcher.params.attributesToHighlight = ["title"]
 
         // Search controller
         searchController = UISearchController(searchResultsController: nil)
@@ -60,12 +60,12 @@ class MoviesTableViewController: UITableViewController, UISearchBarDelegate, UIS
         definesPresentationContext = true
         searchController!.searchBar.sizeToFit()
 
+        // Configure search progress monitoring.
+        searchProgressController = SearchProgressController(searcher: movieSearcher)
+        searchProgressController.delegate = self
+
         // First load
         updateSearchResults(for: searchController)
-
-        // Track progress to update activity indicator.
-        progressController = SearchProgressController(searcher: movieSearcher)
-        progressController.delegate = self
 
         // Start a sync if needed.
         AlgoliaManager.sharedInstance.syncIfNeededAndPossible()
@@ -138,7 +138,7 @@ class MoviesTableViewController: UITableViewController, UISearchBarDelegate, UIS
     // MARK: - Search
 
     func updateSearchResults(for searchController: UISearchController) {
-        movieSearcher.query.query = searchController.searchBar.text
+        movieSearcher.params.query = searchController.searchBar.text
         movieSearcher.search()
     }
 
@@ -147,13 +147,13 @@ class MoviesTableViewController: UITableViewController, UISearchBarDelegate, UIS
     override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
     }
 
-    // MARK: - Activity indicator
+    // MARK: - SearchProgressDelegate
 
-    @objc func searchDidStart(_ searchProgressController: SearchProgressController) {
+    func searchDidStart(_ searchProgressController: SearchProgressController) {
         UIApplication.shared.isNetworkActivityIndicatorVisible = true
     }
 
-    @objc func searchDidStop(_ searchProgressController: SearchProgressController) {
+    func searchDidStop(_ searchProgressController: SearchProgressController) {
         UIApplication.shared.isNetworkActivityIndicatorVisible = false
     }
 }
