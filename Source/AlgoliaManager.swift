@@ -132,6 +132,11 @@ class AlgoliaManager: NSObject {
 
         NotificationCenter.default.addObserver(self, selector: #selector(syncDidStart), name: MirroredIndex.SyncDidStartNotification, object: moviesIndex)
         NotificationCenter.default.addObserver(self, selector: #selector(syncDidFinish), name: MirroredIndex.SyncDidFinishNotification, object: moviesIndex)
+
+        // Bootstrap the movie index.
+        if let settingsFile = Bundle.main.path(forResource: "settings", ofType: "json"), let objectFile = Bundle.main.path(forResource: "objects", ofType: "json") {
+            moviesIndex.bootstrap(settingsFile: settingsFile, objectFiles: [objectFile])
+        }
     }
     
     func syncIfNeededAndPossible() {

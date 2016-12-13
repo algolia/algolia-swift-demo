@@ -21,6 +21,8 @@
 		BC3FF4B91CEF1526005CCC78 /* MovieCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC3FF4B81CEF1526005CCC78 /* MovieCell.swift */; };
 		BC3FF4BD1CEF4759005CCC78 /* ActorCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC3FF4BC1CEF4759005CCC78 /* ActorCell.swift */; };
 		BC3FF4BF1CEF4788005CCC78 /* Actor.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC3FF4BE1CEF4788005CCC78 /* Actor.swift */; };
+		BC45AF561E005F0500692E33 /* objects.json in Resources */ = {isa = PBXBuildFile; fileRef = BC45AF541E005F0500692E33 /* objects.json */; };
+		BC45AF571E005F0500692E33 /* settings.json in Resources */ = {isa = PBXBuildFile; fileRef = BC45AF551E005F0500692E33 /* settings.json */; };
 		BC58264A1D4B95E80047D27F /* ConfigViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = BC5826491D4B95E80047D27F /* ConfigViewController.xib */; };
 		BC58264D1D4B9A580047D27F /* ConfigViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC58264B1D4B9A580047D27F /* ConfigViewController.swift */; };
 		BCA4DA641CEDFCBB00E16ACA /* Main_iPad.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = BCA4DA621CEDFCBB00E16ACA /* Main_iPad.storyboard */; };
@@ -72,6 +74,8 @@
 		BC3FF4B81CEF1526005CCC78 /* MovieCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MovieCell.swift; sourceTree = "<group>"; };
 		BC3FF4BC1CEF4759005CCC78 /* ActorCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ActorCell.swift; sourceTree = "<group>"; };
 		BC3FF4BE1CEF4788005CCC78 /* Actor.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Actor.swift; sourceTree = "<group>"; };
+		BC45AF541E005F0500692E33 /* objects.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; name = objects.json; path = Ressources/objects.json; sourceTree = "<group>"; };
+		BC45AF551E005F0500692E33 /* settings.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; name = settings.json; path = Ressources/settings.json; sourceTree = "<group>"; };
 		BC5826491D4B95E80047D27F /* ConfigViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ConfigViewController.xib; sourceTree = "<group>"; };
 		BC58264B1D4B9A580047D27F /* ConfigViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ConfigViewController.swift; sourceTree = "<group>"; };
 		BCA4DA631CEDFCBB00E16ACA /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main_iPad.storyboard; sourceTree = "<group>"; };
@@ -206,6 +210,8 @@
 				BCD754F11CF47EB6006A05F1 /* star-yellow@3x.png */,
 				BCD754EC1CF47E39006A05F1 /* star-yellow@4x.png */,
 				BC3A24E51D2AB3D70041870D /* Localizable.strings */,
+				BC45AF541E005F0500692E33 /* objects.json */,
+				BC45AF551E005F0500692E33 /* settings.json */,
 			);
 			name = Resources;
 			sourceTree = "<group>";
@@ -315,8 +321,10 @@
 				BCD754F41CF47EB6006A05F1 /* star-yellow@3x.png in Resources */,
 				BCA4DA641CEDFCBB00E16ACA /* Main_iPad.storyboard in Resources */,
 				BCD754F21CF47EB6006A05F1 /* star-yellow.png in Resources */,
+				BC45AF571E005F0500692E33 /* settings.json in Resources */,
 				5D44D00D1B35F7B3008369AC /* LaunchScreen.xib in Resources */,
 				BC58264A1D4B95E80047D27F /* ConfigViewController.xib in Resources */,
+				BC45AF561E005F0500692E33 /* objects.json in Resources */,
 				5D44D00A1B35F7B3008369AC /* Images.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

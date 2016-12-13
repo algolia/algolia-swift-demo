@@ -24,28 +24,35 @@ PODS:
 
 DEPENDENCIES:
   - AFNetworking (~> 3.0)
+  - AlgoliaSearch-Offline-Swift (from `https://github.com/algolia/AlgoliaSearch-Client-Swift.git`, branch `feat/bootstrap`)
   - InstantSearch-Core-Offline-Swift (~> 0.3)
   - Reachability (~> 3.2)
   - TTRangeSlider (from `https://github.com/TomThorpe/TTRangeSlider`, branch `master`)
 
 EXTERNAL SOURCES:
+  AlgoliaSearch-Offline-Swift:
+    :branch: feat/bootstrap
+    :git: https://github.com/algolia/AlgoliaSearch-Client-Swift.git
   TTRangeSlider:
     :branch: master
     :git: https://github.com/TomThorpe/TTRangeSlider
 
 CHECKOUT OPTIONS:
+  AlgoliaSearch-Offline-Swift:
+    :commit: 4b56053b74d3a8de9b8d755146a089db5f817eb1
+    :git: https://github.com/algolia/AlgoliaSearch-Client-Swift.git
   TTRangeSlider:
     :commit: a87a4abecc7695341061bc9034f8d061a1b6d5d1
     :git: https://github.com/TomThorpe/TTRangeSlider
 
 SPEC CHECKSUMS:
   AFNetworking: 5e0e199f73d8626b11e79750991f5d173d1f8b67
-  AlgoliaSearch-Offline-Swift: cc3aee2d04eb30b4c109a804639962344ec8419e
+  AlgoliaSearch-Offline-Swift: 56dcf1bfe5ba261eeef7e419a4845e2db6c2f8ed
   AlgoliaSearchOfflineCore-iOS: c27b688f2633ddd9a897d6d50b28b62c0db1a23c
   InstantSearch-Core-Offline-Swift: 52796a49c84713be69439e963080a1dfc1a38640
   Reachability: 33e18b67625424e47b6cde6d202dce689ad7af96
   TTRangeSlider: 2f2ce4a33b32bb323c6575b9f5161c4664459c58
 
-PODFILE CHECKSUM: dbacbb0b48c981550009d29adf6e146285d2644f
+PODFILE CHECKSUM: 67997d3ea3faff146ea528f41aafffa90a66d710
 
 COCOAPODS: 1.2.0.beta.1
