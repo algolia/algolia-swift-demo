@@ -104,11 +104,10 @@ class MoviesIpadViewController: UIViewController, UICollectionViewDataSource, TT
     private func search() {
         actorSearcher.search()
         movieSearcher.params.setFacet(withName: "genre", disjunctive: genreFilteringModeSwitch.isOn)
-        movieSearcher.params.numericFilters = [
-            "year >= \(Int(yearRangeSlider.selectedMinimum))",
-            "year <= \(Int(yearRangeSlider.selectedMaximum))",
-            "rating >= \(ratingSelectorView.rating)"
-        ]
+        movieSearcher.params.clearNumericRefinements()
+        movieSearcher.params.addNumericRefinement("year", .greaterThanOrEqual, Int(yearRangeSlider.selectedMinimum))
+        movieSearcher.params.addNumericRefinement("year", .lessThanOrEqual, Int(yearRangeSlider.selectedMaximum))
+        movieSearcher.params.addNumericRefinement("rating", .greaterThanOrEqual, ratingSelectorView.rating)
         movieSearcher.search()
     }
 
