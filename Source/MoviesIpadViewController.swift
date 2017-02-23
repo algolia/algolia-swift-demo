@@ -44,7 +44,7 @@ class MoviesIpadViewController: UIViewController, UICollectionViewDataSource, TT
     var movieSearcher: Searcher!
     var actorHits: [JSONObject] = []
     var movieHits: [JSONObject] = []
-    var strategist: SearchStrategist!
+    var strategy: DefaultRequestStrategy!
     var genreFacets: [FacetValue] = []
 
     var yearFilterDebouncer = Debouncer(delay: 0.3)
@@ -93,11 +93,9 @@ class MoviesIpadViewController: UIViewController, UICollectionViewDataSource, TT
         searchProgressController.graceDelay = 0.5
         searchProgressController.delegate = self
 
-        strategist = SearchStrategist()
-        strategist.addSearcher(movieSearcher)
-        strategist.addSearcher(actorSearcher)
-        strategist.addObserver(self, forKeyPath: "strategy", options: .new, context: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(self.requestDropped), name: SearchStrategist.DropNotification, object: strategist)
+        strategy = DefaultRequestStrategy(searchers: [movieSearcher, actorSearcher])
+        strategy.addObserver(self, forKeyPath: "mode", options: .new, context: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(self.requestDropped), name: DefaultRequestStrategy.DropNotification, object: strategy)
         
         updateMovies()
         search()
@@ -125,7 +123,7 @@ class MoviesIpadViewController: UIViewController, UICollectionViewDataSource, TT
     }
     
     private func updateStatusLabelColor() {
-        switch strategist.strategy {
+        switch strategy.mode {
         case .Realtime: searchTimeLabel.textColor = UIColor.green; break
         case .Throttled: searchTimeLabel.textColor = UIColor.purple; break
         case .Manual: searchTimeLabel.textColor = UIColor.orange; break
@@ -134,13 +132,13 @@ class MoviesIpadViewController: UIViewController, UICollectionViewDataSource, TT
 
     // MARK: - Actions
 
-    private func search(asYouType: Bool = false) {
+    private func search(force: Bool = false) {
         movieSearcher.params.setFacet(withName: "genre", disjunctive: genreFilteringModeSwitch.isOn)
         movieSearcher.params.clearNumericRefinements()
         movieSearcher.params.addNumericRefinement("year", .greaterThanOrEqual, Int(yearRangeSlider.selectedMinimum))
         movieSearcher.params.addNumericRefinement("year", .lessThanOrEqual, Int(yearRangeSlider.selectedMaximum))
         movieSearcher.params.addNumericRefinement("rating", .greaterThanOrEqual, ratingSelectorView.rating)
-        strategist.search(asYouType: asYouType)
+        strategy.search(force: force)
     }
 
     @IBAction func genreFilteringModeDidChange(_ sender: AnyObject) {
@@ -158,7 +156,7 @@ class MoviesIpadViewController: UIViewController, UICollectionViewDataSource, TT
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
         actorSearcher.params.query = searchText
         movieSearcher.params.query = searchText
-        search(asYouType: true)
+        search()
     }
     
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
@@ -283,7 +281,7 @@ class MoviesIpadViewController: UIViewController, UICollectionViewDataSource, TT
         switch tableView {
             case genreTableView:
                 movieSearcher.params.toggleFacetRefinement(name: "genre", value: genreFacets[indexPath.item].value)
-                strategist.search(asYouType: false)
+                self.search(force: true)
                 break
             default: return
         }
@@ -293,7 +291,7 @@ class MoviesIpadViewController: UIViewController, UICollectionViewDataSource, TT
 
     func rangeSlider(_ sender: TTRangeSlider!, didChangeSelectedMinimumValue selectedMinimum: Float, andMaximumValue selectedMaximum: Float) {
         yearFilterDebouncer.call {
-            self.search(asYouType: false)
+            self.search(force: false)
         }
     }
 
@@ -305,7 +303,7 @@ class MoviesIpadViewController: UIViewController, UICollectionViewDataSource, TT
             if keyPath == "rating" {
                 search()
             }
-        } else if object === strategist {
+        } else if object === strategy {
             if keyPath == "strategy" {
                 guard let strategy = change?[NSKeyValueChangeKey.newKey] as? Int else { return }
                 searchTimeLabel.text = "New strategy: \(strategy)"
