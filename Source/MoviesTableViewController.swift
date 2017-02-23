@@ -32,7 +32,9 @@ class MoviesTableViewController: UITableViewController, UISearchBarDelegate, UIS
     var searchController: UISearchController!
     var searchProgressController: SearchProgressController!
 
+    var actorSearcher: Searcher!
     var movieSearcher: Searcher!
+    var actorHits: [JSONObject] = []
     var movieHits: [JSONObject] = []
     var originIsLocal: Bool = false
 
@@ -43,9 +45,14 @@ class MoviesTableViewController: UITableViewController, UISearchBarDelegate, UIS
 
         // Algolia Search
         movieSearcher = Searcher(index: AlgoliaManager.sharedInstance.moviesIndex, resultHandler: self.handleSearchResults)
-        movieSearcher.params.hitsPerPage = 15
+        movieSearcher.params.hitsPerPage = 20
         movieSearcher.params.attributesToRetrieve = ["title", "image", "rating", "year"]
         movieSearcher.params.attributesToHighlight = ["title"]
+
+        // Configure actor search.
+        actorSearcher = Searcher(index: AlgoliaManager.sharedInstance.actorsIndex, resultHandler: self.handleActorSearchResults)
+        actorSearcher.params.hitsPerPage = 3
+        actorSearcher.params.attributesToHighlight = ["name"]
 
         // Search controller
         searchController = UISearchController(searchResultsController: nil)
@@ -100,17 +107,35 @@ class MoviesTableViewController: UITableViewController, UISearchBarDelegate, UIS
         self.tableView.reloadData()
     }
 
+    private func handleActorSearchResults(results: SearchResults?, error: Error?) {
+        guard let results = results else { return }
+        actorHits = results.hits
+        self.tableView.reloadData()
+    }
+
     // MARK: - Table view data source
 
     override func numberOfSections(in tableView: UITableView) -> Int {
-        return 1
+        return 2
     }
 
-    override func tableView(_ tableView: UITableView, numberOfRowsInSection: Int) -> Int {
-        return movieHits.count
+    override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return section == 0 ? actorHits.count : movieHits.count
     }
 
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        // Actors
+        if indexPath.section == 0 {
+            let cell = tableView.dequeueReusableCell(withIdentifier: "movieCell", for: indexPath)
+            cell.textLabel?.highlightedText = SearchResults.highlightResult(hit: actorHits[indexPath.row], path: "name")?.value
+            if let imagePath = actorHits[indexPath.row]["image_path"] as? String, let url = URL(string: "https://image.tmdb.org/t/p/w154" + imagePath) {
+                cell.imageView?.setImageWith(url, placeholderImage: placeholder)
+            } else {
+                cell.imageView?.image = nil
+            }
+            cell.detailTextLabel?.text = nil
+            return cell
+        }
         let cell = tableView.dequeueReusableCell(withIdentifier: "movieCell", for: indexPath)
 
         // Load more?
@@ -134,12 +159,22 @@ class MoviesTableViewController: UITableViewController, UISearchBarDelegate, UIS
 
         return cell
     }
+    
+    override func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
+        if section == 0 {
+            return actorHits.count != 0 ? "Actors" : nil
+        } else {
+            return movieHits.count != 0 ? "Movies" : nil
+        }
+    }
 
     // MARK: - Search
 
     func updateSearchResults(for searchController: UISearchController) {
         movieSearcher.params.query = searchController.searchBar.text
         movieSearcher.search()
+        actorSearcher.params.query = searchController.searchBar.text
+        actorSearcher.search()
     }
 
     // MARK: - KVO
