@@ -96,7 +96,7 @@ class MoviesIpadViewController: UIViewController, UICollectionViewDataSource, TT
         strategist = SearchStrategist()
         strategist.addSearcher(movieSearcher)
         strategist.addSearcher(actorSearcher)
-        strategist.addObserver(self, forKeyPath: "strategy", options: .New, context: nil)
+        strategist.addObserver(self, forKeyPath: "strategy", options: .new, context: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(self.requestDropped), name: SearchStrategist.DropNotification, object: strategist)
         
         updateMovies()
@@ -117,7 +117,7 @@ class MoviesIpadViewController: UIViewController, UICollectionViewDataSource, TT
     // MARK: - State update
     
     private func updateMovies() {
-        moviesCollectionViewPlaceholder.hidden = !movieHits.isEmpty
+        moviesCollectionViewPlaceholder.isHidden = !movieHits.isEmpty
         if movieHits.isEmpty {
             moviesCollectionViewPlaceholder.text = "No results"
         }
@@ -126,9 +126,9 @@ class MoviesIpadViewController: UIViewController, UICollectionViewDataSource, TT
     
     private func updateStatusLabelColor() {
         switch strategist.strategy {
-        case .Realtime: searchTimeLabel.textColor = UIColor.greenColor(); break
-        case .Throttled: searchTimeLabel.textColor = UIColor.purpleColor(); break
-        case .Manual: searchTimeLabel.textColor = UIColor.orangeColor(); break
+        case .Realtime: searchTimeLabel.textColor = UIColor.green; break
+        case .Throttled: searchTimeLabel.textColor = UIColor.purple; break
+        case .Manual: searchTimeLabel.textColor = UIColor.orange; break
         }
     }
 
@@ -140,7 +140,7 @@ class MoviesIpadViewController: UIViewController, UICollectionViewDataSource, TT
         movieSearcher.params.addNumericRefinement("year", .greaterThanOrEqual, Int(yearRangeSlider.selectedMinimum))
         movieSearcher.params.addNumericRefinement("year", .lessThanOrEqual, Int(yearRangeSlider.selectedMaximum))
         movieSearcher.params.addNumericRefinement("rating", .greaterThanOrEqual, ratingSelectorView.rating)
-        strategist.search(asYouType)
+        strategist.search(asYouType: asYouType)
     }
 
     @IBAction func genreFilteringModeDidChange(_ sender: AnyObject) {
@@ -158,10 +158,10 @@ class MoviesIpadViewController: UIViewController, UICollectionViewDataSource, TT
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
         actorSearcher.params.query = searchText
         movieSearcher.params.query = searchText
-        search(true)
+        search(asYouType: true)
     }
     
-    func searchBarSearchButtonClicked(searchBar: UISearchBar) {
+    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
         search()
     }
     
@@ -283,7 +283,7 @@ class MoviesIpadViewController: UIViewController, UICollectionViewDataSource, TT
         switch tableView {
             case genreTableView:
                 movieSearcher.params.toggleFacetRefinement(name: "genre", value: genreFacets[indexPath.item].value)
-                strategist.search(false)
+                strategist.search(asYouType: false)
                 break
             default: return
         }
@@ -293,7 +293,7 @@ class MoviesIpadViewController: UIViewController, UICollectionViewDataSource, TT
 
     func rangeSlider(_ sender: TTRangeSlider!, didChangeSelectedMinimumValue selectedMinimum: Float, andMaximumValue selectedMaximum: Float) {
         yearFilterDebouncer.call {
-            self.search(false)
+            self.search(asYouType: false)
         }
     }
 
@@ -307,7 +307,7 @@ class MoviesIpadViewController: UIViewController, UICollectionViewDataSource, TT
             }
         } else if object === strategist {
             if keyPath == "strategy" {
-                guard let strategy = change?[NSKeyValueChangeNewKey] as? Int else { return }
+                guard let strategy = change?[NSKeyValueChangeKey.newKey] as? Int else { return }
                 searchTimeLabel.text = "New strategy: \(strategy)"
                 updateStatusLabelColor()
             }
