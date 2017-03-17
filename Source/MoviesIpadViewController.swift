@@ -26,22 +26,20 @@ import InstantSearchCore
 import TTRangeSlider
 import UIKit
 
-class MoviesIpadViewController: UIViewController, UICollectionViewDataSource, TTRangeSliderDelegate, UISearchBarDelegate, UITableViewDataSource, UITableViewDelegate, SearchProgressDelegate {
+class MoviesIpadViewController: UIViewController, UICollectionViewDataSource, TTRangeSliderDelegate, UISearchBarDelegate, UITableViewDataSource, UITableViewDelegate {
     @IBOutlet weak var searchBar: UISearchBar!
-    @IBOutlet weak var genreTableView: UITableView!
+    @IBOutlet weak var genreTableView: RefinementListView!
     @IBOutlet weak var yearRangeSlider: TTRangeSlider!
     @IBOutlet weak var ratingSelectorView: RatingSelectorView!
     @IBOutlet weak var moviesCollectionView: HitsCollectionView!
     @IBOutlet weak var actorsTableView: UITableView!
     @IBOutlet weak var genreTableViewFooter: UILabel!
     @IBOutlet weak var genreFilteringModeSwitch: UISwitch!
-    @IBOutlet weak var activityIndicator: UIActivityIndicatorView!
 
     var instantSearchPresenter: InstantSearchPresenter!
     var actorSearcher: Searcher!
     var movieSearcher: Searcher!
     var actorHits: [JSONObject] = []
-    var genreFacets: [FacetValue] = []
 
     var yearFilterDebouncer = Debouncer(delay: 0.3)
     var searchProgressController: SearchProgressController!
@@ -66,8 +64,8 @@ class MoviesIpadViewController: UIViewController, UICollectionViewDataSource, TT
         ratingSelectorView.addObserver(self, forKeyPath: "rating", options: .new, context: nil)
 
         // Customize genre table view.
-        genreTableView.tableFooterView = genreTableViewFooter
-        genreTableViewFooter.isHidden = true
+//        genreTableView.tableFooterView = genreTableViewFooter
+//        genreTableViewFooter.isHidden = true
 
         // Configure actor search.
         actorSearcher = Searcher(index: AlgoliaManager.sharedInstance.actorsIndex, resultHandler: self.handleActorSearchResults)
@@ -77,13 +75,9 @@ class MoviesIpadViewController: UIViewController, UICollectionViewDataSource, TT
         // Configure movie search.
         movieSearcher = Searcher(index: AlgoliaManager.sharedInstance.moviesIndex, resultHandler: self.handleMovieSearchResults)
         movieSearcher.params.facets = ["genre"]
+        movieSearcher.params.setFacet(withName: "genre", disjunctive: true)
         movieSearcher.params.attributesToHighlight = ["title"]
         movieSearcher.params.hitsPerPage = 30
-
-        // Configure search progress monitoring.
-        searchProgressController = SearchProgressController(searcher: movieSearcher)
-        searchProgressController.graceDelay = 0.5
-        searchProgressController.delegate = self
 
         instantSearchPresenter = InstantSearchPresenter(searcher: movieSearcher)
         instantSearchPresenter.addAllWidgets(in: self.view)
@@ -137,21 +131,7 @@ class MoviesIpadViewController: UIViewController, UICollectionViewDataSource, TT
         guard let results = results else {
             return
         }
-        // Sort facets: first selected facets, then by decreasing count, then by name.
-        genreFacets = FacetValue.listFrom(facetCounts: results.facets(name: "genre"), refinements: movieSearcher.params.buildFacetRefinements()["genre"]).sorted() { (lhs, rhs) in
-            // When using cunjunctive faceting ("AND"), all refined facet values are displayed first.
-            // But when using disjunctive faceting ("OR"), refined facet values are left where they are.
-            let disjunctiveFaceting = results.disjunctiveFacets.contains("genre")
-            let lhsChecked = self.movieSearcher.params.hasFacetRefinement(name: "genre", value: lhs.value)
-            let rhsChecked = self.movieSearcher.params.hasFacetRefinement(name: "genre", value: rhs.value)
-            if !disjunctiveFaceting && lhsChecked != rhsChecked {
-                return lhsChecked
-            } else if lhs.count != rhs.count {
-                return lhs.count > rhs.count
-            } else {
-                return lhs.value < rhs.value
-            }
-        }
+
         let exhaustiveFacetsCount = results.exhaustiveFacetsCount == true
         genreTableViewFooter.isHidden = exhaustiveFacetsCount
 
@@ -160,8 +140,6 @@ class MoviesIpadViewController: UIViewController, UICollectionViewDataSource, TT
         formatter.numberStyle = .decimal
         formatter.usesGroupingSeparator = true
         formatter.groupingSize = 3
-
-        self.genreTableView.reloadData()
     }
 
     // MARK: - UICollectionViewDataSource
@@ -183,7 +161,7 @@ class MoviesIpadViewController: UIViewController, UICollectionViewDataSource, TT
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         switch tableView {
             case actorsTableView: return actorHits.count
-            case genreTableView: return genreFacets.count
+            case genreTableView: return genreTableView.numberOfRows(in: section)
             default: assert(false); return 0
         }
     }
@@ -199,8 +177,8 @@ class MoviesIpadViewController: UIViewController, UICollectionViewDataSource, TT
                 return cell
             case genreTableView:
                 let cell = tableView.dequeueReusableCell(withIdentifier: "genreCell", for: indexPath) as! GenreCell
-                cell.value = genreFacets[indexPath.item]
-                cell.checked = movieSearcher.params.hasFacetRefinement(name: "genre", value: genreFacets[indexPath.item].value)
+                cell.value = genreTableView.facetForRow(at: indexPath)
+                cell.checked = genreTableView.isRefined(at: indexPath)
                 return cell
             default: assert(false); return UITableViewCell()
         }
@@ -211,8 +189,7 @@ class MoviesIpadViewController: UIViewController, UICollectionViewDataSource, TT
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         switch tableView {
             case genreTableView:
-                movieSearcher.params.toggleFacetRefinement(name: "genre", value: genreFacets[indexPath.item].value)
-                movieSearcher.search()
+                genreTableView.didSelectRow(at: indexPath)
                 break
             default: return
         }
@@ -235,17 +212,5 @@ class MoviesIpadViewController: UIViewController, UICollectionViewDataSource, TT
                 search()
             }
         }
-    }
-
-    // MARK: - SearchProgressDelegate
-    
-    func searchDidStart(_ searchProgressController: SearchProgressController) {
-        UIApplication.shared.isNetworkActivityIndicatorVisible = true
-        activityIndicator.startAnimating()
-    }
-    
-    func searchDidStop(_ searchProgressController: SearchProgressController) {
-        UIApplication.shared.isNetworkActivityIndicatorVisible = false
-        activityIndicator.stopAnimating()
     }
 }

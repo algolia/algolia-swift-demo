@@ -165,7 +165,6 @@
 				5D44D0061B35F7B3008369AC /* Main.storyboard */,
 				5D44D0091B35F7B3008369AC /* Images.xcassets */,
 				5D44D00B1B35F7B3008369AC /* LaunchScreen.xib */,
-				5D44D0001B35F7B3008369AC /* Supporting Files */,
 				BCA4DA621CEDFCBB00E16ACA /* Main_iPad.storyboard */,
 				BCA4DA651CEDFE0300E16ACA /* MoviesIpadViewController.swift */,
 				BC3FF4B41CEF0DF6005CCC78 /* AlgoliaManager.swift */,
@@ -176,6 +175,7 @@
 				BCD755011CF48168006A05F1 /* RatingSelectorView.swift */,
 				BC5826491D4B95E80047D27F /* ConfigViewController.xib */,
 				BC58264B1D4B9A580047D27F /* ConfigViewController.swift */,
+				5D44D0001B35F7B3008369AC /* Supporting Files */,
 			);
 			path = Source;
 			sourceTree = "<group>";
