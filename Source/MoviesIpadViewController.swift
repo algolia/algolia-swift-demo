@@ -31,18 +31,16 @@ class MoviesIpadViewController: UIViewController, UICollectionViewDataSource, TT
     @IBOutlet weak var genreTableView: UITableView!
     @IBOutlet weak var yearRangeSlider: TTRangeSlider!
     @IBOutlet weak var ratingSelectorView: RatingSelectorView!
-    @IBOutlet weak var moviesCollectionView: UICollectionView!
+    @IBOutlet weak var moviesCollectionView: HitsCollectionView!
     @IBOutlet weak var actorsTableView: UITableView!
-    @IBOutlet weak var movieCountLabel: UILabel!
-    @IBOutlet weak var searchTimeLabel: UILabel!
     @IBOutlet weak var genreTableViewFooter: UILabel!
     @IBOutlet weak var genreFilteringModeSwitch: UISwitch!
     @IBOutlet weak var activityIndicator: UIActivityIndicatorView!
 
+    var instantSearchPresenter: InstantSearchPresenter!
     var actorSearcher: Searcher!
     var movieSearcher: Searcher!
     var actorHits: [JSONObject] = []
-    var movieHits: [JSONObject] = []
     var genreFacets: [FacetValue] = []
 
     var yearFilterDebouncer = Debouncer(delay: 0.3)
@@ -50,9 +48,6 @@ class MoviesIpadViewController: UIViewController, UICollectionViewDataSource, TT
 
     override func viewDidLoad() {
         super.viewDidLoad()
-
-        self.movieCountLabel.text = NSLocalizedString("movie_count_placeholder", comment: "")
-        self.searchTimeLabel.text = nil
 
         // Customize search bar.
         searchBar.placeholder = NSLocalizedString("search_bar_placeholder", comment: "")
@@ -90,6 +85,9 @@ class MoviesIpadViewController: UIViewController, UICollectionViewDataSource, TT
         searchProgressController.graceDelay = 0.5
         searchProgressController.delegate = self
 
+        instantSearchPresenter = InstantSearchPresenter(searcher: movieSearcher)
+        instantSearchPresenter.addAllWidgets(in: self.view)
+        
         search()
     }
     
@@ -123,17 +121,9 @@ class MoviesIpadViewController: UIViewController, UICollectionViewDataSource, TT
         self.present(vc, animated: true, completion: nil)
     }
 
-    // MARK: - UISearchBarDelegate
-
-    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
-        actorSearcher.params.query = searchText
-        movieSearcher.params.query = searchText
-        search()
-    }
-
     // MARK: - Search completion handlers
 
-    private func handleActorSearchResults(results: SearchResults?, error: Error?) {
+    private func handleActorSearchResults(results: SearchResults?, error: Error?, userInfo: [String: Any]) {
         guard let results = results else { return }
         if results.page == 0 {
             actorHits = results.hits
@@ -141,23 +131,11 @@ class MoviesIpadViewController: UIViewController, UICollectionViewDataSource, TT
             actorHits.append(contentsOf: results.hits)
         }
         self.actorsTableView.reloadData()
-
-        // Scroll to top.
-        if results.page == 0 {
-            self.moviesCollectionView.contentOffset = CGPoint.zero
-        }
     }
 
-    private func handleMovieSearchResults(results: SearchResults?, error: Error?) {
+    private func handleMovieSearchResults(results: SearchResults?, error: Error?, userInfo: [String: Any]) {
         guard let results = results else {
-            self.searchTimeLabel.textColor = UIColor.red
-            self.searchTimeLabel.text = NSLocalizedString("error_search", comment: "")
             return
-        }
-        if results.page == 0 {
-            movieHits = results.hits
-        } else {
-            movieHits.append(contentsOf: results.hits)
         }
         // Sort facets: first selected facets, then by decreasing count, then by name.
         genreFacets = FacetValue.listFrom(facetCounts: results.facets(name: "genre"), refinements: movieSearcher.params.buildFacetRefinements()["genre"]).sorted() { (lhs, rhs) in
@@ -182,37 +160,21 @@ class MoviesIpadViewController: UIViewController, UICollectionViewDataSource, TT
         formatter.numberStyle = .decimal
         formatter.usesGroupingSeparator = true
         formatter.groupingSize = 3
-        self.movieCountLabel.text = "\(formatter.string(for: results.nbHits)!) MOVIES"
-
-        searchTimeLabel.textColor = UIColor.lightGray
-        self.searchTimeLabel.text = "Found in \(results.processingTimeMS) ms"
-        // Indicate origin of content.
-        if results.content["origin"] as? String == "local" {
-            searchTimeLabel.textColor = searchTimeLabel.highlightedTextColor
-            searchTimeLabel.text! += " (offline results)"
-        }
 
         self.genreTableView.reloadData()
-        self.moviesCollectionView.reloadData()
-
-        // Scroll to top.
-        if results.page == 0 {
-            self.moviesCollectionView.contentOffset = CGPoint.zero
-        }
     }
 
     // MARK: - UICollectionViewDataSource
 
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return movieHits.count
+        return moviesCollectionView.numberOfRows(in: section)
     }
 
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "movieCell", for: indexPath) as! MovieCell
-        cell.movie = MovieRecord(json: movieHits[indexPath.item])
-        if indexPath.item + 5 >= movieHits.count {
-            movieSearcher.loadMore()
-        }
+        let hit = moviesCollectionView.hitForRow(at: indexPath)
+        cell.movie = MovieRecord(json: hit)
+        
         return cell
     }
 

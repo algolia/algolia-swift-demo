@@ -14,7 +14,7 @@ PODS:
   - AFNetworking/Serialization (3.1.0)
   - AFNetworking/UIKit (3.1.0):
     - AFNetworking/NSURLSession
-  - AlgoliaSearch-Client-Swift (4.5)
+  - AlgoliaSearch-Client-Swift (4.7)
   - InstantSearch-Core-Swift (1.0):
     - AlgoliaSearch-Client-Swift (~> 4.0)
   - Reachability (3.2)
@@ -22,11 +22,13 @@ PODS:
 
 DEPENDENCIES:
   - AFNetworking (~> 3.0)
-  - InstantSearch-Core-Swift (~> 1.0)
+  - InstantSearch-Core-Swift (from `../instantsearch-core-swift`)
   - Reachability (~> 3.2)
   - TTRangeSlider (from `https://github.com/TomThorpe/TTRangeSlider`, branch `master`)
 
 EXTERNAL SOURCES:
+  InstantSearch-Core-Swift:
+    :path: ../instantsearch-core-swift
   TTRangeSlider:
     :branch: master
     :git: https://github.com/TomThorpe/TTRangeSlider
@@ -38,11 +40,11 @@ CHECKOUT OPTIONS:
 
 SPEC CHECKSUMS:
   AFNetworking: 5e0e199f73d8626b11e79750991f5d173d1f8b67
-  AlgoliaSearch-Client-Swift: c7662215a44392430635a922234c1c04e64ee17b
-  InstantSearch-Core-Swift: 7fcdf313c2d8f2fea9edc975319a7b4626e50e53
+  AlgoliaSearch-Client-Swift: 1fecaee39b416d513f438246e33634a8e3a04ced
+  InstantSearch-Core-Swift: c0c088acabf2da91b14d138677128cec689c2e77
   Reachability: 33e18b67625424e47b6cde6d202dce689ad7af96
   TTRangeSlider: 2f2ce4a33b32bb323c6575b9f5161c4664459c58
 
-PODFILE CHECKSUM: 381515db7583d99667dea5637a2fffa91505c830
+PODFILE CHECKSUM: 723b206f6fd4436716f3a0a6af3bfd74b5cbbef0
 
 COCOAPODS: 1.2.0

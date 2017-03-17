@@ -85,7 +85,7 @@ class MoviesTableViewController: UITableViewController, UISearchBarDelegate, UIS
 
     // MARK: - Search completion handlers
 
-    private func handleSearchResults(results: SearchResults?, error: Error?) {
+    private func handleSearchResults(results: SearchResults?, error: Error?, userInfo: [String: Any]) {
         guard let results = results else { return }
         if results.page == 0 {
             movieHits = results.hits

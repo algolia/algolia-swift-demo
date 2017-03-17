@@ -36,6 +36,18 @@
 		BCD754FC1CF4801C006A05F1 /* star-gray@4x.png in Resources */ = {isa = PBXBuildFile; fileRef = BCD754F81CF4801C006A05F1 /* star-gray@4x.png */; };
 		BCD755021CF48168006A05F1 /* RatingSelectorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCD755011CF48168006A05F1 /* RatingSelectorView.swift */; };
 		BCE9A13A1CFC8A6000BF767D /* placeholder.png in Resources */ = {isa = PBXBuildFile; fileRef = BCE9A1391CFC8A6000BF767D /* placeholder.png */; };
+		E22213271E7AF49900C16B31 /* InstantSearchPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = E22213231E7AF49900C16B31 /* InstantSearchPresenter.swift */; };
+		E22213281E7AF49900C16B31 /* InstantSearchMultiplePresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = E22213241E7AF49900C16B31 /* InstantSearchMultiplePresenter.swift */; };
+		E22213291E7AF49900C16B31 /* AlgoliaWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = E22213251E7AF49900C16B31 /* AlgoliaWidget.swift */; };
+		E222132A1E7AF49900C16B31 /* RefinementControlWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = E22213261E7AF49900C16B31 /* RefinementControlWidget.swift */; };
+		E22213341E7AF4A700C16B31 /* Stats.swift in Sources */ = {isa = PBXBuildFile; fileRef = E222132B1E7AF4A700C16B31 /* Stats.swift */; };
+		E22213351E7AF4A700C16B31 /* StatsLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = E222132C1E7AF4A700C16B31 /* StatsLabel.swift */; };
+		E22213361E7AF4A700C16B31 /* ActivityIndicatorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E222132D1E7AF4A700C16B31 /* ActivityIndicatorView.swift */; };
+		E22213371E7AF4A700C16B31 /* Slider.swift in Sources */ = {isa = PBXBuildFile; fileRef = E222132E1E7AF4A700C16B31 /* Slider.swift */; };
+		E22213391E7AF4A700C16B31 /* HitsTableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E22213301E7AF4A700C16B31 /* HitsTableView.swift */; };
+		E222133A1E7AF4A700C16B31 /* RefinementListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E22213311E7AF4A700C16B31 /* RefinementListView.swift */; };
+		E222133B1E7AF4A700C16B31 /* SearchBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = E22213321E7AF4A700C16B31 /* SearchBar.swift */; };
+		E222133F1E7BE05D00C16B31 /* HitsCollectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E222133E1E7BE05D00C16B31 /* HitsCollectionView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -88,6 +100,18 @@
 		BCD755011CF48168006A05F1 /* RatingSelectorView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RatingSelectorView.swift; sourceTree = "<group>"; };
 		BCE9A1391CFC8A6000BF767D /* placeholder.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = placeholder.png; path = Ressources/placeholder.png; sourceTree = "<group>"; };
 		D2954C98D66239E67B3B3D52 /* Pods-MovieSearch.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MovieSearch.debug.xcconfig"; path = "Pods/Target Support Files/Pods-MovieSearch/Pods-MovieSearch.debug.xcconfig"; sourceTree = "<group>"; };
+		E22213231E7AF49900C16B31 /* InstantSearchPresenter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = InstantSearchPresenter.swift; sourceTree = "<group>"; };
+		E22213241E7AF49900C16B31 /* InstantSearchMultiplePresenter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = InstantSearchMultiplePresenter.swift; sourceTree = "<group>"; };
+		E22213251E7AF49900C16B31 /* AlgoliaWidget.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AlgoliaWidget.swift; sourceTree = "<group>"; };
+		E22213261E7AF49900C16B31 /* RefinementControlWidget.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RefinementControlWidget.swift; sourceTree = "<group>"; };
+		E222132B1E7AF4A700C16B31 /* Stats.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Stats.swift; sourceTree = "<group>"; };
+		E222132C1E7AF4A700C16B31 /* StatsLabel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StatsLabel.swift; sourceTree = "<group>"; };
+		E222132D1E7AF4A700C16B31 /* ActivityIndicatorView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ActivityIndicatorView.swift; sourceTree = "<group>"; };
+		E222132E1E7AF4A700C16B31 /* Slider.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Slider.swift; sourceTree = "<group>"; };
+		E22213301E7AF4A700C16B31 /* HitsTableView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HitsTableView.swift; sourceTree = "<group>"; };
+		E22213311E7AF4A700C16B31 /* RefinementListView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RefinementListView.swift; sourceTree = "<group>"; };
+		E22213321E7AF4A700C16B31 /* SearchBar.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SearchBar.swift; sourceTree = "<group>"; };
+		E222133E1E7BE05D00C16B31 /* HitsCollectionView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HitsCollectionView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -133,6 +157,7 @@
 		5D44CFFF1B35F7B3008369AC /* Source */ = {
 			isa = PBXGroup;
 			children = (
+				E22213221E7AF48000C16B31 /* InstantSearchLib */,
 				5D44D0021B35F7B3008369AC /* AppDelegate.swift */,
 				5D44D0221B35F87B008369AC /* MoviesTableViewController.swift */,
 				5D44D0241B3601E8008369AC /* MovieRecord.swift */,
@@ -216,6 +241,34 @@
 				43A7D5DF246F97C734900317 /* Pods_MovieSearch.framework */,
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		E22213221E7AF48000C16B31 /* InstantSearchLib */ = {
+			isa = PBXGroup;
+			children = (
+				E22213331E7AF4A700C16B31 /* views */,
+				E22213231E7AF49900C16B31 /* InstantSearchPresenter.swift */,
+				E22213241E7AF49900C16B31 /* InstantSearchMultiplePresenter.swift */,
+				E22213251E7AF49900C16B31 /* AlgoliaWidget.swift */,
+				E22213261E7AF49900C16B31 /* RefinementControlWidget.swift */,
+			);
+			name = InstantSearchLib;
+			sourceTree = "<group>";
+		};
+		E22213331E7AF4A700C16B31 /* views */ = {
+			isa = PBXGroup;
+			children = (
+				E222132B1E7AF4A700C16B31 /* Stats.swift */,
+				E222132C1E7AF4A700C16B31 /* StatsLabel.swift */,
+				E222132D1E7AF4A700C16B31 /* ActivityIndicatorView.swift */,
+				E222133E1E7BE05D00C16B31 /* HitsCollectionView.swift */,
+				E222132E1E7AF4A700C16B31 /* Slider.swift */,
+				E22213301E7AF4A700C16B31 /* HitsTableView.swift */,
+				E22213311E7AF4A700C16B31 /* RefinementListView.swift */,
+				E22213321E7AF4A700C16B31 /* SearchBar.swift */,
+			);
+			name = views;
+			path = "../../instantsearch-swift-examples/ecommerce/ecommerce";
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -384,17 +437,29 @@
 			buildActionMask = 2147483647;
 			files = (
 				5D44D0231B35F87B008369AC /* MoviesTableViewController.swift in Sources */,
+				E22213341E7AF4A700C16B31 /* Stats.swift in Sources */,
 				BCA4DA671CEDFE0300E16ACA /* MoviesIpadViewController.swift in Sources */,
 				BC58264D1D4B9A580047D27F /* ConfigViewController.swift in Sources */,
 				BC3FF4BD1CEF4759005CCC78 /* ActorCell.swift in Sources */,
+				E222133B1E7AF4A700C16B31 /* SearchBar.swift in Sources */,
 				BC3FF4B91CEF1526005CCC78 /* MovieCell.swift in Sources */,
+				E22213351E7AF4A700C16B31 /* StatsLabel.swift in Sources */,
+				E22213291E7AF49900C16B31 /* AlgoliaWidget.swift in Sources */,
 				5D44D0251B3601E8008369AC /* MovieRecord.swift in Sources */,
+				E222133F1E7BE05D00C16B31 /* HitsCollectionView.swift in Sources */,
 				5D44D0031B35F7B3008369AC /* AppDelegate.swift in Sources */,
 				5D9EB6AE1B3C3DC100BA6737 /* Helpers.swift in Sources */,
 				BC3FF4B51CEF0DF6005CCC78 /* AlgoliaManager.swift in Sources */,
+				E22213361E7AF4A700C16B31 /* ActivityIndicatorView.swift in Sources */,
+				E222132A1E7AF49900C16B31 /* RefinementControlWidget.swift in Sources */,
+				E22213371E7AF4A700C16B31 /* Slider.swift in Sources */,
 				BCD754E91CF452EC006A05F1 /* GenreCell.swift in Sources */,
 				BC3FF4BF1CEF4788005CCC78 /* Actor.swift in Sources */,
 				BCD755021CF48168006A05F1 /* RatingSelectorView.swift in Sources */,
+				E22213281E7AF49900C16B31 /* InstantSearchMultiplePresenter.swift in Sources */,
+				E22213271E7AF49900C16B31 /* InstantSearchPresenter.swift in Sources */,
+				E22213391E7AF4A700C16B31 /* HitsTableView.swift in Sources */,
+				E222133A1E7AF4A700C16B31 /* RefinementListView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
