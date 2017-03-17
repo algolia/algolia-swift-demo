@@ -48,6 +48,8 @@
 		E222133A1E7AF4A700C16B31 /* RefinementListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E22213311E7AF4A700C16B31 /* RefinementListView.swift */; };
 		E222133B1E7AF4A700C16B31 /* SearchBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = E22213321E7AF4A700C16B31 /* SearchBar.swift */; };
 		E222133F1E7BE05D00C16B31 /* HitsCollectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E222133E1E7BE05D00C16B31 /* HitsCollectionView.swift */; };
+		E22213431E7C141E00C16B31 /* ClearAllWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = E22213421E7C141E00C16B31 /* ClearAllWidget.swift */; };
+		E22213461E7C17C600C16B31 /* RangerSliderWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = E22213451E7C17C600C16B31 /* RangerSliderWidget.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -112,6 +114,8 @@
 		E22213311E7AF4A700C16B31 /* RefinementListView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RefinementListView.swift; sourceTree = "<group>"; };
 		E22213321E7AF4A700C16B31 /* SearchBar.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SearchBar.swift; sourceTree = "<group>"; };
 		E222133E1E7BE05D00C16B31 /* HitsCollectionView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HitsCollectionView.swift; sourceTree = "<group>"; };
+		E22213421E7C141E00C16B31 /* ClearAllWidget.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ClearAllWidget.swift; sourceTree = "<group>"; };
+		E22213451E7C17C600C16B31 /* RangerSliderWidget.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RangerSliderWidget.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -157,6 +161,7 @@
 		5D44CFFF1B35F7B3008369AC /* Source */ = {
 			isa = PBXGroup;
 			children = (
+				E22213441E7C176200C16B31 /* CustomWidgets */,
 				E22213221E7AF48000C16B31 /* InstantSearchLib */,
 				5D44D0021B35F7B3008369AC /* AppDelegate.swift */,
 				5D44D0221B35F87B008369AC /* MoviesTableViewController.swift */,
@@ -258,6 +263,7 @@
 		E22213331E7AF4A700C16B31 /* views */ = {
 			isa = PBXGroup;
 			children = (
+				E22213421E7C141E00C16B31 /* ClearAllWidget.swift */,
 				E222132B1E7AF4A700C16B31 /* Stats.swift */,
 				E222132C1E7AF4A700C16B31 /* StatsLabel.swift */,
 				E222132D1E7AF4A700C16B31 /* ActivityIndicatorView.swift */,
@@ -269,6 +275,14 @@
 			);
 			name = views;
 			path = "../../instantsearch-swift-examples/ecommerce/ecommerce";
+			sourceTree = "<group>";
+		};
+		E22213441E7C176200C16B31 /* CustomWidgets */ = {
+			isa = PBXGroup;
+			children = (
+				E22213451E7C17C600C16B31 /* RangerSliderWidget.swift */,
+			);
+			name = CustomWidgets;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -452,6 +466,8 @@
 				BC3FF4B51CEF0DF6005CCC78 /* AlgoliaManager.swift in Sources */,
 				E22213361E7AF4A700C16B31 /* ActivityIndicatorView.swift in Sources */,
 				E222132A1E7AF49900C16B31 /* RefinementControlWidget.swift in Sources */,
+				E22213431E7C141E00C16B31 /* ClearAllWidget.swift in Sources */,
+				E22213461E7C17C600C16B31 /* RangerSliderWidget.swift in Sources */,
 				E22213371E7AF4A700C16B31 /* Slider.swift in Sources */,
 				BCD754E91CF452EC006A05F1 /* GenreCell.swift in Sources */,
 				BC3FF4BF1CEF4788005CCC78 /* Actor.swift in Sources */,

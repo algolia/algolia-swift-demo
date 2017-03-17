@@ -43,8 +43,8 @@
                                     <userDefinedRuntimeAttribute type="string" keyPath="resultTemplate" value="Innn {processingTimeMS}"/>
                                 </userDefinedRuntimeAttributes>
                             </label>
-                            <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" dataMode="prototypes" id="DcT-Nr-JyO" userLabel="Movies Collection View" customClass="HitsCollectionView" customModule="MovieSearch" customModuleProvider="target">
-                                <rect key="frame" x="189" y="104" width="627" height="664"/>
+                            <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" misplaced="YES" dataMode="prototypes" id="DcT-Nr-JyO" userLabel="Movies Collection View" customClass="HitsCollectionView" customModule="MovieSearch" customModuleProvider="target">
+                                <rect key="frame" x="189" y="104" width="627" height="484"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 <collectionViewFlowLayout key="collectionViewLayout" minimumLineSpacing="10" minimumInteritemSpacing="10" id="pJ3-pk-4aR">
@@ -178,7 +178,7 @@
                                 <color key="textColor" red="0.66666666666666663" green="0.66666666666666663" blue="0.66666666666666663" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <view contentMode="scaleToFill" id="jAj-7w-QJV" customClass="TTRangeSlider">
+                            <view contentMode="scaleToFill" id="jAj-7w-QJV" customClass="RangerSliderWidget" customModule="MovieSearch" customModuleProvider="target">
                                 <rect key="frame" x="8" y="628" width="165" height="60"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
@@ -330,6 +330,27 @@
                                     <action selector="configTapped:" destination="QoU-xg-cOI" eventType="touchUpInside" id="Xgx-Dq-37o"/>
                                 </connections>
                             </button>
+                            <slider opaque="NO" contentMode="scaleToFill" misplaced="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" value="2020" minValue="1950" maxValue="2020" id="E53-bb-0lw" customClass="Slider" customModule="MovieSearch" customModuleProvider="target">
+                                <rect key="frame" x="355" y="643" width="118" height="31"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <userDefinedRuntimeAttributes>
+                                    <userDefinedRuntimeAttribute type="string" keyPath="operation" value="lessThanOrEqual"/>
+                                    <userDefinedRuntimeAttribute type="string" keyPath="attributeName" value="year"/>
+                                </userDefinedRuntimeAttributes>
+                            </slider>
+                            <button opaque="NO" contentMode="scaleToFill" misplaced="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" id="Bsh-Sj-n8b" customClass="ClearAllWidget" customModule="MovieSearch" customModuleProvider="target">
+                                <rect key="frame" x="513" y="643" width="36" height="30"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <state key="normal" title="Clear"/>
+                            </button>
+                            <slider opaque="NO" contentMode="scaleToFill" misplaced="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" value="1950" minValue="1950" maxValue="2020" id="fkb-cZ-qNc" customClass="Slider" customModule="MovieSearch" customModuleProvider="target">
+                                <rect key="frame" x="210" y="643" width="118" height="31"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <userDefinedRuntimeAttributes>
+                                    <userDefinedRuntimeAttribute type="string" keyPath="attributeName" value="year"/>
+                                    <userDefinedRuntimeAttribute type="string" keyPath="operation" value="greaterThanOrEqual"/>
+                                </userDefinedRuntimeAttributes>
+                            </slider>
                         </subviews>
                         <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     </view>
@@ -351,7 +372,7 @@
                     <rect key="frame" x="0.0" y="0.0" width="320" height="44"/>
                     <autoresizingMask key="autoresizingMask"/>
                     <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="8xQ-1c-zgq" id="FO8-P0-oga">
-                        <rect key="frame" x="0.0" y="0.0" width="320" height="43.5"/>
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
                     </tableViewCellContentView>
                 </tableViewCell>

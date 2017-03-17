@@ -26,7 +26,7 @@ import InstantSearchCore
 import TTRangeSlider
 import UIKit
 
-class MoviesIpadViewController: UIViewController, UICollectionViewDataSource, TTRangeSliderDelegate, UISearchBarDelegate, UITableViewDataSource, UITableViewDelegate {
+class MoviesIpadViewController: UIViewController, UICollectionViewDataSource, UISearchBarDelegate, UITableViewDataSource, UITableViewDelegate {
     @IBOutlet weak var searchBar: UISearchBar!
     @IBOutlet weak var genreTableView: RefinementListView!
     @IBOutlet weak var yearRangeSlider: TTRangeSlider!
@@ -99,8 +99,6 @@ class MoviesIpadViewController: UIViewController, UICollectionViewDataSource, TT
         actorSearcher.search()
         movieSearcher.params.setFacet(withName: "genre", disjunctive: genreFilteringModeSwitch.isOn)
         movieSearcher.params.clearNumericRefinements()
-        movieSearcher.params.addNumericRefinement("year", .greaterThanOrEqual, Int(yearRangeSlider.selectedMinimum))
-        movieSearcher.params.addNumericRefinement("year", .lessThanOrEqual, Int(yearRangeSlider.selectedMaximum))
         movieSearcher.params.addNumericRefinement("rating", .greaterThanOrEqual, ratingSelectorView.rating)
         movieSearcher.search()
     }
@@ -134,12 +132,6 @@ class MoviesIpadViewController: UIViewController, UICollectionViewDataSource, TT
 
         let exhaustiveFacetsCount = results.exhaustiveFacetsCount == true
         genreTableViewFooter.isHidden = exhaustiveFacetsCount
-
-        let formatter = NumberFormatter()
-        formatter.locale = NSLocale.current
-        formatter.numberStyle = .decimal
-        formatter.usesGroupingSeparator = true
-        formatter.groupingSize = 3
     }
 
     // MARK: - UICollectionViewDataSource
@@ -192,14 +184,6 @@ class MoviesIpadViewController: UIViewController, UICollectionViewDataSource, TT
                 genreTableView.didSelectRow(at: indexPath)
                 break
             default: return
-        }
-    }
-
-    // MARK: - TTRangeSliderDelegate
-
-    func rangeSlider(_ sender: TTRangeSlider!, didChangeSelectedMinimumValue selectedMinimum: Float, andMaximumValue selectedMaximum: Float) {
-        yearFilterDebouncer.call {
-            self.search()
         }
     }
 
