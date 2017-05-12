@@ -208,7 +208,7 @@
                                 <color key="textColor" red="0.66666666666666663" green="0.66666666666666663" blue="0.66666666666666663" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <view contentMode="scaleToFill" id="mLA-z9-UQN" customClass="RatingSelectorView" customModule="MovieSearch" customModuleProvider="target">
+                            <view contentMode="scaleToFill" id="mLA-z9-UQN" customClass="RatingSelectorWidget" customModule="MovieSearch" customModuleProvider="target">
                                 <rect key="frame" x="30" y="728" width="120" height="20"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <subviews>

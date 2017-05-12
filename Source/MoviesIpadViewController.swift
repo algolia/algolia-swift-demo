@@ -36,7 +36,7 @@ class MoviesIpadViewController: UIViewController, UICollectionViewDataSource, UI
     @IBOutlet weak var genreTableViewFooter: UILabel!
     @IBOutlet weak var genreFilteringModeSwitch: UISwitch!
 
-    var instantSearchPresenter: InstantSearchPresenter!
+    var instantSearch: InstantSearchPresenter!
     var actorSearcher: Searcher!
     var movieSearcher: Searcher!
     var actorHits: [JSONObject] = []
@@ -61,8 +61,6 @@ class MoviesIpadViewController: UIViewController, UICollectionViewDataSource, UI
         yearRangeSlider.minLabelFont = UIFont.systemFont(ofSize: 12)
         yearRangeSlider.maxLabelFont = yearRangeSlider.minLabelFont
 
-        ratingSelectorView.addObserver(self, forKeyPath: "rating", options: .new, context: nil)
-
         // Customize genre table view.
 //        genreTableView.tableFooterView = genreTableViewFooter
 //        genreTableViewFooter.isHidden = true
@@ -79,8 +77,9 @@ class MoviesIpadViewController: UIViewController, UICollectionViewDataSource, UI
         movieSearcher.params.attributesToHighlight = ["title"]
         movieSearcher.params.hitsPerPage = 30
 
-        instantSearchPresenter = InstantSearchPresenter(searcher: movieSearcher)
-        instantSearchPresenter.addAllWidgets(in: self.view)
+        instantSearch = InstantSearchPresenter(searcher: movieSearcher)
+        
+        instantSearch.addAllWidgets(in: self.view)
         
         search()
     }
@@ -99,7 +98,6 @@ class MoviesIpadViewController: UIViewController, UICollectionViewDataSource, UI
         actorSearcher.search()
         movieSearcher.params.setFacet(withName: "genre", disjunctive: genreFilteringModeSwitch.isOn)
         movieSearcher.params.clearNumericRefinements()
-        movieSearcher.params.addNumericRefinement("rating", .greaterThanOrEqual, ratingSelectorView.rating)
         movieSearcher.search()
     }
 
@@ -184,17 +182,6 @@ class MoviesIpadViewController: UIViewController, UICollectionViewDataSource, UI
                 genreTableView.didSelectRow(at: indexPath)
                 break
             default: return
-        }
-    }
-
-    // MARK: - KVO
-
-    override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
-        guard let object = object as? NSObject else { return }
-        if object === ratingSelectorView {
-            if keyPath == "rating" {
-                search()
-            }
         }
     }
 }
